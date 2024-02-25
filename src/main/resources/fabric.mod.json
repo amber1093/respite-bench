@@ -3,20 +3,23 @@
 	"id": "respite_bench",
 	"version": "${version}",
 	"name": "Respite Bench",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "This mod adds items and blocks to emulate resting and mob respawning mechanics from souls-like games.",
 	"authors": [
-		"Me!"
+		"amber1093"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/respite_bench/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
 			"amber1093.respite_bench.RespiteBench"
+		],
+		"client": [
+			"amber1093.respite_bench.RespiteBenchClient"
 		],
 		"fabric-datagen": [
 			"amber1093.respite_bench.RespiteBenchDataGenerator"
