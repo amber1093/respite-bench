@@ -1,4 +1,6 @@
 {
     "item.respite_bench.flask": "Flask",
-    "item.respite_bench.empty_flask": "Empty Flask"
+    "item.respite_bench.empty_flask": "Empty Flask",
+
+    "itemgroup.respite_bench": "Respite Bench"
 }
