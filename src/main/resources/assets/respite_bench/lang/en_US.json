@@ -2,5 +2,8 @@
     "item.respite_bench.flask": "Flask",
     "item.respite_bench.empty_flask": "Empty Flask",
 
+    "block.respite_bench.mob_respawner": "Mob Respawner",
+    "block.respite_bench.bench": "Bench",
+
     "itemgroup.respite_bench": "Respite Bench"
 }

@@ -1,6 +1,7 @@
-package amber1093.item;
+package amber1093.respite_bench.item;
 
 import amber1093.respite_bench.RespiteBench;
+import amber1093.respite_bench.block.ModBlocks;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -19,11 +20,12 @@ public class ModItemGroups {
                     .entries((displayContext, entries) -> {
                         entries.add(ModItems.FLASK);
                         entries.add(ModItems.EMPTY_FLASK);
+                        entries.add(ModBlocks.MOB_RESPAWNER);
+                        entries.add(ModBlocks.BENCH);
                     }).build()
     );
 
     public static void registerItemGroups() {
         RespiteBench.LOGGER.info("Registering item groups for " + RespiteBench.MOD_ID);
-
     }
 }

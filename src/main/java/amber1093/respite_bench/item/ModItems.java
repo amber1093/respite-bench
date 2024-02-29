@@ -1,4 +1,4 @@
-package amber1093.item;
+package amber1093.respite_bench.item;
 
 import amber1093.respite_bench.RespiteBench;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
