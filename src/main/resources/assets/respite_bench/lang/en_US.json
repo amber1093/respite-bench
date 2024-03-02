@@ -1,6 +1,7 @@
 {
     "item.respite_bench.flask": "Flask",
     "item.respite_bench.empty_flask": "Empty Flask",
+    "item.respite_bench.flask_shard": "Flask Shard",
 
     "block.respite_bench.mob_respawner": "Mob Respawner",
     "block.respite_bench.bench": "Bench",

@@ -3,7 +3,10 @@ package amber1093.respite_bench.item;
 import amber1093.respite_bench.RespiteBench;
 import amber1093.respite_bench.block.ModBlocks;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -20,12 +23,20 @@ public class ModItemGroups {
                     .entries((displayContext, entries) -> {
                         entries.add(ModItems.FLASK);
                         entries.add(ModItems.EMPTY_FLASK);
+                        entries.add(ModItems.FLASK_SHARD);
                         entries.add(ModBlocks.MOB_RESPAWNER);
                         entries.add(ModBlocks.BENCH);
                     }).build()
     );
 
+    private static void addItemsToFoodAndDrinkItemGroup(FabricItemGroupEntries entries) {
+        entries.add(ModItems.FLASK);
+        entries.add(ModItems.EMPTY_FLASK);
+        entries.add(ModItems.FLASK_SHARD);
+    }
+
     public static void registerItemGroups() {
         RespiteBench.LOGGER.info("Registering item groups for " + RespiteBench.MOD_ID);
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.FOOD_AND_DRINK).register(ModItemGroups::addItemsToFoodAndDrinkItemGroup);
     }
 }
