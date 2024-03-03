@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 public class ModItems {
 
-    public static final Item FLASK = registerItem("flask", new Item(new FabricItemSettings()));
+    public static final Item FLASK = registerItem("flask", new FlaskItem(new FabricItemSettings().food(ModFoodComponents.FLASK)));
     public static final Item EMPTY_FLASK = registerItem("empty_flask", new Item(new FabricItemSettings()));
     public static final Item FLASK_SHARD = registerItem("flask_shard", new Item(new FabricItemSettings()));
 
