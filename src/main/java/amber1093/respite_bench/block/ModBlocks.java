@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 public class ModBlocks {
 
     public static final Block MOB_RESPAWNER = registerBlock("mob_respawner", new Block(FabricBlockSettings.copyOf(Blocks.BEDROCK).nonOpaque()));
-    public static final Block BENCH = registerBlock("bench", new Block(FabricBlockSettings.copyOf(Blocks.BEDROCK).nonOpaque()));
+    public static final Block BENCH = registerBlock("bench", new BenchBlock(FabricBlockSettings.copyOf(Blocks.BEDROCK).nonOpaque()));
 
     private static Block registerBlock (String name, Block block) {
         registerBlockItem(name, block);
