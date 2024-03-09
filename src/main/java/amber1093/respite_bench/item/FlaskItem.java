@@ -11,7 +11,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.world.World;
 
-public class FlaskItem extends Item{
+public class FlaskItem extends Item {
 
     public FlaskItem(Settings settings) {
         super(settings);
@@ -34,6 +34,7 @@ public class FlaskItem extends Item{
                 stack.decrement(1);
             }
         }
+        
         if (playerEntity == null || !playerEntity.getAbilities().creativeMode) {
             if (stack.isEmpty()) {
                 return new ItemStack(ModItems.EMPTY_FLASK);

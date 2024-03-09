@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import amber1093.respite_bench.block.ModBlocks;
+import amber1093.respite_bench.blockentity.ModBlockEntities;
+import amber1093.respite_bench.entity.ModEntities;
 import amber1093.respite_bench.item.ModItemGroups;
 import amber1093.respite_bench.item.ModItems;
 
@@ -24,5 +26,7 @@ public class RespiteBench implements ModInitializer {
 		ModItemGroups.registerItemGroups();
 		ModItems.registerModItems();
 		ModBlocks.registerModBlocks();
+		ModBlockEntities.registerModBlockEntities();
+		ModEntities.registerModEntities();
 	}
 }

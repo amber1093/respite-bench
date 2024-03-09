@@ -1,20 +1,30 @@
 package amber1093.respite_bench.block;
 
+import amber1093.respite_bench.blockentity.BenchBlockEntity;
+import amber1093.respite_bench.entity.BenchEntity;
+import amber1093.respite_bench.entity.ModEntities;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.StateManager;
-import net.minecraft.util.BlockRotation;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 
-public class BenchBlock extends HorizontalFacingBlock {
+public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProvider {
+    private BenchBlockEntity blockEntity;
 
     public BenchBlock(Settings settings) {
         super(settings);
@@ -30,23 +40,7 @@ public class BenchBlock extends HorizontalFacingBlock {
 		return super.getPlacementState(context).with(Properties.HORIZONTAL_FACING, context.getHorizontalPlayerFacing().getOpposite());
 	}
 
-    public BlockRotation getBlockRotation(BlockState state) {
-        Direction direction = state.get(FACING);
-        switch (direction) {
-            case NORTH:
-                return BlockRotation.NONE;
-            case EAST:
-                return BlockRotation.CLOCKWISE_90;
-            case SOUTH:
-                return BlockRotation.CLOCKWISE_180;
-            case WEST:
-                return BlockRotation.COUNTERCLOCKWISE_90;
-            default:
-                break;
-        }
-        return null;
-    }
-
+    //TODO make lighting work on different rotations
     public VoxelShape getShape(BlockState state) {
         VoxelShape shape = VoxelShapes.empty();
         Direction direction = state.get(FACING);
@@ -131,5 +125,29 @@ public class BenchBlock extends HorizontalFacingBlock {
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return this.getShape(state);
+    }
+
+    @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (!world.isClient()) {
+            if (!player.hasVehicle()) {
+                BenchEntity benchEntity = ModEntities.BENCH_ENTITY.create(world);
+                benchEntity.setInvulnerable(true);
+                benchEntity.setPosition(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f);
+                world.spawnEntity(benchEntity);
+                player.startRiding(benchEntity);
+                benchEntity.allowKill = true;
+                player.heal(player.getMaxHealth());
+                player.clearStatusEffects();
+                return ActionResult.SUCCESS;
+            }
+        }
+        return ActionResult.PASS;
+    }
+
+    @Override
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        blockEntity = new BenchBlockEntity(pos, state);
+        return blockEntity;
     }
 }

@@ -25,7 +25,6 @@ public class ModBlocks {
         return Registry.register(Registries.ITEM, new Identifier(RespiteBench.MOD_ID, name), new BlockItem(block, new FabricItemSettings()));
     }
 
-    
     public static void registerModBlocks() {
         RespiteBench.LOGGER.info("Registering mod blocks for " + RespiteBench.MOD_ID);
     }
