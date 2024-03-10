@@ -13,10 +13,7 @@ public class ModEntities {
     public static final EntityType<BenchEntity> BENCH_ENTITY = Registry.register(Registries.ENTITY_TYPE, new Identifier(RespiteBench.MOD_ID, "bench_entity"),
             FabricEntityTypeBuilder.create(SpawnGroup.MISC, BenchEntity::new).disableSummon().fireImmune().build());
 
-            
     public static void registerModEntities() {
         RespiteBench.LOGGER.info("Registering mod entities for " + RespiteBench.MOD_ID);
-        //FabricDefaultAttributeRegistry.register(BENCH_ENTITY, BenchEntity.createLivingAttributes());
-        
     }
 }

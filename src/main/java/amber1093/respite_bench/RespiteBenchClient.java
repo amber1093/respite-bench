@@ -17,7 +17,6 @@ public class RespiteBenchClient implements ClientModInitializer {
     public void onInitializeClient() {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.MOB_RESPAWNER, RenderLayer.getTranslucent());
         EntityRendererRegistry.register(ModEntities.BENCH_ENTITY, new EntityRendererFactory<BenchEntity>() {
-
             @Override
             public EntityRenderer<BenchEntity> create(Context var1) {
                 return new EntityRenderer<BenchEntity>(var1) {

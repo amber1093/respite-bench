@@ -3,6 +3,7 @@ package amber1093.respite_bench.block;
 import amber1093.respite_bench.blockentity.BenchBlockEntity;
 import amber1093.respite_bench.entity.BenchEntity;
 import amber1093.respite_bench.entity.ModEntities;
+import amber1093.respite_bench.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -11,7 +12,9 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -130,17 +133,25 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!world.isClient()) {
-            if (!player.hasVehicle()) {
-                BenchEntity benchEntity = ModEntities.BENCH_ENTITY.create(world);
-                benchEntity.setInvulnerable(true);
-                benchEntity.setPosition(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f);
-                world.spawnEntity(benchEntity);
-                player.startRiding(benchEntity);
-                benchEntity.allowKill = true;
-                player.heal(player.getMaxHealth());
-                player.clearStatusEffects();
-                return ActionResult.SUCCESS;
+            BenchEntity benchEntity = ModEntities.BENCH_ENTITY.create(world);
+            benchEntity.setInvulnerable(true);
+            benchEntity.setPosition(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f);
+            world.spawnEntity(benchEntity);
+            player.startRiding(benchEntity);
+            benchEntity.allowKill = true;
+            player.heal(player.getMaxHealth());
+            player.clearStatusEffects();
+            do {
+                int flaskSlot = player.getInventory().getSlotWithStack(new ItemStack(ModItems.EMPTY_FLASK));
+                int flaskAmount = player.getInventory().getStack(flaskSlot).getCount();
+                player.getInventory().getStack(flaskSlot).setCount(0);
+                player.getInventory().insertStack(new ItemStack(ModItems.FLASK, flaskAmount));
+
+                player.sendMessage(Text.literal("flaskSlot" + String.valueOf(flaskSlot)));
+                player.sendMessage(Text.literal("flaskAmount" + String.valueOf(flaskAmount)));
             }
+            while (player.getInventory().getSlotWithStack(new ItemStack(ModItems.EMPTY_FLASK)) != -1);
+            return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
     }
