@@ -6,7 +6,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 
 public class BenchBlockEntity extends BlockEntity {
-    public BenchBlockEntity(BlockPos pos, BlockState state) {
-        super(RespiteBench.BENCH_BLOCK_ENTITY, pos, state);
-    }
+	public BenchBlockEntity(BlockPos pos, BlockState state) {
+		super(RespiteBench.BENCH_BLOCK_ENTITY, pos, state);
+	}
 }

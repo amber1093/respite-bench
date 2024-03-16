@@ -1,8 +1,8 @@
 {
-    "variants": {
-        "facing=north": { "model": "respite_bench:block/bench" },
-        "facing=east":  { "model": "respite_bench:block/bench", "y": 90 },
-        "facing=south": { "model": "respite_bench:block/bench", "y": 180 },
-        "facing=west":  { "model": "respite_bench:block/bench", "y": 270 }
-    }
+	"variants": {
+		"facing=north": { "model": "respite_bench:block/bench" },
+		"facing=east":  { "model": "respite_bench:block/bench", "y": 90 },
+		"facing=south": { "model": "respite_bench:block/bench", "y": 180 },
+		"facing=west":  { "model": "respite_bench:block/bench", "y": 270 }
+	}
 }

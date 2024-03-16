@@ -1,13 +1,13 @@
 {
-    "type": "minecraft:crafting_shapeless",
-    "category": "tools",
-    "ingredients": [
-        {"item": "respite_bench:flask_shard"},
-        {"item": "respite_bench:flask_shard"},
-        {"item": "respite_bench:flask_shard"}
-    ],
-    "result": {
-        "item": "respite_bench:empty_flask",
-        "count": 1
-    }
+	"type": "minecraft:crafting_shapeless",
+	"category": "tools",
+	"ingredients": [
+		{"item": "respite_bench:flask_shard"},
+		{"item": "respite_bench:flask_shard"},
+		{"item": "respite_bench:flask_shard"}
+	],
+	"result": {
+		"item": "respite_bench:empty_flask",
+		"count": 1
+	}
 }

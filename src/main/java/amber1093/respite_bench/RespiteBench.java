@@ -36,49 +36,49 @@ public class RespiteBench implements ModInitializer {
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final String MOD_ID = "respite_bench";
-    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	//#region Items
 	public static final FoodComponent FLASK_FOOD_COMPONENT = new FoodComponent.Builder().alwaysEdible().build();
 	public static final Item FLASK = registerItem("flask", new FlaskItem(new FabricItemSettings().food(FLASK_FOOD_COMPONENT)));
-    public static final Item EMPTY_FLASK = registerItem("empty_flask", new Item(new FabricItemSettings()));
-    public static final Item FLASK_SHARD = registerItem("flask_shard", new Item(new FabricItemSettings()));
+	public static final Item EMPTY_FLASK = registerItem("empty_flask", new Item(new FabricItemSettings()));
+	public static final Item FLASK_SHARD = registerItem("flask_shard", new Item(new FabricItemSettings()));
 
-    private static Item registerItem(String name, Item item) {
-        return Registry.register(Registries.ITEM, new Identifier(RespiteBench.MOD_ID, name), item);
-    }
+	private static Item registerItem(String name, Item item) {
+		return Registry.register(Registries.ITEM, new Identifier(RespiteBench.MOD_ID, name), item);
+	}
 	//#endregion
 
 	//#region ItemGroups
 	public static final ItemGroup RESPITE_BENCH_GROUP = Registry.register(
-            Registries.ITEM_GROUP,
-            new Identifier(RespiteBench.MOD_ID, "respite_bench"),
-            FabricItemGroup.builder()
-                .displayName(Text.translatable("itemgroup.respite_bench"))
-                .icon(() -> new ItemStack(RespiteBench.FLASK))
-                .entries((displayContext, entries) -> {
-                    entries.add(RespiteBench.FLASK);
-                    entries.add(RespiteBench.EMPTY_FLASK);
-                    entries.add(RespiteBench.FLASK_SHARD);
-                    entries.add(RespiteBench.MOB_RESPAWNER);
-                    entries.add(RespiteBench.BENCH);
-                })
-                .build()
-    );
+			Registries.ITEM_GROUP,
+			new Identifier(RespiteBench.MOD_ID, "respite_bench"),
+			FabricItemGroup.builder()
+				.displayName(Text.translatable("itemgroup.respite_bench"))
+				.icon(() -> new ItemStack(RespiteBench.FLASK))
+				.entries((displayContext, entries) -> {
+					entries.add(RespiteBench.FLASK);
+					entries.add(RespiteBench.EMPTY_FLASK);
+					entries.add(RespiteBench.FLASK_SHARD);
+					entries.add(RespiteBench.MOB_RESPAWNER);
+					entries.add(RespiteBench.BENCH);
+				})
+				.build()
+	);
 	//#endregion
 
 	//#region Blocks
 	public static final Block MOB_RESPAWNER = registerBlock("mob_respawner", new MobRespawnerBlock(FabricBlockSettings.copyOf(Blocks.SPAWNER)));
-    public static final Block BENCH = registerBlock("bench", new BenchBlock(FabricBlockSettings.copyOf(Blocks.BEDROCK).nonOpaque()));
+	public static final Block BENCH = registerBlock("bench", new BenchBlock(FabricBlockSettings.copyOf(Blocks.BEDROCK).nonOpaque()));
 
-    private static Block registerBlock (String name, Block block) {
-        registerBlockItem(name, block);
-        return Registry.register(Registries.BLOCK, new Identifier(RespiteBench.MOD_ID, name), block);
-    } 
+	private static Block registerBlock (String name, Block block) {
+		registerBlockItem(name, block);
+		return Registry.register(Registries.BLOCK, new Identifier(RespiteBench.MOD_ID, name), block);
+	} 
 
-    private static Item registerBlockItem(String name, Block block) {
-        return Registry.register(Registries.ITEM, new Identifier(RespiteBench.MOD_ID, name), new BlockItem(block, new FabricItemSettings()));
-    }
+	private static Item registerBlockItem(String name, Block block) {
+		return Registry.register(Registries.ITEM, new Identifier(RespiteBench.MOD_ID, name), new BlockItem(block, new FabricItemSettings()));
+	}
 	//#endregion
 
 	//#region BlockEntity
@@ -86,14 +86,14 @@ public class RespiteBench implements ModInitializer {
 			Registries.BLOCK_ENTITY_TYPE, new Identifier(RespiteBench.MOD_ID, "bench_block_entity_type"), 
 			FabricBlockEntityTypeBuilder.create(BenchBlockEntity::new, RespiteBench.BENCH).build());
 
-    public static final BlockEntityType<MobRespawnerBlockEntity> MOB_RESPAWER_BLOCK_ENTITY_TYPE = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE, new Identifier(RespiteBench.MOD_ID, "mob_respawner_block_entity_type"),
-            FabricBlockEntityTypeBuilder.create(MobRespawnerBlockEntity::new, RespiteBench.MOB_RESPAWNER).build());
+	public static final BlockEntityType<MobRespawnerBlockEntity> MOB_RESPAWER_BLOCK_ENTITY_TYPE = Registry.register(
+			Registries.BLOCK_ENTITY_TYPE, new Identifier(RespiteBench.MOD_ID, "mob_respawner_block_entity_type"),
+			FabricBlockEntityTypeBuilder.create(MobRespawnerBlockEntity::new, RespiteBench.MOB_RESPAWNER).build());
 	//#endregion
 	
 	//#region Entity
 	public static final EntityType<BenchEntity> BENCH_ENTITY = Registry.register(Registries.ENTITY_TYPE, new Identifier(RespiteBench.MOD_ID, "bench_entity"),
-            FabricEntityTypeBuilder.create(SpawnGroup.MISC, BenchEntity::new).disableSummon().fireImmune().build());
+			FabricEntityTypeBuilder.create(SpawnGroup.MISC, BenchEntity::new).disableSummon().fireImmune().build());
 	//#endregion
 
 	@Override

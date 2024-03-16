@@ -11,19 +11,19 @@ import net.minecraft.client.render.entity.EntityRenderer;
 
 public class RespiteBenchClient implements ClientModInitializer {
 
-    @Override
-    public void onInitializeClient() {
-        BlockRenderLayerMap.INSTANCE.putBlock(RespiteBench.MOB_RESPAWNER, RenderLayer.getCutout());
-        EntityRendererRegistry.register(RespiteBench.BENCH_ENTITY, new EntityRendererFactory<BenchEntity>() {
-            @Override
-            public EntityRenderer<BenchEntity> create(Context var1) {
-                return new EntityRenderer<BenchEntity>(var1) {
-                    @Override
-                    public Identifier getTexture(BenchEntity var1) {
-                        return new Identifier(RespiteBench.MOD_ID, "bench_entity");
-                    }
-                };
-            }
-        });
-    }
+	@Override
+	public void onInitializeClient() {
+		BlockRenderLayerMap.INSTANCE.putBlock(RespiteBench.MOB_RESPAWNER, RenderLayer.getCutout());
+		EntityRendererRegistry.register(RespiteBench.BENCH_ENTITY, new EntityRendererFactory<BenchEntity>() {
+			@Override
+			public EntityRenderer<BenchEntity> create(Context var1) {
+				return new EntityRenderer<BenchEntity>(var1) {
+					@Override
+					public Identifier getTexture(BenchEntity var1) {
+						return new Identifier(RespiteBench.MOD_ID, "bench_entity");
+					}
+				};
+			}
+		});
+	}
 }

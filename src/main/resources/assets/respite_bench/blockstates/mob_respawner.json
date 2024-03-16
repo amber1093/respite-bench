@@ -1,5 +1,5 @@
 {
-    "variants": {
-        "": { "model": "respite_bench:block/mob_respawner" }
-    }
+	"variants": {
+		"": { "model": "respite_bench:block/mob_respawner" }
+	}
 }   
