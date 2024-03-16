@@ -5,8 +5,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 
-public class BenchBlockEntity extends BlockEntity {
-    public BenchBlockEntity(BlockPos pos, BlockState state) {
-        super(RespiteBench.BENCH_BLOCK_ENTITY, pos, state);
+public class MobRespawnerBlockEntity extends BlockEntity {
+    public MobRespawnerBlockEntity(BlockPos pos, BlockState state) {
+        super(RespiteBench.MOB_RESPAWER_BLOCK_ENTITY_TYPE, pos, state);
     }
 }

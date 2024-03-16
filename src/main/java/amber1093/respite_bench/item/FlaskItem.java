@@ -1,5 +1,6 @@
 package amber1093.respite_bench.item;
 
+import amber1093.respite_bench.RespiteBench;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -37,10 +38,10 @@ public class FlaskItem extends Item {
         
         if (playerEntity == null || !playerEntity.getAbilities().creativeMode) {
             if (stack.isEmpty()) {
-                return new ItemStack(ModItems.EMPTY_FLASK);
+                return new ItemStack(RespiteBench.EMPTY_FLASK);
             }
             if (playerEntity != null) {
-                playerEntity.getInventory().insertStack(new ItemStack(ModItems.EMPTY_FLASK));
+                playerEntity.getInventory().insertStack(new ItemStack(RespiteBench.EMPTY_FLASK));
             }
         }
         

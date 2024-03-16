@@ -1,8 +1,6 @@
 package amber1093.respite_bench;
 
-import amber1093.respite_bench.block.ModBlocks;
 import amber1093.respite_bench.entity.BenchEntity;
-import amber1093.respite_bench.entity.ModEntities;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
@@ -15,8 +13,8 @@ public class RespiteBenchClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.MOB_RESPAWNER, RenderLayer.getTranslucent());
-        EntityRendererRegistry.register(ModEntities.BENCH_ENTITY, new EntityRendererFactory<BenchEntity>() {
+        BlockRenderLayerMap.INSTANCE.putBlock(RespiteBench.MOB_RESPAWNER, RenderLayer.getCutout());
+        EntityRendererRegistry.register(RespiteBench.BENCH_ENTITY, new EntityRendererFactory<BenchEntity>() {
             @Override
             public EntityRenderer<BenchEntity> create(Context var1) {
                 return new EntityRenderer<BenchEntity>(var1) {
