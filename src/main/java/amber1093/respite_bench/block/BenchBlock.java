@@ -24,6 +24,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
+//TODO add item texture
 public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProvider {
 	private BenchBlockEntity blockEntity;
 

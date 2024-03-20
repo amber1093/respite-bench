@@ -20,6 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
+//TODO make better texture
 public class MobRespawnerBlock extends SpawnerBlock {
 
 	public MobRespawnerBlock(Settings settings) {
@@ -31,6 +32,8 @@ public class MobRespawnerBlock extends SpawnerBlock {
 		return new MobRespawnerBlockEntity(pos, state);
 	}
 
+
+	//TODO: vanilla spawner cannot read NBT from spawn eggs. make this work for Mob Respawner
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (!world.isClient())  {

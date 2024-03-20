@@ -7,7 +7,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
-
+//TODO make hitbox invisible OR smaller
 public class BenchEntity extends TextDisplayEntity {
 
 	public boolean allowKill = false;
