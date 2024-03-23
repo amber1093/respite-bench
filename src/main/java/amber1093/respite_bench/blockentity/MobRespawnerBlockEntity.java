@@ -48,8 +48,8 @@ public class MobRespawnerBlockEntity extends BlockEntity {
 
     @Override
     protected void writeNbt(NbtCompound nbt) {
+		this.logic.writeNbt(nbt);
         super.writeNbt(nbt);
-        this.logic.writeNbt(nbt);
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, MobRespawnerBlockEntity blockEntity) {

@@ -22,6 +22,7 @@ import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LightType;
@@ -35,7 +36,6 @@ import org.slf4j.Logger;
 public abstract class MobRespawnerLogic {
     public static final String SPAWN_DATA_KEY = "SpawnData";
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final int field_30951 = 1;
     public int spawnDelay = 20;
 	private DataPool<MobSpawnerEntry> spawnPotentials = DataPool.<MobSpawnerEntry>empty();
     @Nullable
@@ -63,14 +63,8 @@ public abstract class MobRespawnerLogic {
         if (!this.isPlayerInRange(world, pos)) {
             this.lastRotation = this.rotation;
         } else if (this.renderedEntity != null) {
-            Random random = world.getRandom();
-            double d = (double)pos.getX() + random.nextDouble();
-            double e = (double)pos.getY() + random.nextDouble();
-            double f = (double)pos.getZ() + random.nextDouble();
-            world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
-            world.addParticle(ParticleTypes.FLAME, d, e, f, 0.0, 0.0, 0.0);
             if (this.spawnDelay > 0) {
-                --this.spawnDelay;
+				--this.spawnDelay;
             }
             this.lastRotation = this.rotation;
             this.rotation = (this.rotation + (double)(1000.0f / ((float)this.spawnDelay + 200.0f))) % 360.0;
@@ -94,7 +88,6 @@ public abstract class MobRespawnerLogic {
         MobSpawnerEntry mobSpawnerEntry = this.getSpawnEntry(world, random, pos);
         for (int i = 0; i < this.spawnCount; ++i) {
             MobSpawnerEntry.CustomSpawnRules customSpawnRules;
-            double f;
             NbtCompound nbtCompound = mobSpawnerEntry.getNbt();
             Optional<EntityType<?>> optional = EntityType.fromNbt(nbtCompound);
             if (optional.isEmpty()) {
@@ -105,7 +98,7 @@ public abstract class MobRespawnerLogic {
             int j = nbtList.size();
             double d = j >= 1 ? nbtList.getDouble(0) : (double)pos.getX() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5;
             double e = j >= 2 ? nbtList.getDouble(1) : (double)(pos.getY() + random.nextInt(3) - 1);
-            double d2 = f = j >= 3 ? nbtList.getDouble(2) : (double)pos.getZ() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5;
+            double f = j >= 3 ? nbtList.getDouble(2) : (double)pos.getZ() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5;
             if (!world.isSpaceEmpty(optional.get().createSimpleBoundingBox(d, e, f))) continue;
             BlockPos blockPos = BlockPos.ofFloored(d, e, f);
             if (!mobSpawnerEntry.getCustomSpawnRules().isPresent()
@@ -158,7 +151,8 @@ public abstract class MobRespawnerLogic {
     }
 
     public void readNbt(@Nullable World world, BlockPos pos, NbtCompound nbt) {
-        boolean bl2;
+        @SuppressWarnings("unused")
+		boolean bl2;
         this.spawnDelay = nbt.getShort("Delay");
         boolean bl = nbt.contains(SPAWN_DATA_KEY, NbtElement.COMPOUND_TYPE);
         if (bl) {

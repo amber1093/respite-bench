@@ -3,25 +3,25 @@ package amber1093.respite_bench.block;
 import java.util.List;
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
+
+import amber1093.respite_bench.RespiteBench;
 import amber1093.respite_bench.blockentity.MobRespawnerBlockEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SpawnerBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -41,8 +41,14 @@ public class MobRespawnerBlock extends SpawnerBlock {
 		return blockEntity;
 	}
 
+	@Override
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return MobRespawnerBlock.checkType(type, RespiteBench.MOB_RESPAWER_BLOCK_ENTITY_TYPE, world.isClient ? MobRespawnerBlockEntity::clientTick : MobRespawnerBlockEntity::serverTick);
+    }
 
 	//TODO: vanilla spawner cannot read NBT from spawn eggs. make this work for Mob Respawner
+	/*
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (!world.isClient())  {
@@ -54,6 +60,7 @@ public class MobRespawnerBlock extends SpawnerBlock {
 					else if (blockEntity != null) {
 						player.sendMessage(Text.literal("MobRespawnerBlockEntity.setSpawnDelay(0)"));
 						blockEntity.logic.setSpawnDelay(0);
+						blockEntity.markDirty();
 					}
 				}
 				else {
@@ -63,6 +70,7 @@ public class MobRespawnerBlock extends SpawnerBlock {
 		}
 		return ActionResult.PASS;
 	}
+	*/
 
 	//TODO add mob name when NBT is present
 	@Override
