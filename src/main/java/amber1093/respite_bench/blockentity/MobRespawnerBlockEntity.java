@@ -4,6 +4,7 @@ package amber1093.respite_bench.blockentity;
 import org.jetbrains.annotations.Nullable;
 
 import amber1093.respite_bench.RespiteBench;
+import amber1093.respite_bench.event.UseBenchCallback;
 import amber1093.respite_bench.logic.MobRespawnerLogic;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -12,6 +13,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.MobSpawnerEntry;
@@ -21,10 +23,17 @@ public class MobRespawnerBlockEntity extends BlockEntity {
 	
 	public MobRespawnerBlockEntity(BlockPos pos, BlockState state) {
 		super(RespiteBench.MOB_RESPAWER_BLOCK_ENTITY_TYPE, pos, state);
+
+		UseBenchCallback.EVENT.register((spawnDelay) -> {
+			logic.setSpawnDelay(spawnDelay);
+			markDirty();
+			return ActionResult.PASS;
+		});
 	}
 
 	public final MobRespawnerLogic logic = new MobRespawnerLogic() {
 
+		
 		@Override
         public void sendStatus(World world, BlockPos pos, int status) {
             world.addSyncedBlockEvent(pos, RespiteBench.MOB_RESPAWNER, status, 0);

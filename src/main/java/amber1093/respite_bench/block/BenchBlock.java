@@ -3,6 +3,7 @@ package amber1093.respite_bench.block;
 import amber1093.respite_bench.RespiteBench;
 import amber1093.respite_bench.blockentity.BenchBlockEntity;
 import amber1093.respite_bench.entity.BenchEntity;
+import amber1093.respite_bench.event.UseBenchCallback;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -13,6 +14,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -141,6 +143,9 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
 	return this.getShape(state);
 	}
 
+	//TODO (config) make bench work without sitting on it
+	//TODO (config) make bench work in an aoe 
+	//TODO unmount when block is destroyed
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (!world.isClient()) {
@@ -164,6 +169,13 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
 				player.getInventory().getStack(flaskSlot).setCount(0);
 				player.getInventory().insertStack(new ItemStack(RespiteBench.FLASK, flaskAmount));
 			}
+
+			//TODO does not work for hostile mobs
+			ActionResult result = UseBenchCallback.EVENT.invoker().setSpawnDelay(0);
+			if (result == ActionResult.FAIL) {
+				player.sendMessage(Text.literal("BenchBlock.onUse.UseBenchCallback: Failed to modify all Mob Respawners"));
+			}
+
 			return ActionResult.SUCCESS;
 		}
 		return ActionResult.PASS;

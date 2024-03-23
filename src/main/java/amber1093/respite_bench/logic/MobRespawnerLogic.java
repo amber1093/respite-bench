@@ -4,6 +4,8 @@
 package amber1093.respite_bench.logic;
 
 import com.mojang.logging.LogUtils;
+
+
 import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.entity.Entity;
@@ -15,14 +17,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LightType;
@@ -33,23 +33,33 @@ import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
+/** <p>Mostly a copy paste of {@link net.minecraft.world.MobSpawnerLogic}, 
+ * modified to only spawn when called by the event {@link amber1093.respite_bench.event.UseBenchCallback}
+ * which is called by {@link amber1093.respite_bench.block.BenchBlock}.</p>
+ * 
+ * <p>spawnRange and spawn position behaviour change: if spawn count is 1, spawn position will not be randomized.
+ * 
+ * <p>Removed nbt: minSpawnDelay, maxSpawnDelay</p>
+ * <p>Changed nbt: {int spawnDelay} changed to {boolean spawnAllow}</p>
+ * <p>Changed defaults: spawnCount default changed from 4 to 1</p>
+ */
 public abstract class MobRespawnerLogic {
     public static final String SPAWN_DATA_KEY = "SpawnData";
     private static final Logger LOGGER = LogUtils.getLogger();
-    public int spawnDelay = 20;
+    public int spawnDelay = 1;
 	private DataPool<MobSpawnerEntry> spawnPotentials = DataPool.<MobSpawnerEntry>empty();
     @Nullable
     private MobSpawnerEntry spawnEntry;
-    private double rotation;
-    private double lastRotation;
+    private double rotation = 0;
     private int minSpawnDelay = 200;
     private int maxSpawnDelay = 800;
-    private int spawnCount = 4;
+    private int spawnCount = 1;
     @Nullable
     private Entity renderedEntity;
     private int maxNearbyEntities = 6;
     private int requiredPlayerRange = 16;
     private int spawnRange = 4;
+
 
     public void setEntityId(EntityType<?> type, @Nullable World world, Random random, BlockPos pos) {
         this.getSpawnEntry(world, random, pos).getNbt().putString("id", Registries.ENTITY_TYPE.getId(type).toString());
@@ -61,13 +71,11 @@ public abstract class MobRespawnerLogic {
 
     public void clientTick(World world, BlockPos pos) {
         if (!this.isPlayerInRange(world, pos)) {
-            this.lastRotation = this.rotation;
+
         } else if (this.renderedEntity != null) {
             if (this.spawnDelay > 0) {
-				--this.spawnDelay;
+				++this.rotation;
             }
-            this.lastRotation = this.rotation;
-            this.rotation = (this.rotation + (double)(1000.0f / ((float)this.spawnDelay + 200.0f))) % 360.0;
         }
     }
 
@@ -79,14 +87,17 @@ public abstract class MobRespawnerLogic {
             this.updateSpawns(world, pos);
         }
         if (this.spawnDelay > 0) {
-            --this.spawnDelay;
+            ++this.rotation;
             return;
         }
 
+		//begin spawning mobs
         boolean bl = false;
         Random random = world.getRandom();
         MobSpawnerEntry mobSpawnerEntry = this.getSpawnEntry(world, random, pos);
         for (int i = 0; i < this.spawnCount; ++i) {
+
+			//setup
             MobSpawnerEntry.CustomSpawnRules customSpawnRules;
             NbtCompound nbtCompound = mobSpawnerEntry.getNbt();
             Optional<EntityType<?>> optional = EntityType.fromNbt(nbtCompound);
@@ -94,11 +105,25 @@ public abstract class MobRespawnerLogic {
                 this.updateSpawns(world, pos);
                 return;
             }
-            NbtList nbtList = nbtCompound.getList("Pos", NbtElement.DOUBLE_TYPE);
-            int j = nbtList.size();
-            double d = j >= 1 ? nbtList.getDouble(0) : (double)pos.getX() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5;
-            double e = j >= 2 ? nbtList.getDouble(1) : (double)(pos.getY() + random.nextInt(3) - 1);
-            double f = j >= 3 ? nbtList.getDouble(2) : (double)pos.getZ() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5;
+
+			//spawn position
+			NbtList nbtList = nbtCompound.getList("Pos", NbtElement.DOUBLE_TYPE);
+			int nbtListSize = nbtList.size();
+			double d, e, f;
+			//non-randomized position
+			if (this.spawnCount == 1) {
+				d = ( nbtListSize >= 1 ? nbtList.getDouble(0) : (double)pos.getX() );
+				e = ( nbtListSize >= 2 ? nbtList.getDouble(1) : (double)(pos.getY() + 1) );
+				f = ( nbtListSize >= 3 ? nbtList.getDouble(2) : (double)pos.getZ() );
+			}
+			//randomized position
+			else {
+				d = ( nbtListSize >= 1 ? nbtList.getDouble(0) : (double)pos.getX() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5 );
+				e = ( nbtListSize >= 2 ? nbtList.getDouble(1) : (double)(pos.getY() + random.nextInt(3) - 1) );
+				f = ( nbtListSize >= 3 ? nbtList.getDouble(2) : (double)pos.getZ() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5 );
+			}
+
+			//idk what happens down here
             if (!world.isSpaceEmpty(optional.get().createSimpleBoundingBox(d, e, f))) continue;
             BlockPos blockPos = BlockPos.ofFloored(d, e, f);
             if (!mobSpawnerEntry.getCustomSpawnRules().isPresent()
@@ -145,7 +170,7 @@ public abstract class MobRespawnerLogic {
 
     private void updateSpawns(World world, BlockPos pos) {
         Random random = world.random;
-        this.spawnDelay = this.maxSpawnDelay <= this.minSpawnDelay ? this.minSpawnDelay : this.minSpawnDelay + random.nextInt(this.maxSpawnDelay - this.minSpawnDelay);
+        this.spawnDelay = 1;
         this.spawnPotentials.getOrEmpty(random).ifPresent(spawnPotential -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)spawnPotential.getData()));
         this.sendStatus(world, pos, 1);
     }
@@ -213,7 +238,7 @@ public abstract class MobRespawnerLogic {
     public boolean handleStatus(World world, int status) {
         if (status == 1) {
             if (world.isClient) {
-                this.spawnDelay = this.minSpawnDelay;
+                this.spawnDelay = 1;
             }
             return true;
         }
@@ -236,10 +261,6 @@ public abstract class MobRespawnerLogic {
 
     public double getRotation() {
         return this.rotation;
-    }
-
-    public double getLastRotation() {
-        return this.lastRotation;
     }
 
 	public void setSpawnDelay(int spawnDelay) {
