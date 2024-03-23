@@ -41,8 +41,9 @@ public class MixinSpawnEggItem {
 			BlockState blockState = world.getBlockState(blockPos);
 			if ((blockState.isOf(RespiteBench.MOB_RESPAWNER)) && (blockEntity instanceof MobRespawnerBlockEntity)) {
 				ItemStack itemStack = context.getStack();
+				NbtCompound entityNbt = itemStack.getNbt();
 				MobRespawnerBlockEntity mobRespawnerBlockEntity = (MobRespawnerBlockEntity) blockEntity;
-				EntityType<?> entityType = this.getEntityType(itemStack.getNbt());
+				EntityType<?> entityType = this.getEntityType(entityNbt);
 				mobRespawnerBlockEntity.setEntityType(entityType, world.getRandom());
 				blockEntity.markDirty();
 				world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);

@@ -1,6 +1,7 @@
 package amber1093.respite_bench.blockentityrenderer;
 
 import amber1093.respite_bench.blockentity.MobRespawnerBlockEntity;
+import amber1093.respite_bench.logic.MobRespawnerLogic;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -11,11 +12,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
-import net.minecraft.world.MobSpawnerLogic;
 
 @Environment(value=EnvType.CLIENT)
 public class MobRespawnerBlockEntityRenderer implements BlockEntityRenderer<MobRespawnerBlockEntity> {
-	
 	private final EntityRenderDispatcher entityRenderDispatcher;
 	
 	public MobRespawnerBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
@@ -26,7 +25,7 @@ public class MobRespawnerBlockEntityRenderer implements BlockEntityRenderer<MobR
     public void render(MobRespawnerBlockEntity mobRespawnerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         matrixStack.push();
         matrixStack.translate(0.5f, 0.0f, 0.5f);
-        MobSpawnerLogic logic = mobRespawnerBlockEntity.getLogic();
+        MobRespawnerLogic logic = mobRespawnerBlockEntity.getLogic();
         Entity entity = logic.getRenderedEntity(mobRespawnerBlockEntity.getWorld(), mobRespawnerBlockEntity.getWorld().getRandom(), mobRespawnerBlockEntity.getPos());
         if (entity != null) {
             float g = 0.53125f;

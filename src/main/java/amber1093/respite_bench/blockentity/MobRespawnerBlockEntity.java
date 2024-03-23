@@ -1,8 +1,10 @@
 package amber1093.respite_bench.blockentity;
 
+
 import org.jetbrains.annotations.Nullable;
 
 import amber1093.respite_bench.RespiteBench;
+import amber1093.respite_bench.logic.MobRespawnerLogic;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -13,7 +15,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.MobSpawnerEntry;
-import net.minecraft.world.MobSpawnerLogic;
 import net.minecraft.world.World;
 
 public class MobRespawnerBlockEntity extends BlockEntity {
@@ -22,23 +23,14 @@ public class MobRespawnerBlockEntity extends BlockEntity {
 		super(RespiteBench.MOB_RESPAWER_BLOCK_ENTITY_TYPE, pos, state);
 	}
 
-	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
-
-		/*
-		private int minSpawnDelay = 0;
-		private int maxSpawnDelay = 0;
-		private int spawnCount = 1;
-		private int maxNearbyEntities = 999999;
-		private int requiredPlayerRange = 999999;
-		private int spawnRange = 1;
-		*/
+	public final MobRespawnerLogic logic = new MobRespawnerLogic() {
 
 		@Override
-		public void sendStatus(World world, BlockPos pos, int status) {
-			world.addSyncedBlockEvent(pos, RespiteBench.MOB_RESPAWNER, status, 0);
-		}
+        public void sendStatus(World world, BlockPos pos, int status) {
+            world.addSyncedBlockEvent(pos, RespiteBench.MOB_RESPAWNER, status, 0);
+        }
 
-		@Override
+        @Override
         public void setSpawnEntry(@Nullable World world, BlockPos pos, MobSpawnerEntry spawnEntry) {
             super.setSpawnEntry(world, pos, spawnEntry);
             if (world != null) {
@@ -92,7 +84,7 @@ public class MobRespawnerBlockEntity extends BlockEntity {
         this.logic.setEntityId(entityType, this.world, random, this.pos);
     }
 
-    public MobSpawnerLogic getLogic() {
+    public MobRespawnerLogic getLogic() {
         return this.logic;
     }
 

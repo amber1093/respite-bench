@@ -4,19 +4,19 @@ import amber1093.respite_bench.blockentityrenderer.MobRespawnerBlockEntityRender
 import amber1093.respite_bench.entity.BenchEntity;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.util.Identifier;
 import net.minecraft.client.render.entity.EntityRenderer;
 
-@SuppressWarnings("deprecation")
 public class RespiteBenchClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
 		BlockRenderLayerMap.INSTANCE.putBlock(RespiteBench.MOB_RESPAWNER, RenderLayer.getCutout());
+		BlockEntityRendererFactories.register(RespiteBench.MOB_RESPAWER_BLOCK_ENTITY_TYPE, MobRespawnerBlockEntityRenderer::new);
 		EntityRendererRegistry.register(RespiteBench.BENCH_ENTITY, new EntityRendererFactory<BenchEntity>() {
 			@Override
 			public EntityRenderer<BenchEntity> create(Context var1) {
@@ -28,7 +28,5 @@ public class RespiteBenchClient implements ClientModInitializer {
 				};
 			}
 		});
-		BlockEntityRendererRegistry.register(RespiteBench.MOB_RESPAWER_BLOCK_ENTITY_TYPE, MobRespawnerBlockEntityRenderer::new);
-			
 	}
 }
