@@ -72,7 +72,6 @@ public class MobRespawnerBlock extends SpawnerBlock {
 	}
 	*/
 
-	//TODO add mob name when NBT is present
 	@Override
 	public void appendTooltip(ItemStack stack, BlockView world, List<Text> tooltip, TooltipContext options) {
 

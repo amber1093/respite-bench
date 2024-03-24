@@ -23,7 +23,7 @@ public class MobRespawnerBlockEntityRenderer implements BlockEntityRenderer<MobR
 	@Override
     public void render(MobRespawnerBlockEntity blockEntity, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         matrixStack.push();
-        //matrixStack.translate(0.5f, 0.0f, 0.5f);
+        matrixStack.translate(0.5f, 0.0f, 0.5f);
         MobRespawnerLogic logic = blockEntity.getLogic();
         Entity entity = logic.getRenderedEntity(blockEntity.getWorld(), blockEntity.getWorld().getRandom(), blockEntity.getPos());
         if (entity != null) {
@@ -33,12 +33,12 @@ public class MobRespawnerBlockEntityRenderer implements BlockEntityRenderer<MobR
             if ((double)h > 1.0) {
                 g /= h;
             }
-            //matrixStack.translate(0.0f, 0.4f, 0.0f);
+            matrixStack.translate(0.0f, 0.4f, 0.0f);
             matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation));
-            //matrixStack.translate(0.0f, -0.2f, 0.0f);
-            //matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-rotation));
+            matrixStack.translate(0.0f, -0.2f, 0.0f);
+            matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-20.0f));
             matrixStack.scale(g, g, g);
-            this.entityRenderDispatcher.render(entity, 0.5, 0.5, 0.5, 20.0f, delta, matrixStack, vertexConsumerProvider, i);
+            this.entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0f, delta, matrixStack, vertexConsumerProvider, i);
         }
         matrixStack.pop();
     }

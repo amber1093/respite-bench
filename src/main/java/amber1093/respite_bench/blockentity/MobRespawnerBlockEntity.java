@@ -33,7 +33,6 @@ public class MobRespawnerBlockEntity extends BlockEntity {
 
 	public final MobRespawnerLogic logic = new MobRespawnerLogic() {
 
-		
 		@Override
         public void sendStatus(World world, BlockPos pos, int status) {
             world.addSyncedBlockEvent(pos, RespiteBench.MOB_RESPAWNER, status, 0);

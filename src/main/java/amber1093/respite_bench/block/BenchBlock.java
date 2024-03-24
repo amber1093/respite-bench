@@ -170,7 +170,7 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
 				player.getInventory().insertStack(new ItemStack(RespiteBench.FLASK, flaskAmount));
 			}
 
-			//allow all mob respawners to spawn a mob
+			//allow all mob respawners to spawn mobs once
 			ActionResult result = UseBenchCallback.EVENT.invoker().setCanSpawn(true);
 			if (result == ActionResult.FAIL) {
 				player.sendMessage(Text.literal("BenchBlock.onUse.UseBenchCallback: Failed to modify all Mob Respawners"));

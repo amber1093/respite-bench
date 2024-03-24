@@ -37,11 +37,9 @@ import org.slf4j.Logger;
  * modified to only spawn mobs when called by the event {@link amber1093.respite_bench.event.UseBenchCallback}
  * which is called by {@link amber1093.respite_bench.block.BenchBlock}.</p>
  * 
- * <p>spawnRange and spawn position behaviour change: if spawn count is 1, spawn position will not be randomized.
- * 
- * <p>Added: {int maxAliveEntities}, {DataPool#Entity aliveEntities}</p>
+ * <p>Added: {@code int maxAliveEntities}, {@code DataPool<Entity> aliveEntities}</p>
  * <p>Removed: minSpawnDelay, maxSpawnDelay, maxNearbyEntities</p>
- * <p>{int spawnDelay} changed to {boolean canSpawn}</p>
+ * <p>{@code int spawnDelay} changed to {@code boolean canSpawn}</p>
  * <p>spawnCount default value changed from 4 to 1</p>
  * <p>spawnRange default value changed from 4 to 2 </p>
  */

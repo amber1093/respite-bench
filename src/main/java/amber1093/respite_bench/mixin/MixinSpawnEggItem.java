@@ -48,10 +48,10 @@ public class MixinSpawnEggItem {
 				blockEntity.markDirty();
 				world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
 				world.emitGameEvent((Entity)context.getPlayer(), GameEvent.BLOCK_CHANGE, blockPos);
-				callbackInfoReturnable.setReturnValue(ActionResult.CONSUME);
+				callbackInfoReturnable.setReturnValue(ActionResult.SUCCESS);
 			}
 		}
-		return ActionResult.SUCCESS;
+		return ActionResult.CONSUME;
 	}
 
 	@Shadow
