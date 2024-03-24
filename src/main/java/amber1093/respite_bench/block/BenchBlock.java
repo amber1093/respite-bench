@@ -170,8 +170,8 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
 				player.getInventory().insertStack(new ItemStack(RespiteBench.FLASK, flaskAmount));
 			}
 
-			//TODO does not work for hostile mobs
-			ActionResult result = UseBenchCallback.EVENT.invoker().setSpawnDelay(0);
+			//allow all mob respawners to spawn a mob
+			ActionResult result = UseBenchCallback.EVENT.invoker().setCanSpawn(true);
 			if (result == ActionResult.FAIL) {
 				player.sendMessage(Text.literal("BenchBlock.onUse.UseBenchCallback: Failed to modify all Mob Respawners"));
 			}

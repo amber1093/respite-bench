@@ -5,7 +5,6 @@ package amber1093.respite_bench.logic;
 
 import com.mojang.logging.LogUtils;
 
-
 import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.entity.Entity;
@@ -17,6 +16,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DataPool;
@@ -34,48 +34,73 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 /** <p>Mostly a copy paste of {@link net.minecraft.world.MobSpawnerLogic}, 
- * modified to only spawn when called by the event {@link amber1093.respite_bench.event.UseBenchCallback}
+ * modified to only spawn mobs when called by the event {@link amber1093.respite_bench.event.UseBenchCallback}
  * which is called by {@link amber1093.respite_bench.block.BenchBlock}.</p>
  * 
  * <p>spawnRange and spawn position behaviour change: if spawn count is 1, spawn position will not be randomized.
  * 
- * <p>Removed nbt: minSpawnDelay, maxSpawnDelay</p>
- * <p>Changed nbt: {int spawnDelay} changed to {boolean spawnAllow}</p>
- * <p>Changed defaults: spawnCount default changed from 4 to 1</p>
+ * <p>Added: {int maxAliveEntities}, {DataPool#Entity aliveEntities}</p>
+ * <p>Removed: minSpawnDelay, maxSpawnDelay, maxNearbyEntities</p>
+ * <p>{int spawnDelay} changed to {boolean canSpawn}</p>
+ * <p>spawnCount default value changed from 4 to 1</p>
+ * <p>spawnRange default value changed from 4 to 2 </p>
  */
 public abstract class MobRespawnerLogic {
     public static final String SPAWN_DATA_KEY = "SpawnData";
     private static final Logger LOGGER = LogUtils.getLogger();
-    public int spawnDelay = 1;
-	private DataPool<MobSpawnerEntry> spawnPotentials = DataPool.<MobSpawnerEntry>empty();
     @Nullable
     private MobSpawnerEntry spawnEntry;
-    private double rotation = 0;
-    private int minSpawnDelay = 200;
-    private int maxSpawnDelay = 800;
-    private int spawnCount = 1;
     @Nullable
     private Entity renderedEntity;
-    private int maxNearbyEntities = 6;
-    private int requiredPlayerRange = 16;
-    private int spawnRange = 4;
+	private DataPool<MobSpawnerEntry> spawnPotentials = DataPool.<MobSpawnerEntry>empty();
 
+	private DataPool<Entity> aliveEntities = DataPool.<Entity>empty();
+	private int maxAliveEntities = 1;
+
+    private double rotation = 0;
+	private double particleRotationX = 0;
+	private double particleRotationY = 0;
+
+    public boolean canSpawn = false;
+    private int spawnCount = 1;
+    private int spawnRange = 2;
+    private int maxNearbyEntities = 99;
+    private int requiredPlayerRange = 16;
 
     public void setEntityId(EntityType<?> type, @Nullable World world, Random random, BlockPos pos) {
         this.getSpawnEntry(world, random, pos).getNbt().putString("id", Registries.ENTITY_TYPE.getId(type).toString());
     }
 
     private boolean isPlayerInRange(World world, BlockPos pos) {
-        return world.isPlayerInRange((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, this.requiredPlayerRange);
+        return world.isPlayerInRange(
+				(double)pos.getX() + 0.5,
+				(double)pos.getY() + 0.5,
+				(double)pos.getZ() + 0.5,
+				this.requiredPlayerRange);
     }
 
     public void clientTick(World world, BlockPos pos) {
-        if (!this.isPlayerInRange(world, pos)) {
-
-        } else if (this.renderedEntity != null) {
-            if (this.spawnDelay > 0) {
+		if (this.isPlayerInRange(world, pos) && this.renderedEntity != null) {
+            if (!this.canSpawn) {
 				++this.rotation;
             }
+			else {
+				this.particleRotationX += 10;
+				this.particleRotationY += 2;
+				double particleRotationXRadian = Math.toRadians(this.particleRotationX % 360);
+				double particleRotationYRadian = Math.toRadians(this.particleRotationY % 360);
+
+				double particlePosX = (double)pos.getX() + 0.5d; 
+				double particlePosY = (double)pos.getY() + 0.5d;
+				double particlePosZ = (double)pos.getZ() + 0.5d;
+
+				world.addParticle(
+						ParticleTypes.SOUL_FIRE_FLAME,
+						particlePosX + (0.4 * Math.cos(particleRotationXRadian)),
+						particlePosY + (0.4 * Math.cos(particleRotationYRadian)),
+						particlePosZ + (0.4 * Math.sin(particleRotationXRadian)),
+						0, 0, 0);
+			}
         }
     }
 
@@ -83,10 +108,7 @@ public abstract class MobRespawnerLogic {
         if (!this.isPlayerInRange(world, pos)) {
             return;
         }
-        if (this.spawnDelay == -1) {
-            this.updateSpawns(world, pos);
-        }
-        if (this.spawnDelay > 0) {
+        if (!this.canSpawn) {
             ++this.rotation;
             return;
         }
@@ -106,22 +128,14 @@ public abstract class MobRespawnerLogic {
                 return;
             }
 
+			//TODO add a message when it fails to summon
 			//spawn position
 			NbtList nbtList = nbtCompound.getList("Pos", NbtElement.DOUBLE_TYPE);
 			int nbtListSize = nbtList.size();
 			double d, e, f;
-			//non-randomized position
-			if (this.spawnCount == 1) {
-				d = ( nbtListSize >= 1 ? nbtList.getDouble(0) : (double)pos.getX() );
-				e = ( nbtListSize >= 2 ? nbtList.getDouble(1) : (double)(pos.getY() + 1) );
-				f = ( nbtListSize >= 3 ? nbtList.getDouble(2) : (double)pos.getZ() );
-			}
-			//randomized position
-			else {
-				d = ( nbtListSize >= 1 ? nbtList.getDouble(0) : (double)pos.getX() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5 );
-				e = ( nbtListSize >= 2 ? nbtList.getDouble(1) : (double)(pos.getY() + random.nextInt(3) - 1) );
-				f = ( nbtListSize >= 3 ? nbtList.getDouble(2) : (double)pos.getZ() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5 );
-			}
+			d = ( nbtListSize >= 1 ? nbtList.getDouble(0) : (double)pos.getX() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5 );
+			e = ( nbtListSize >= 2 ? nbtList.getDouble(1) : (double)(pos.getY() + random.nextInt(3) - 1) );
+			f = ( nbtListSize >= 3 ? nbtList.getDouble(2) : (double)pos.getZ() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5 );
 
 			//idk what happens down here
             if (!world.isSpaceEmpty(optional.get().createSimpleBoundingBox(d, e, f))) continue;
@@ -170,29 +184,30 @@ public abstract class MobRespawnerLogic {
 
     private void updateSpawns(World world, BlockPos pos) {
         Random random = world.random;
-        this.spawnDelay = 1;
+        this.canSpawn = false;
         this.spawnPotentials.getOrEmpty(random).ifPresent(spawnPotential -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)spawnPotential.getData()));
         this.sendStatus(world, pos, 1);
     }
 
     public void readNbt(@Nullable World world, BlockPos pos, NbtCompound nbt) {
-        @SuppressWarnings("unused")
-		boolean bl2;
-        this.spawnDelay = nbt.getShort("Delay");
-        boolean bl = nbt.contains(SPAWN_DATA_KEY, NbtElement.COMPOUND_TYPE);
-        if (bl) {
+
+		this.canSpawn = nbt.getBoolean("CanSpawn");
+		boolean spawnPotentialsExists = nbt.contains("SpawnPotentials", NbtElement.LIST_TYPE);
+        boolean spawnDataExists = nbt.contains(SPAWN_DATA_KEY, NbtElement.COMPOUND_TYPE);
+
+        if (spawnDataExists) {
             MobSpawnerEntry mobSpawnerEntry = MobSpawnerEntry.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound(SPAWN_DATA_KEY)).resultOrPartial(string -> LOGGER.warn("Invalid SpawnData: {}", string)).orElseGet(MobSpawnerEntry::new);
             this.setSpawnEntry(world, pos, mobSpawnerEntry);
         }
-        if (bl2 = nbt.contains("SpawnPotentials", NbtElement.LIST_TYPE)) {
+
+        if (spawnPotentialsExists) {
             NbtList nbtList = nbt.getList("SpawnPotentials", NbtElement.COMPOUND_TYPE);
             this.spawnPotentials = MobSpawnerEntry.DATA_POOL_CODEC.parse(NbtOps.INSTANCE, nbtList).resultOrPartial(error -> LOGGER.warn("Invalid SpawnPotentials list: {}", error)).orElseGet(DataPool::<MobSpawnerEntry>empty);
         } else {
             this.spawnPotentials = DataPool.of(this.spawnEntry != null ? this.spawnEntry : new MobSpawnerEntry());
         }
-        if (nbt.contains("MinSpawnDelay", NbtElement.NUMBER_TYPE)) {
-            this.minSpawnDelay = nbt.getShort("MinSpawnDelay");
-            this.maxSpawnDelay = nbt.getShort("MaxSpawnDelay");
+
+        if (nbt.contains("SpawnCount", NbtElement.NUMBER_TYPE)) {
             this.spawnCount = nbt.getShort("SpawnCount");
         }
         if (nbt.contains("MaxNearbyEntities", NbtElement.NUMBER_TYPE)) {
@@ -206,9 +221,7 @@ public abstract class MobRespawnerLogic {
     }
 
     public NbtCompound writeNbt(NbtCompound nbt) {
-        nbt.putShort("Delay", (short)this.spawnDelay);
-        nbt.putShort("MinSpawnDelay", (short)this.minSpawnDelay);
-        nbt.putShort("MaxSpawnDelay", (short)this.maxSpawnDelay);
+        nbt.putBoolean("CanSpawn", this.canSpawn);
         nbt.putShort("SpawnCount", (short)this.spawnCount);
         nbt.putShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
         nbt.putShort("RequiredPlayerRange", (short)this.requiredPlayerRange);
@@ -238,7 +251,7 @@ public abstract class MobRespawnerLogic {
     public boolean handleStatus(World world, int status) {
         if (status == 1) {
             if (world.isClient) {
-                this.spawnDelay = 1;
+                this.canSpawn = false;
             }
             return true;
         }
@@ -263,8 +276,8 @@ public abstract class MobRespawnerLogic {
         return this.rotation;
     }
 
-	public void setSpawnDelay(int spawnDelay) {
-		this.spawnDelay = spawnDelay;
+	public void setCanSpawn(boolean canSpawn) {
+		this.canSpawn = canSpawn;
 	}
 }
 

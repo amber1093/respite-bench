@@ -24,8 +24,8 @@ public class MobRespawnerBlockEntity extends BlockEntity {
 	public MobRespawnerBlockEntity(BlockPos pos, BlockState state) {
 		super(RespiteBench.MOB_RESPAWER_BLOCK_ENTITY_TYPE, pos, state);
 
-		UseBenchCallback.EVENT.register((spawnDelay) -> {
-			logic.setSpawnDelay(spawnDelay);
+		UseBenchCallback.EVENT.register((canSpawn) -> {
+			logic.setCanSpawn(canSpawn);
 			markDirty();
 			return ActionResult.PASS;
 		});

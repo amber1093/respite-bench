@@ -8,9 +8,9 @@ public interface UseBenchCallback {
 
 	Event<UseBenchCallback> EVENT = EventFactory.createArrayBacked(
 			UseBenchCallback.class,
-			(listeners) -> (spawnDelay) -> {
+			(listeners) -> (canSpawn) -> {
 				for (UseBenchCallback listener : listeners) {
-					ActionResult result = listener.setSpawnDelay(spawnDelay);
+					ActionResult result = listener.setCanSpawn(canSpawn);
 					if(result != ActionResult.PASS) {
 						return result;
 					}
@@ -19,5 +19,5 @@ public interface UseBenchCallback {
 			}
 	);
 
-    ActionResult setSpawnDelay(int spawnDelay);
+    ActionResult setCanSpawn(boolean canSpawn);
 }
