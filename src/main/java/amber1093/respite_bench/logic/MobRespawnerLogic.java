@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -35,6 +36,13 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+
+	//TODO add event callback to remove entries from aliveEntitiesUuid
+
+	//TODO implement your own Listener class for listening to GameEvent.EntityDie
+
+//TODO disable spawning if entities are alive
+
 
 /** <p>Mostly a copy paste of {@link net.minecraft.world.MobSpawnerLogic}, 
  * modified to only spawn mobs when called by the event {@link amber1093.respite_bench.event.UseBenchCallback}
@@ -71,6 +79,7 @@ public abstract class MobRespawnerLogic {
     }
 
     private boolean isPlayerInRange(World world, BlockPos pos) {
+
         return world.isPlayerInRange(
 				(double)pos.getX() + 0.5,
 				(double)pos.getY() + 0.5,
@@ -234,11 +243,11 @@ public abstract class MobRespawnerLogic {
 		if (nbt.contains("AliveEntitiesUUID", NbtElement.LIST_TYPE)) {
 			this.aliveEntitiesUuid.clear();
 			NbtList nbtList = nbt.getList("AliveEntitiesUUID", NbtElement.COMPOUND_TYPE);
-			LOGGER.info("AliveEntitiesUUID nbtList" + nbtList.toString());
+			LOGGER.info("AliveEntitiesUUID nbtList" + nbtList.toString()); //DEBUG
 			
 			for (int i = 0; i < nbtList.size(); i++) {
 				NbtCompound nbtCompound = nbtList.getCompound(i);
-				LOGGER.debug("AliveEntitiesUUID nbtCompound[" + String.valueOf(i) + "] " + nbtCompound.toString());
+				LOGGER.debug("AliveEntitiesUUID nbtCompound[" + String.valueOf(i) + "] " + nbtCompound.toString()); //DEBUG
 				this.aliveEntitiesUuid.add(nbtCompound.getUuid(String.valueOf(i)));
 			}
 		}
@@ -323,6 +332,10 @@ public abstract class MobRespawnerLogic {
 
 	public void setCanSpawn(boolean canSpawn) {
 		this.canSpawn = canSpawn;
+	}
+
+	public boolean removeEntityUuid(UUID uuidToRemove) {
+		return this.aliveEntitiesUuid.remove(uuidToRemove);
 	}
 }
 

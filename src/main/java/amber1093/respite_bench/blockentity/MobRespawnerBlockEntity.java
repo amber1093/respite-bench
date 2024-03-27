@@ -4,6 +4,7 @@ package amber1093.respite_bench.blockentity;
 import org.jetbrains.annotations.Nullable;
 
 import amber1093.respite_bench.RespiteBench;
+import amber1093.respite_bench.event.EntityDeathCallback;
 import amber1093.respite_bench.event.UseBenchCallback;
 import amber1093.respite_bench.logic.MobRespawnerLogic;
 import net.minecraft.block.Block;
@@ -26,8 +27,16 @@ public class MobRespawnerBlockEntity extends BlockEntity {
 
 		UseBenchCallback.EVENT.register((canSpawn) -> {
 			logic.setCanSpawn(canSpawn);
-			markDirty();
+			this.markDirty();
 			return ActionResult.PASS;
+		});
+
+		EntityDeathCallback.EVENT.register((uuidToRemove) -> {
+			boolean result = logic.removeEntityUuid(uuidToRemove);
+			if (result == true) {
+				this.markDirty();
+			}
+			return result;
 		});
 	}
 

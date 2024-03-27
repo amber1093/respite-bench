@@ -25,7 +25,7 @@ import amber1093.respite_bench.RespiteBench;
 import amber1093.respite_bench.blockentity.MobRespawnerBlockEntity;
 
 @Mixin(SpawnEggItem.class)
-public class MixinSpawnEggItem {
+public abstract class MixinSpawnEggItem {
 
 	/** 
 	 * <p>Mixins to {@link SpawnEggItem}</p>

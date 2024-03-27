@@ -3,7 +3,8 @@
 	"package": "amber1093.respite_bench.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"MixinSpawnEggItem"
+		"MixinSpawnEggItem",
+		"MixinLivingEntity"
 	],
 	"injectors": {
 		"defaultRequire": 1
