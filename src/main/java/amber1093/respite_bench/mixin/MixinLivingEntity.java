@@ -20,7 +20,6 @@ public abstract class MixinLivingEntity extends Entity {
 
 	public MixinLivingEntity(EntityType<?> type, World world) {
 		super(type, world);
-		//TODO Auto-generated constructor stub
 	}
 
 	/** 

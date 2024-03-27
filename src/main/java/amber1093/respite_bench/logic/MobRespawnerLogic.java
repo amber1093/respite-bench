@@ -37,7 +37,7 @@ import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-
+//! TODO investigate for possible chunkloading related bugs
 
 /** <p>Mostly a copy paste of {@link net.minecraft.world.MobSpawnerLogic}, 
  * modified to only spawn mobs when called by the event {@link amber1093.respite_bench.event.UseBenchCallback}
@@ -65,6 +65,8 @@ public abstract class MobRespawnerLogic {
 	private double particleRotationX = 0;
 	private double particleRotationY = 0;
 
+	//* TODO refresh already alive mobs' nbt (heal to full and re-gear)
+	//public boolean canRefreshConnectedMobs = false;
     public boolean canSpawn = false;
     private int spawnCount = 1;
     private int spawnRange = 2;
@@ -171,15 +173,6 @@ public abstract class MobRespawnerLogic {
                 this.updateSpawns(world, pos, false);
                 return;
             }
-
-			//cancel if there are too many entities nearby
-			/*
-            int k = world.getNonSpectatingEntities(entity2.getClass(), new Box(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1).expand(this.spawnRange)).size();
-            if (k >= this.maxNearbyEntities) {
-                this.updateSpawns(world, pos);
-                return;
-            }
-			*/
 
 			//prepare mob spawn
             entity2.refreshPositionAndAngles(entity2.getX(), entity2.getY(), entity2.getZ(), random.nextFloat() * 360.0f, 0.0f);
