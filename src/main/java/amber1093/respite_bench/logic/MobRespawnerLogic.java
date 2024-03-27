@@ -37,18 +37,13 @@ import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-	//TODO add event callback to remove entries from aliveEntitiesUuid
-
-	//TODO implement your own Listener class for listening to GameEvent.EntityDie
-
-//TODO disable spawning if entities are alive
 
 
 /** <p>Mostly a copy paste of {@link net.minecraft.world.MobSpawnerLogic}, 
  * modified to only spawn mobs when called by the event {@link amber1093.respite_bench.event.UseBenchCallback}
  * which is called by {@link amber1093.respite_bench.block.BenchBlock}.</p>
  * 
- * <p>Added: {@code int maxAliveEntities}, {@code DataPool<UUID> aliveEntities}</p>
+ * <p>Added: {@code int maxConnectedEntities}, {@code int currentConnectedEntities}, {@code List<UUID> connectedEntitiesUuid}</p>
  * <p>Removed: minSpawnDelay, maxSpawnDelay, maxNearbyEntities</p>
  * <p>{@code int spawnDelay} changed to {@code boolean canSpawn}</p>
  * <p>spawnCount default value changed from 4 to 1</p>
@@ -63,9 +58,10 @@ public abstract class MobRespawnerLogic {
     private MobSpawnerEntry spawnEntry;
 	private DataPool<MobSpawnerEntry> spawnPotentials = DataPool.<MobSpawnerEntry>empty();
 
-	private List<UUID> aliveEntitiesUuid = new ArrayList<>();
+	private List<UUID> connectedEntitiesUuid = new ArrayList<>();
+	private int maxConnectedEntities = 3;
 
-    private double rotation = 0;
+	private double rotation = 0;
 	private double particleRotationX = 0;
 	private double particleRotationY = 0;
 
@@ -91,12 +87,12 @@ public abstract class MobRespawnerLogic {
     public void clientTick(World world, BlockPos pos) {
 		if (this.isPlayerInRange(world, pos) && this.renderedEntity != null) {
 
-			ParticleEffect particleType = ParticleTypes.SMOKE;
+			ParticleEffect particleType = ParticleTypes.SOUL_FIRE_FLAME;
             if (!this.canSpawn) {
 				++this.rotation;
             }
 			else {
-				particleType = ParticleTypes.SOUL_FIRE_FLAME;
+				particleType = ParticleTypes.SMOKE;
 			}
 
 			this.particleRotationX += 10;
@@ -123,6 +119,11 @@ public abstract class MobRespawnerLogic {
             return;
         }
 
+		if (getConnectedEntityAmount() >= maxConnectedEntities) {
+			this.updateSpawns(world, pos, false);
+			return;
+		}
+
 		//prepare for spawning mobs
         boolean spawnSuccessful = false;
         Random random = world.getRandom();
@@ -134,7 +135,7 @@ public abstract class MobRespawnerLogic {
             NbtCompound nbtCompound = mobSpawnerEntry.getNbt();
             Optional<EntityType<?>> optional = EntityType.fromNbt(nbtCompound);
             if (optional.isEmpty()) {
-                this.updateSpawns(world, pos);
+                this.updateSpawns(world, pos, false);
                 return;
             }
 
@@ -167,7 +168,7 @@ public abstract class MobRespawnerLogic {
 
 			//cancel if entity doesnt exist
             if (entity2 == null) {
-                this.updateSpawns(world, pos);
+                this.updateSpawns(world, pos, false);
                 return;
             }
 
@@ -192,12 +193,12 @@ public abstract class MobRespawnerLogic {
 
 			//spawn mob
             if (!world.spawnNewEntityAndPassengers(entity2)) {
-                this.updateSpawns(world, pos);
+                this.updateSpawns(world, pos, false);
                 return;
             }
 
 			//get uuid
-			this.aliveEntitiesUuid.add(entity2.getUuid());
+			this.connectedEntitiesUuid.add(entity2.getUuid());
 
 			//notify server
             world.syncWorldEvent(WorldEvents.SPAWNER_SPAWNS_MOB, pos, 0);
@@ -211,13 +212,13 @@ public abstract class MobRespawnerLogic {
             spawnSuccessful = true;
         }
         if (spawnSuccessful) {
-            this.updateSpawns(world, pos);
+            this.updateSpawns(world, pos, true);
         }
     }
 
-    private void updateSpawns(World world, BlockPos pos) {
+    private void updateSpawns(World world, BlockPos pos, boolean canSpawn) {
         Random random = world.random;
-        this.canSpawn = false;
+        this.canSpawn = canSpawn;
         this.spawnPotentials.getOrEmpty(random).ifPresent(spawnPotential -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)spawnPotential.getData()));
         this.sendStatus(world, pos, 1);
     }
@@ -240,18 +241,6 @@ public abstract class MobRespawnerLogic {
             this.spawnPotentials = DataPool.of(this.spawnEntry != null ? this.spawnEntry : new MobSpawnerEntry());
         }
 
-		if (nbt.contains("AliveEntitiesUUID", NbtElement.LIST_TYPE)) {
-			this.aliveEntitiesUuid.clear();
-			NbtList nbtList = nbt.getList("AliveEntitiesUUID", NbtElement.COMPOUND_TYPE);
-			LOGGER.info("AliveEntitiesUUID nbtList" + nbtList.toString()); //DEBUG
-			
-			for (int i = 0; i < nbtList.size(); i++) {
-				NbtCompound nbtCompound = nbtList.getCompound(i);
-				LOGGER.debug("AliveEntitiesUUID nbtCompound[" + String.valueOf(i) + "] " + nbtCompound.toString()); //DEBUG
-				this.aliveEntitiesUuid.add(nbtCompound.getUuid(String.valueOf(i)));
-			}
-		}
-
         if (nbt.contains("SpawnCount", NbtElement.NUMBER_TYPE)) {
             this.spawnCount = nbt.getShort("SpawnCount");
         }
@@ -261,6 +250,23 @@ public abstract class MobRespawnerLogic {
         if (nbt.contains("SpawnRange", NbtElement.NUMBER_TYPE)) {
             this.spawnRange = nbt.getShort("SpawnRange");
         }
+
+		if (nbt.contains("ConnectedEntitiesUuid", NbtElement.LIST_TYPE)) {
+			this.connectedEntitiesUuid.clear();
+			NbtList nbtList = nbt.getList("connectedEntitiesUuid", NbtElement.COMPOUND_TYPE);
+			LOGGER.info("connectedEntitiesUuid nbtList" + nbtList.toString()); //DEBUG
+			
+			for (int i = 0; i < nbtList.size(); i++) {
+				NbtCompound nbtCompound = nbtList.getCompound(i);
+				LOGGER.debug("connectedEntitiesUuid nbtCompound[" + String.valueOf(i) + "] " + nbtCompound.toString()); //DEBUG
+				this.connectedEntitiesUuid.add(nbtCompound.getUuid(String.valueOf(i)));
+			}
+		}
+
+		if (nbt.contains("MaxConnectedEntities", NbtElement.NUMBER_TYPE)) {
+			this.maxConnectedEntities = nbt.getShort("MaxConnectedEntities");
+		}
+
         this.renderedEntity = null;
     }
 
@@ -274,15 +280,16 @@ public abstract class MobRespawnerLogic {
         }
 		nbt.put("SpawnPotentials", MobSpawnerEntry.DATA_POOL_CODEC.encodeStart(NbtOps.INSTANCE, this.spawnPotentials).result().orElseThrow());
 
-		if (this.aliveEntitiesUuid.size() > 0) {
+		if (this.connectedEntitiesUuid.size() > 0) {
 			NbtList nbtList = new NbtList();
-			for (int i = 0; i < this.aliveEntitiesUuid.size(); i++) {
+			for (int i = 0; i < this.connectedEntitiesUuid.size(); i++) {
 				NbtCompound nbtCompound = new NbtCompound();
-				nbtCompound.putUuid(String.valueOf(i), this.aliveEntitiesUuid.get(i));
+				nbtCompound.putUuid(String.valueOf(i), this.connectedEntitiesUuid.get(i));
 				nbtList.add(nbtCompound);
 			}
-			nbt.put("AliveEntitiesUUID", nbtList);
+			nbt.put("ConnectedEntitiesUuid", nbtList);
 		}
+		nbt.putShort("MaxConnectedEntities", (short)this.maxConnectedEntities);
 
         return nbt;
 	}
@@ -335,7 +342,11 @@ public abstract class MobRespawnerLogic {
 	}
 
 	public boolean removeEntityUuid(UUID uuidToRemove) {
-		return this.aliveEntitiesUuid.remove(uuidToRemove);
+		return this.connectedEntitiesUuid.remove(uuidToRemove);
+	}
+
+	public int getConnectedEntityAmount() {
+		return this.connectedEntitiesUuid.size();
 	}
 }
 
