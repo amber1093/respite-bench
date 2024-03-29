@@ -3,7 +3,7 @@
 	"id": "respite_bench",
 	"version": "${version}",
 	"name": "Respite Bench",
-	"description": "Adds content that emulates resting and mob respawning mechanics from souls-like games.",
+	"description": "Adds content that mimics resting and mob respawning mechanics from souls-like games.",
 	"authors": [
 		"amber1093"
 	],

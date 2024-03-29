@@ -1,6 +1,5 @@
 {
 	"type": "minecraft:crafting_shapeless",
-	"category": "tools",
 	"ingredients": [
 		{"item": "respite_bench:flask_shard"},
 		{"item": "respite_bench:flask_shard"},

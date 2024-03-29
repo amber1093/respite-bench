@@ -72,10 +72,6 @@ public abstract class MobRespawnerLogic {
     private int spawnRange = 2;
     private int requiredPlayerRange = 16;
 
-    public void setEntityId(EntityType<?> type, @Nullable World world, Random random, BlockPos pos) {
-        this.getSpawnEntry(world, random, pos).getNbt().putString("id", Registries.ENTITY_TYPE.getId(type).toString());
-    }
-
     private boolean isPlayerInRange(World world, BlockPos pos) {
 
         return world.isPlayerInRange(
@@ -178,7 +174,10 @@ public abstract class MobRespawnerLogic {
             entity2.refreshPositionAndAngles(entity2.getX(), entity2.getY(), entity2.getZ(), random.nextFloat() * 360.0f, 0.0f);
             if (entity2 instanceof MobEntity) {
                 MobEntity mobEntity = (MobEntity)entity2;
-                if (mobSpawnerEntry.getCustomSpawnRules().isEmpty() && !mobEntity.canSpawn(world, SpawnReason.SPAWNER) || !mobEntity.canSpawn(world)) continue;
+                if (mobSpawnerEntry.getCustomSpawnRules().isEmpty() && !mobEntity.canSpawn(world, SpawnReason.SPAWNER) || !mobEntity.canSpawn(world)) { 
+					continue;
+				}
+
                 if (mobSpawnerEntry.getNbt().getSize() == 1 && mobSpawnerEntry.getNbt().contains("id", NbtElement.STRING_TYPE)) {
                     ((MobEntity)entity2).initialize(world, world.getLocalDifficulty(entity2.getBlockPos()), SpawnReason.SPAWNER, null, null);
                 }
@@ -192,6 +191,9 @@ public abstract class MobRespawnerLogic {
 
 			//get uuid
 			this.connectedEntitiesUuid.add(entity2.getUuid());
+			
+			LOGGER.info(entity2.toString()); //DEBUG
+			LOGGER.info(spawnEntry.toString()); //DEBUG
 
 			//notify server
             world.syncWorldEvent(WorldEvents.SPAWNER_SPAWNS_MOB, pos, 0);
@@ -247,11 +249,11 @@ public abstract class MobRespawnerLogic {
 		if (nbt.contains("ConnectedEntitiesUuid", NbtElement.LIST_TYPE)) {
 			this.connectedEntitiesUuid.clear();
 			NbtList nbtList = nbt.getList("connectedEntitiesUuid", NbtElement.COMPOUND_TYPE);
-			LOGGER.info("connectedEntitiesUuid nbtList" + nbtList.toString()); //DEBUG
+			//LOGGER.info("connectedEntitiesUuid nbtList" + nbtList.toString()); //DEBUG
 			
 			for (int i = 0; i < nbtList.size(); i++) {
 				NbtCompound nbtCompound = nbtList.getCompound(i);
-				LOGGER.debug("connectedEntitiesUuid nbtCompound[" + String.valueOf(i) + "] " + nbtCompound.toString()); //DEBUG
+				//LOGGER.debug("connectedEntitiesUuid nbtCompound[" + String.valueOf(i) + "] " + nbtCompound.toString()); //DEBUG
 				this.connectedEntitiesUuid.add(nbtCompound.getUuid(String.valueOf(i)));
 			}
 		}
@@ -302,6 +304,10 @@ public abstract class MobRespawnerLogic {
         return this.renderedEntity;
     }
 
+	public void resetRenderedEntity() {
+		this.renderedEntity = null;
+	}
+
     public boolean handleStatus(World world, int status) {
         if (status == 1) {
             if (world.isClient) {
@@ -311,6 +317,20 @@ public abstract class MobRespawnerLogic {
         }
         return false;
     }
+
+	public void setEntityId(EntityType<?> type, @Nullable World world, Random random, BlockPos pos) {
+        this.getSpawnEntry(world, random, pos).getNbt().putString("id", Registries.ENTITY_TYPE.getId(type).toString());
+    }
+
+	/** Reads and merges NBT from {@link SpawnEggItem}!
+	 * @param nbtCompound
+	 * @param world
+	 * @param random
+	 * @param pos
+	 */
+	public void setEntityNbt(NbtCompound nbtCompound, @Nullable World world, Random random, BlockPos pos) {
+		this.getSpawnEntry(world, random, pos).getNbt().copyFrom(nbtCompound.getCompound("EntityTag"));
+	}
 
     private MobSpawnerEntry getSpawnEntry(@Nullable World world, Random random, BlockPos pos) {
 		if (this.spawnEntry != null) {

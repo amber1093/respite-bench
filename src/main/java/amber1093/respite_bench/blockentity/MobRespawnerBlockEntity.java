@@ -97,9 +97,17 @@ public class MobRespawnerBlockEntity extends BlockEntity {
         return true;
     }
 
+	public void resetRenderedEntity() {
+		this.logic.resetRenderedEntity();
+	}
+
     public void setEntityType(EntityType<?> entityType, Random random) {
         this.logic.setEntityId(entityType, this.world, random, this.pos);
     }
+
+	public void setEntityNbt(NbtCompound nbtCompound, Random random) {
+		this.logic.setEntityNbt(nbtCompound, this.world, random, this.pos);
+	}
 
     public MobRespawnerLogic getLogic() {
         return this.logic;

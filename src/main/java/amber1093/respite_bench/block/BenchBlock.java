@@ -14,7 +14,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -167,6 +166,7 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
 			while (player.getInventory().getSlotWithStack(new ItemStack(RespiteBench.EMPTY_FLASK)) != -1) {
 				int flaskSlot = player.getInventory().getSlotWithStack(new ItemStack(RespiteBench.EMPTY_FLASK));
 				int flaskAmount = player.getInventory().getStack(flaskSlot).getCount();
+				
 				player.getInventory().getStack(flaskSlot).setCount(0);
 				player.getInventory().insertStack(new ItemStack(RespiteBench.FLASK, flaskAmount));
 			}
@@ -174,7 +174,7 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
 			//allow all mob respawners to spawn mobs once
 			ActionResult result = UseBenchCallback.EVENT.invoker().setCanSpawn(true);
 			if (result == ActionResult.FAIL) {
-				player.sendMessage(Text.literal("BenchBlock.onUse.UseBenchCallback: Failed to modify all Mob Respawners"));
+				RespiteBench.LOGGER.warn("BenchBlock.onUse.UseBenchCallback: Failed to modify all Mob Respawners");	//DEBUG
 			}
 
 			return ActionResult.SUCCESS;

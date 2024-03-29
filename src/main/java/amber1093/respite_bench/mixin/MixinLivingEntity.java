@@ -15,24 +15,24 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.World;
 
-@Mixin(value = {LivingEntity.class})
+/** 
+ * <p>Mixins to {@link LivingEntity}</p>
+ * <p>Inserts an event invoker for entity death
+ * cuz idk how to use the vanilla {@link net.minecraft.world.event.GameEvent.ENTITY_DIE}</p>
+ */
+@Mixin(LivingEntity.class)
 public abstract class MixinLivingEntity extends Entity {
 
 	public MixinLivingEntity(EntityType<?> type, World world) {
 		super(type, world);
 	}
 
-	/** 
-	 * <p>Mixins to {@link LivingEntity}</p>
-	 * <p>Inserts an event invoker for entity death
-	 * cuz idk how to use the vanilla {@link net.minecraft.world.event.GameEvent.ENTITY_DIE}</p>
-	 */
 	@Inject(at = @At("HEAD"), method = "onDeath")
-	private void onOnDeath(CallbackInfo ci) {
+	private void onOnDeath(CallbackInfo callbackInfo) {
 		if (!super.isRemoved() && !this.dead) {
 			UUID uuid = this.getUuid();
 			EntityDeathCallback.EVENT.invoker().removeEntityUuid(uuid);
-			RespiteBench.LOGGER.info(String.valueOf(uuid)); //DEBUG
+			//RespiteBench.LOGGER.info(String.valueOf(uuid)); //DEBUG
 		}
 	}
 
