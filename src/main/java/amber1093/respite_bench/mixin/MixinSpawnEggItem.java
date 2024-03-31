@@ -59,9 +59,9 @@ public abstract class MixinSpawnEggItem {
 					mobRespawnerBlockEntity.setEntityNbt(spawnEggNbt, random);
 					mobRespawnerBlockEntity.resetRenderedEntity();
 				}
-				else {
+				//else {
 					//RespiteBench.LOGGER.info("MixinSpawnEggItem spawnEggNbt.contains(EntityTag) == false"); //DEBUG
-				}
+				//}
 
 				blockEntity.markDirty();
 				world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);

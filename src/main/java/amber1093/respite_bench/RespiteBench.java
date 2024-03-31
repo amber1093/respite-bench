@@ -31,6 +31,7 @@ import amber1093.respite_bench.blockentity.MobRespawnerBlockEntity;
 import amber1093.respite_bench.entity.BenchEntity;
 import amber1093.respite_bench.item.FlaskItem;
 
+//TODO downgrade fabricloader version to 0.14.21
 public class RespiteBench implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.

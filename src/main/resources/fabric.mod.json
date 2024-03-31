@@ -3,7 +3,7 @@
 	"id": "respite_bench",
 	"version": "${version}",
 	"name": "Respite Bench",
-	"description": "Adds content that mimics resting and mob respawning mechanics from souls-like games.",
+	"description": "Souls-like mechanics in Minecraft!",
 	"authors": [
 		"amber1093"
 	],
@@ -29,7 +29,7 @@
 		"respite_bench.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.15.7",
+		"fabricloader": "=0.14.21",
 		"minecraft": "~1.20.1",
 		"java": ">=17",
 		"fabric-api": "*"
