@@ -26,7 +26,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-//TODO make better texture
 public class MobRespawnerBlock extends SpawnerBlock {
 
 	public MobRespawnerBlockEntity blockEntity = null;
@@ -79,10 +78,12 @@ public class MobRespawnerBlock extends SpawnerBlock {
 		tooltip.add(Text.translatable("block.minecraft.spawner.desc1").formatted(Formatting.GRAY));
 		tooltip.add(ScreenTexts.space().append(Text.translatable("block.minecraft.spawner.desc2")).formatted(Formatting.BLUE));
 
+		/*
 		tooltip.add(ScreenTexts.EMPTY);
 		tooltip.add(Text.translatable("block.respite_bench.mob_respawner.tooltip.desc3").formatted(Formatting.GRAY));
 		tooltip.add(Text.translatable("block.respite_bench.mob_respawner.tooltip.desc4").formatted(Formatting.BLUE));
 		tooltip.add(Text.translatable("block.respite_bench.mob_respawner.tooltip.desc5").formatted(Formatting.BLUE));
+		*/
 
 		Optional<Text> optional = getEntityNameForTooltip(stack);
         if (optional.isPresent()) {
