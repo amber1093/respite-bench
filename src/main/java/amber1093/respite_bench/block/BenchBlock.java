@@ -1,8 +1,12 @@
 package amber1093.respite_bench.block;
 
+import java.util.List;
+import java.util.UUID;
+
 import amber1093.respite_bench.RespiteBench;
 import amber1093.respite_bench.blockentity.BenchBlockEntity;
 import amber1093.respite_bench.entity.BenchEntity;
+import amber1093.respite_bench.event.DiscardConnectedEntityCallback;
 import amber1093.respite_bench.event.UseBenchCallback;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -30,16 +34,16 @@ import net.minecraft.world.World;
 public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProvider {
 	private BenchBlockEntity blockEntity;
 
-	public VoxelShape shape_north = createShape(Direction.NORTH);
-	public VoxelShape shape_east = createShape(Direction.EAST);
-	public VoxelShape shape_west = createShape(Direction.WEST);
-	public VoxelShape shape_south = createShape(Direction.SOUTH);
+	private static final VoxelShape SHAPE_NORTH = createShape(Direction.NORTH);
+	private static final VoxelShape SHAPE_EAST = createShape(Direction.EAST);
+	private static final VoxelShape SHAPE_WEST = createShape(Direction.WEST);
+	private static final VoxelShape SHAPE_SOUTH = createShape(Direction.SOUTH);
 
 	public BenchBlock(Settings settings) {
 		super(settings);
 	}
 
-	protected VoxelShape createShape(Direction direction) {
+	protected static VoxelShape createShape(Direction direction) {
 		VoxelShape shape = VoxelShapes.empty();
 		switch (direction) {
 			case NORTH:
@@ -116,31 +120,31 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
 
 	switch (direction) {
 		case NORTH:
-			return shape_north;
+			return SHAPE_NORTH;
 		case EAST:
-			return shape_east;
+			return SHAPE_EAST;
 		case WEST:
-			return shape_west;
+			return SHAPE_WEST;
 		case SOUTH:
-			return shape_south;
+			return SHAPE_SOUTH;
 
 		case DOWN:
 		case UP:
 		default:
 			RespiteBench.LOGGER.warn("BenchBlock.getShape: The direction " + direction.toString() + " is invalid!");
-			return shape_north;
+			return SHAPE_NORTH;
 	}
 
 	}
 
 	@Override
 	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-	return this.getShape(state);
+		return this.getShape(state);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-	return this.getShape(state);
+		return this.getShape(state);
 	}
 
 	//TODO (config) make bench work without sitting on it
@@ -172,10 +176,10 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
 			}
 
 			//allow all mob respawners to spawn mobs once
-			ActionResult result = UseBenchCallback.EVENT.invoker().setCanSpawn(true);
-			if (result == ActionResult.FAIL) {
-				RespiteBench.LOGGER.warn("BenchBlock.onUse.UseBenchCallback: Failed to modify all Mob Respawners");	//DEBUG
-			}
+			List<UUID> uuidList = UseBenchCallback.EVENT.invoker().useBenchEvent(true);
+
+			//use the list from UseBenchCallback and discard all matching entities
+			DiscardConnectedEntityCallback.EVENT.invoker().discardConnectedEntities(uuidList);
 
 			return ActionResult.SUCCESS;
 		}

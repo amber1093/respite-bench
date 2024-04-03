@@ -1,23 +1,24 @@
 package amber1093.respite_bench.event;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.util.ActionResult;
 
 public interface UseBenchCallback {
 
 	Event<UseBenchCallback> EVENT = EventFactory.createArrayBacked(
 		UseBenchCallback.class,
 		(listeners) -> (canSpawn) -> {
+			List<UUID> uuidList = new ArrayList<>();
 			for (UseBenchCallback listener : listeners) {
-				ActionResult result = listener.setCanSpawn(canSpawn);
-				if(result != ActionResult.PASS) {
-					return result;
-				}
+				uuidList.addAll(listener.useBenchEvent(canSpawn));
 			}
-			return ActionResult.PASS;
+			return uuidList;
 		}
 	);
 
-    ActionResult setCanSpawn(boolean canSpawn);
+    List<UUID> useBenchEvent(boolean canSpawn);
 }

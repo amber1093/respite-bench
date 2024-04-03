@@ -39,6 +39,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 //! TODO investigate for possible chunkloading related bugs
+	//? known bug: triggered when a connected entity is killed while mob respawner is unloaded
+	//* known bug, unknown reason: sometimes respawner keeps spawning mobs with no regard for maxConnectedEntities
 
 /** <p>Mostly a copy paste of {@link net.minecraft.world.MobSpawnerLogic}, 
  * modified to only spawn mobs when called by the event {@link amber1093.respite_bench.event.UseBenchCallback}
@@ -47,7 +49,7 @@ import org.slf4j.Logger;
  * This tag is used to prevent chunk loading related bugs.</p>
  * 
  * <p>List of changes compared to the vanilla spawner:</p>
- * <p>Added: {@code int maxConnectedEntities}, {@code int currentConnectedEntities}, {@code List<UUID> connectedEntitiesUuid}</p>
+ * <p>Added: {@code int maxConnectedEntities}, {@code List<UUID> connectedEntitiesUuid}</p>
  * <p>Removed: minSpawnDelay, maxSpawnDelay, maxNearbyEntities</p>
  * <p>{@code int spawnDelay} changed to {@code boolean canSpawn}</p>
  * <p>spawnCount default value changed from 4 to 1</p>
@@ -63,18 +65,17 @@ public abstract class MobRespawnerLogic {
 	private DataPool<MobSpawnerEntry> spawnPotentials = DataPool.<MobSpawnerEntry>empty();
 
 	private List<UUID> connectedEntitiesUuid = new ArrayList<>();
-	private int maxConnectedEntities = 1;
+	public int maxConnectedEntities = 1;
 
+    public boolean canSpawn = false;
+    public int spawnCount = 1;
+    public int spawnRange = 2;
+    public int requiredPlayerRange = 16;
+
+	//just for particle visuals, not stored in nbt
 	private double rotation = 0;
 	private double particleRotationX = 0;
 	private double particleRotationY = 0;
-
-	//* TODO refresh already alive mobs' nbt (heal to full and re-gear)
-	//public boolean canRefreshConnectedMobs = false;
-    public boolean canSpawn = false;
-    private int spawnCount = 1;
-    private int spawnRange = 2;
-    private int requiredPlayerRange = 16;
 
     private boolean isPlayerInRange(World world, BlockPos pos) {
 
@@ -120,7 +121,8 @@ public abstract class MobRespawnerLogic {
             return;
         }
 
-		if (getConnectedEntityAmount() >= maxConnectedEntities) {
+		int currentConnectedEntityAmount = getConnectedEntityAmount();
+		if (currentConnectedEntityAmount >= maxConnectedEntities) {
 			this.updateSpawns(world, pos, false);
 			return;
 		}
@@ -128,12 +130,13 @@ public abstract class MobRespawnerLogic {
         boolean spawnSuccessful = false;
         Random random = world.getRandom();
 
-		//add if PersistenceRequired is not present
+		//if PersistenceRequired is not present, add it
 		if (this.getSpawnEntry(world, random, pos).getNbt().getCompound("EntityTag").getBoolean("PersistenceRequired") == false) {
 			setEntityNbt(null, world, random, pos);
 		}
         MobSpawnerEntry mobSpawnerEntry = this.getSpawnEntry(world, random, pos);
 
+		//mob spawning logic
         for (int i = 0; i < this.spawnCount; ++i) {
 
 			//setup
@@ -213,7 +216,14 @@ public abstract class MobRespawnerLogic {
             }
 
             spawnSuccessful = true;
+
+			//stop if max entity limit is reached
+			currentConnectedEntityAmount += 1;
+			if (currentConnectedEntityAmount >= maxConnectedEntities) {
+				break;
+			}
         }
+
         if (spawnSuccessful) {
             this.updateSpawns(world, pos, true);
         }
@@ -368,6 +378,10 @@ public abstract class MobRespawnerLogic {
 
 	public void setCanSpawn(boolean canSpawn) {
 		this.canSpawn = canSpawn;
+	}
+
+	public List<UUID> getConnectedEntitiesUuid() {
+		return this.connectedEntitiesUuid;
 	}
 
 	public boolean removeEntityUuid(UUID uuidToRemove) {
