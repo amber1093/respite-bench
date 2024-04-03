@@ -16,6 +16,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -41,8 +42,11 @@ import org.slf4j.Logger;
 
 /** <p>Mostly a copy paste of {@link net.minecraft.world.MobSpawnerLogic}, 
  * modified to only spawn mobs when called by the event {@link amber1093.respite_bench.event.UseBenchCallback}
- * which is called by {@link amber1093.respite_bench.block.BenchBlock}.</p>
  * 
+ * <p>Entities spawned by this block will receive the {@code boolean PersistenceRequired} tag with the value {@code true}.
+ * This tag is used to prevent chunk loading related bugs.</p>
+ * 
+ * <p>List of changes compared to the vanilla spawner:</p>
  * <p>Added: {@code int maxConnectedEntities}, {@code int currentConnectedEntities}, {@code List<UUID> connectedEntitiesUuid}</p>
  * <p>Removed: minSpawnDelay, maxSpawnDelay, maxNearbyEntities</p>
  * <p>{@code int spawnDelay} changed to {@code boolean canSpawn}</p>
@@ -59,7 +63,7 @@ public abstract class MobRespawnerLogic {
 	private DataPool<MobSpawnerEntry> spawnPotentials = DataPool.<MobSpawnerEntry>empty();
 
 	private List<UUID> connectedEntitiesUuid = new ArrayList<>();
-	private int maxConnectedEntities = 3;
+	private int maxConnectedEntities = 1;
 
 	private double rotation = 0;
 	private double particleRotationX = 0;
@@ -81,7 +85,6 @@ public abstract class MobRespawnerLogic {
 				this.requiredPlayerRange);
     }
 
-	//TODO disable particles outside of creative mode
     public void clientTick(World world, BlockPos pos) {
 		if (this.isPlayerInRange(world, pos) && this.renderedEntity != null) {
 
@@ -122,10 +125,15 @@ public abstract class MobRespawnerLogic {
 			return;
 		}
 
-		//prepare for spawning mobs
         boolean spawnSuccessful = false;
         Random random = world.getRandom();
+
+		//add if PersistenceRequired is not present
+		if (this.getSpawnEntry(world, random, pos).getNbt().getCompound("EntityTag").getBoolean("PersistenceRequired") == false) {
+			setEntityNbt(null, world, random, pos);
+		}
         MobSpawnerEntry mobSpawnerEntry = this.getSpawnEntry(world, random, pos);
+
         for (int i = 0; i < this.spawnCount; ++i) {
 
 			//setup
@@ -191,9 +199,9 @@ public abstract class MobRespawnerLogic {
 
 			//get uuid
 			this.connectedEntitiesUuid.add(entity2.getUuid());
-			
-			LOGGER.info(entity2.toString()); //DEBUG
-			LOGGER.info(spawnEntry.toString()); //DEBUG
+
+			//LOGGER.info(entity2.toString()); //DEBUG
+			//LOGGER.info(spawnEntry.toString()); //DEBUG
 
 			//notify server
             world.syncWorldEvent(WorldEvents.SPAWNER_SPAWNS_MOB, pos, 0);
@@ -322,14 +330,22 @@ public abstract class MobRespawnerLogic {
         this.getSpawnEntry(world, random, pos).getNbt().putString("id", Registries.ENTITY_TYPE.getId(type).toString());
     }
 
-	/** Reads and merges NBT from {@link SpawnEggItem}!
-	 * @param nbtCompound
-	 * @param world
-	 * @param random
-	 * @param pos
+	/** 
+	 * Reads and merges NBT from {@link SpawnEggItem}
 	 */
-	public void setEntityNbt(NbtCompound nbtCompound, @Nullable World world, Random random, BlockPos pos) {
-		this.getSpawnEntry(world, random, pos).getNbt().copyFrom(nbtCompound.getCompound("EntityTag"));
+	public void setEntityNbt(@Nullable NbtCompound nbtCompound, @Nullable World world, Random random, BlockPos pos) {
+		if (nbtCompound != null) {
+			this.getSpawnEntry(world, random, pos).getNbt().copyFrom(nbtCompound.getCompound("EntityTag")).copyFrom(getPersistentTag());
+		}
+		else {
+			this.getSpawnEntry(world, random, pos).getNbt().copyFrom(getPersistentTag());
+		}
+	}
+
+	public static NbtCompound getPersistentTag() {
+		NbtCompound extraNbt = new NbtCompound(); 
+		extraNbt.putBoolean("PersistenceRequired", true);	//TODO impl tag logic for PersistenceRequired (if tag doesnt exist, dont invoke EntityDeathCallback)
+		return extraNbt;
 	}
 
     private MobSpawnerEntry getSpawnEntry(@Nullable World world, Random random, BlockPos pos) {

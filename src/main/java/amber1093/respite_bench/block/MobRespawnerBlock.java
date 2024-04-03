@@ -46,31 +46,6 @@ public class MobRespawnerBlock extends SpawnerBlock {
         return MobRespawnerBlock.checkType(type, RespiteBench.MOB_RESPAWER_BLOCK_ENTITY_TYPE, world.isClient ? MobRespawnerBlockEntity::clientTick : MobRespawnerBlockEntity::serverTick);
     }
 
-	//TODO: vanilla spawner cannot read NBT from spawn eggs. make this work for Mob Respawner
-	/*
-	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (!world.isClient())  {
-			if (player.isCreative()) {
-				if (!player.isSneaking()) {
-					if (player.getMainHandStack().getItem() instanceof SpawnEggItem) {
-						player.sendMessage(Text.literal("DING DING DING!!!!"));
-					}
-					else if (blockEntity != null) {
-						player.sendMessage(Text.literal("MobRespawnerBlockEntity.setSpawnDelay(0)"));
-						blockEntity.logic.setSpawnDelay(0);
-						blockEntity.markDirty();
-					}
-				}
-				else {
-
-				}
-			}
-		}
-		return ActionResult.PASS;
-	}
-	*/
-
 	@Override
 	public void appendTooltip(ItemStack stack, BlockView world, List<Text> tooltip, TooltipContext options) {
 
@@ -78,6 +53,7 @@ public class MobRespawnerBlock extends SpawnerBlock {
 		tooltip.add(Text.translatable("block.minecraft.spawner.desc1").formatted(Formatting.GRAY));
 		tooltip.add(ScreenTexts.space().append(Text.translatable("block.minecraft.spawner.desc2")).formatted(Formatting.BLUE));
 
+		//TODO impl some form of editing for nbt
 		/*
 		tooltip.add(ScreenTexts.EMPTY);
 		tooltip.add(Text.translatable("block.respite_bench.mob_respawner.tooltip.desc3").formatted(Formatting.GRAY));

@@ -1,6 +1,6 @@
 # Respite Bench
 
-![Title](title_1000px.png)
+![Title](title.png)
 
 ## Description
 

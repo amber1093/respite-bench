@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+
 import amber1093.respite_bench.event.EntityDeathCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -31,7 +32,6 @@ public abstract class MixinLivingEntity extends Entity {
 		if (!super.isRemoved() && !this.dead) {
 			UUID uuid = this.getUuid();
 			EntityDeathCallback.EVENT.invoker().removeEntityUuid(uuid);
-			//RespiteBench.LOGGER.info(String.valueOf(uuid)); //DEBUG
 		}
 	}
 

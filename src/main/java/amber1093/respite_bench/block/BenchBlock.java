@@ -26,6 +26,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 //TODO better texture (maybe based on vanilla wood?)
+//TODO impl set spawn point
 public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProvider {
 	private BenchBlockEntity blockEntity;
 
