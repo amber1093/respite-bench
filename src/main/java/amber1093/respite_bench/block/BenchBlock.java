@@ -1,6 +1,7 @@
 package amber1093.respite_bench.block;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import amber1093.respite_bench.RespiteBench;
@@ -12,11 +13,15 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.ActionResult;
@@ -24,16 +29,18 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
 
 //TODO better texture (maybe based on vanilla wood?)
-//TODO impl set spawn point
+
 public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProvider {
 	private BenchBlockEntity blockEntity;
-
+	
 	private static final VoxelShape SHAPE_NORTH = createShape(Direction.NORTH);
 	private static final VoxelShape SHAPE_EAST = createShape(Direction.EAST);
 	private static final VoxelShape SHAPE_WEST = createShape(Direction.WEST);
@@ -161,19 +168,16 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
 			world.spawnEntity(benchEntity);
 			player.startRiding(benchEntity);
 			benchEntity.allowKill = true;
+			
+			//set spawn point
+			((ServerPlayerEntity)player).setSpawnPoint(world.getRegistryKey(), pos, player.getYaw(), false, true);
 
 			//heal and clear status from player
 			player.heal(player.getMaxHealth());
 			player.clearStatusEffects();
-
+			
 			//replace all EmptyFlask with Flask
-			while (player.getInventory().getSlotWithStack(new ItemStack(RespiteBench.EMPTY_FLASK)) != -1) {
-				int flaskSlot = player.getInventory().getSlotWithStack(new ItemStack(RespiteBench.EMPTY_FLASK));
-				int flaskAmount = player.getInventory().getStack(flaskSlot).getCount();
-				
-				player.getInventory().getStack(flaskSlot).setCount(0);
-				player.getInventory().insertStack(new ItemStack(RespiteBench.FLASK, flaskAmount));
-			}
+			refillFlasks(player.getInventory());
 
 			//allow all mob respawners to spawn mobs once
 			List<UUID> uuidList = UseBenchCallback.EVENT.invoker().useBenchEvent(true);
@@ -186,9 +190,24 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
 		return ActionResult.PASS;
 	}
 
+	public void refillFlasks(PlayerInventory playerInventory) {
+		while (playerInventory.getSlotWithStack(new ItemStack(RespiteBench.EMPTY_FLASK)) != -1) {
+			int flaskSlot = playerInventory.getSlotWithStack(new ItemStack(RespiteBench.EMPTY_FLASK));
+			int flaskAmount = playerInventory.getStack(flaskSlot).getCount();
+			
+			playerInventory.getStack(flaskSlot).setCount(0);
+			playerInventory.insertStack(new ItemStack(RespiteBench.FLASK, flaskAmount));
+		}
+	}
+
+	//no need to copy paste all that code :)
+	public static Optional<Vec3d> findRespawnPosition(EntityType<?> entity, CollisionView world, BlockPos pos) {
+		return RespawnAnchorBlock.findRespawnPosition(entity, world, pos);
+	}
+
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-	blockEntity = new BenchBlockEntity(pos, state);
-	return blockEntity;
+		blockEntity = new BenchBlockEntity(pos, state);
+		return blockEntity;
 	}
 }

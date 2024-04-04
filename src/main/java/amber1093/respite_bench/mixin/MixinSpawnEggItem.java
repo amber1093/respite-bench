@@ -27,7 +27,7 @@ import amber1093.respite_bench.RespiteBench;
 import amber1093.respite_bench.blockentity.MobRespawnerBlockEntity;
 
 /** 
- * <p>Mixins to {@link SpawnEggItem}</p>
+ * <p>Mixins to {@link SpawnEggItem#useOnBlock}</p>
  * <p>Copy-pasted functionality of {@link MobSpawnerBlockEntity} interaction with {@link SpawnEggItem},
  * modified for {@link MobRespawnerBlockEntity}.</p>
  */
@@ -35,7 +35,7 @@ import amber1093.respite_bench.blockentity.MobRespawnerBlockEntity;
 public abstract class MixinSpawnEggItem {
 
 	@Inject(at = @At("HEAD"), method = "useOnBlock", cancellable = true)
-	private ActionResult onUseOnBlock(ItemUsageContext context, CallbackInfoReturnable<ActionResult> callbackInfoReturnable) {
+	private ActionResult useOnMobRespawner(ItemUsageContext context, CallbackInfoReturnable<ActionResult> callbackInfoReturnable) {
 		if (context.getPlayer().isCreative()) {
 			World world = context.getWorld();
 			Random random = world.getRandom();

@@ -14,9 +14,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
 /** 
- * <p>Mixins to {@link Entity}</p>
- * <p>Injects the event invoker for {@link EntityDeathCallback} in the entity remove method.</p>
- * <p>Also injects an event registry method for {@link DiscardConnectedEntityCallback} in the entity constructor.</p>
+ * <p>Mixins to {@link Entity} constructor and {@link Entity#remove}.</p>
+ * <p>Injects an event registry method for {@link DiscardConnectedEntityCallback} in the entity constructor.</p>
+ * <p>Injects an event invoker for {@link EntityDeathCallback} in the entity remove method.</p>
  */
 @Mixin(Entity.class)
 public abstract class MixinEntity {
@@ -33,7 +33,7 @@ public abstract class MixinEntity {
 	}
 
 	@Inject(at = @At("HEAD"), method = "remove")
-	private void onRemove(CallbackInfo callbackInfo) {
+	private void invokeEntityDeathCallback(CallbackInfo callbackInfo) {
 		UUID uuid = this.getUuid();
 		EntityDeathCallback.EVENT.invoker().removeEntityUuid(uuid);
 	}

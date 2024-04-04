@@ -22,26 +22,23 @@ public class FlaskItem extends Item {
 	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
 		PlayerEntity playerEntity = user instanceof PlayerEntity ? (PlayerEntity)user : null;
 
-		if (!world.isClient()) {
-			new StatusEffectInstance(StatusEffects.INSTANT_HEALTH)
-					.getEffectType()
-					.applyInstantEffect(playerEntity, user, playerEntity, 1, 1);
-			user.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100));
-		}
-		
 		if (playerEntity != null) {
 			playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 			if (!playerEntity.getAbilities().creativeMode) {
 				stack.decrement(1);
+				if (stack.isEmpty()) {
+					return new ItemStack(RespiteBench.EMPTY_FLASK);
+				}
+				else {
+					playerEntity.getInventory().insertStack(new ItemStack(RespiteBench.EMPTY_FLASK));
+				}
 			}
-		}
-		
-		if (playerEntity == null || !playerEntity.getAbilities().creativeMode) {
-			if (stack.isEmpty()) {
-				return new ItemStack(RespiteBench.EMPTY_FLASK);
-			}
-			if (playerEntity != null) {
-				playerEntity.getInventory().insertStack(new ItemStack(RespiteBench.EMPTY_FLASK));
+
+			if (!world.isClient()) {
+				new StatusEffectInstance(StatusEffects.INSTANT_HEALTH)
+						.getEffectType()
+						.applyInstantEffect(playerEntity, user, playerEntity, 1, 1);
+				user.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100));
 			}
 		}
 		

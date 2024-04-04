@@ -3,13 +3,13 @@
 	"id": "respite_bench",
 	"version": "${version}",
 	"name": "Respite Bench",
-	"description": "Souls-like mechanics for map makers!",
+	"description": "Souls-like mechanics in Minecraft!",
 	"authors": [
 		"amber1093"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/amber1093/respite-bench"
 	},
 	"license": "MIT",
 	"icon": "assets/respite_bench/icon.png",

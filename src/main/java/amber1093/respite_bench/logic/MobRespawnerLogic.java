@@ -354,7 +354,7 @@ public abstract class MobRespawnerLogic {
 
 	public static NbtCompound getPersistentTag() {
 		NbtCompound extraNbt = new NbtCompound(); 
-		extraNbt.putBoolean("PersistenceRequired", true);	//TODO impl tag logic for PersistenceRequired (if tag doesnt exist, dont invoke EntityDeathCallback)
+		extraNbt.putBoolean("PersistenceRequired", true);
 		return extraNbt;
 	}
 
