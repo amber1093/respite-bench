@@ -124,24 +124,21 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
 
 	public VoxelShape getShape(BlockState state) {
 	Direction direction = state.get(FACING);
-
-	switch (direction) {
-		case NORTH:
-			return SHAPE_NORTH;
-		case EAST:
-			return SHAPE_EAST;
-		case WEST:
-			return SHAPE_WEST;
-		case SOUTH:
-			return SHAPE_SOUTH;
-
-		case DOWN:
-		case UP:
-		default:
-			RespiteBench.LOGGER.warn("BenchBlock.getShape: The direction " + direction.toString() + " is invalid!");
-			return SHAPE_NORTH;
-	}
-
+		switch (direction) {
+			case NORTH:
+				return SHAPE_NORTH;
+			case EAST:
+				return SHAPE_EAST;
+			case WEST:
+				return SHAPE_WEST;
+			case SOUTH:
+				return SHAPE_SOUTH;
+			case DOWN:
+			case UP:
+			default:
+				RespiteBench.LOGGER.warn("BenchBlock.getShape: The direction " + direction.toString() + " is invalid!");
+				return SHAPE_NORTH;
+		}
 	}
 
 	@Override
@@ -157,6 +154,7 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
 	//TODO (config) make bench work without sitting on it
 	//TODO (config) make bench work in an aoe 
 	//TODO unmount when block is destroyed
+	//TODO run this when player respawns
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (!world.isClient()) {
@@ -190,7 +188,7 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
 		return ActionResult.PASS;
 	}
 
-	public void refillFlasks(PlayerInventory playerInventory) {
+	public static void refillFlasks(PlayerInventory playerInventory) {
 		while (playerInventory.getSlotWithStack(new ItemStack(RespiteBench.EMPTY_FLASK)) != -1) {
 			int flaskSlot = playerInventory.getSlotWithStack(new ItemStack(RespiteBench.EMPTY_FLASK));
 			int flaskAmount = playerInventory.getStack(flaskSlot).getCount();

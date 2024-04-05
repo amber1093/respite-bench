@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 @Mixin(Entity.class)
 public abstract class MixinEntity {
 
-	@Inject(at = { @At("RETURN") }, method = "<init>*")
+	@Inject(at = @At("RETURN"), method = "<init>*")
 	public void registerConnectedEntityEvent(CallbackInfo callbackInfo) {
 		DiscardConnectedEntityCallback.EVENT.register((uuidList) -> {
 			if (!this.getWorld().isClient()) {
