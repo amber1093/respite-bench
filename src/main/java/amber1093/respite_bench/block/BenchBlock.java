@@ -5,17 +5,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 import amber1093.respite_bench.RespiteBench;
-import amber1093.respite_bench.blockentity.BenchBlockEntity;
 import amber1093.respite_bench.entity.BenchEntity;
 import amber1093.respite_bench.event.DiscardConnectedEntityCallback;
 import amber1093.respite_bench.event.UseBenchCallback;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -35,11 +32,16 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
-//TODO better texture (maybe based on vanilla wood?)
+//TODO better texture
+//TODO add wood variants
 
-public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProvider {
-	private BenchBlockEntity blockEntity;
+public class BenchBlock extends HorizontalFacingBlock {
+
+	//* BenchBlockEntity is currently unused
+	//private BenchBlockEntity benchBlockEntity;
+	private BenchEntity benchEntity;
 	
 	private static final VoxelShape SHAPE_NORTH = createShape(Direction.NORTH);
 	private static final VoxelShape SHAPE_EAST = createShape(Direction.EAST);
@@ -153,26 +155,24 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
 
 	//TODO (config) make bench work without sitting on it
 	//TODO (config) make bench work in an aoe 
-	//TODO unmount when block is destroyed
 	//TODO run this when player respawns
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (!world.isClient()) {
 
 			//spawn and teleport BenchEntity
-			BenchEntity benchEntity = RespiteBench.BENCH_ENTITY.create(world);
+			benchEntity = RespiteBench.BENCH_ENTITY.create(world);
 			benchEntity.setInvulnerable(true);
-			benchEntity.setPosition(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f);
+			benchEntity.setPosition(pos.getX() + 0.5f, pos.getY() - 0.55f, pos.getZ() + 0.5f);
 			world.spawnEntity(benchEntity);
 			player.startRiding(benchEntity);
-			benchEntity.allowKill = true;
 			
 			//set spawn point
 			((ServerPlayerEntity)player).setSpawnPoint(world.getRegistryKey(), pos, player.getYaw(), false, true);
 
 			//heal and clear status from player
 			player.heal(player.getMaxHealth());
-			player.clearStatusEffects();
+			player.clearStatusEffects();	//TODO make this a config
 			
 			//replace all EmptyFlask with Flask
 			refillFlasks(player.getInventory());
@@ -203,9 +203,19 @@ public class BenchBlock extends HorizontalFacingBlock implements BlockEntityProv
 		return RespawnAnchorBlock.findRespawnPosition(entity, world, pos);
 	}
 
+	/* //* BenchBlockEntity is currently unused
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		blockEntity = new BenchBlockEntity(pos, state);
-		return blockEntity;
+		benchBlockEntity = new BenchBlockEntity(pos, state);
+		return benchBlockEntity;
+	}
+	 */
+
+	@Override
+	public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
+		super.onBroken(world, pos, state);
+		if (benchEntity != null && benchEntity.isAlive()) {
+			benchEntity.discard();
+		}
 	}
 }

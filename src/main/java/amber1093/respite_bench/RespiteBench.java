@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.BlockItem;
@@ -26,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import amber1093.respite_bench.block.BenchBlock;
 import amber1093.respite_bench.block.MobRespawnerBlock;
-import amber1093.respite_bench.blockentity.BenchBlockEntity;
 import amber1093.respite_bench.blockentity.MobRespawnerBlockEntity;
 import amber1093.respite_bench.entity.BenchEntity;
 import amber1093.respite_bench.item.FlaskItem;
@@ -79,10 +79,11 @@ public class RespiteBench implements ModInitializer {
 	//#endregion
 
 	//#region BlockEntity
+	/* //* BenchBlockEntity is currently unused
 	public static final BlockEntityType<BenchBlockEntity> BENCH_BLOCK_ENTITY = Registry.register(
 			Registries.BLOCK_ENTITY_TYPE, new Identifier(RespiteBench.MOD_ID, "bench_block_entity_type"), 
 			FabricBlockEntityTypeBuilder.create(BenchBlockEntity::new, RespiteBench.BENCH).build());
-
+	*/
 	public static final BlockEntityType<MobRespawnerBlockEntity> MOB_RESPAWER_BLOCK_ENTITY_TYPE = Registry.register(
 			Registries.BLOCK_ENTITY_TYPE, new Identifier(RespiteBench.MOD_ID, "mob_respawner_block_entity_type"),
 			FabricBlockEntityTypeBuilder.create(MobRespawnerBlockEntity::new, RespiteBench.MOB_RESPAWNER).build());
@@ -90,7 +91,7 @@ public class RespiteBench implements ModInitializer {
 	
 	//#region Entity
 	public static final EntityType<BenchEntity> BENCH_ENTITY = Registry.register(Registries.ENTITY_TYPE, new Identifier(RespiteBench.MOD_ID, "bench_entity"),
-			FabricEntityTypeBuilder.create(SpawnGroup.MISC, BenchEntity::new).disableSummon().fireImmune().build());
+			FabricEntityTypeBuilder.create(SpawnGroup.MISC, BenchEntity::new).disableSummon().dimensions(EntityDimensions.fixed(0, 1f)).fireImmune().build());
 	//#endregion
 
 	@Override

@@ -8,10 +8,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
-//TODO make hitbox invisible OR smaller
 public class BenchEntity extends TextDisplayEntity {
-
-	public boolean allowKill = false;
 
 	public BenchEntity(EntityType<? extends TextDisplayEntity> entityType, World world) {
 		super(entityType, world);
@@ -20,8 +17,8 @@ public class BenchEntity extends TextDisplayEntity {
 	@Override
 	public void tick() {
 		if (!this.getWorld().isClient()) {
-			if (this.hasPassengers() || !allowKill) {
-				Entity passenger = getFirstPassenger();
+			if (this.hasPassengers()) {
+				Entity passenger = this.getFirstPassenger();
 				if (passenger != null) {
 					PlayerEntity player = (PlayerEntity)passenger;
 					player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 10, 255));
