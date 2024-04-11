@@ -1,34 +1,28 @@
 package amber1093.respite_bench.block;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.jetbrains.annotations.Nullable;
 
 import amber1093.respite_bench.RespiteBench;
 import amber1093.respite_bench.blockentity.MobRespawnerBlockEntity;
+import amber1093.respite_bench.logic.MobRespawnerLogic;
+import amber1093.respite_bench.screen.MobRespawnerScreen;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SpawnerBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.registry.Registries;
-import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class MobRespawnerBlock extends SpawnerBlock {
-
-	public MobRespawnerBlockEntity blockEntity = null;
 
 	public MobRespawnerBlock(Settings settings) {
 		super(settings);
@@ -36,8 +30,7 @@ public class MobRespawnerBlock extends SpawnerBlock {
 
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		blockEntity = new MobRespawnerBlockEntity(pos, state);
-		return blockEntity;
+		return new MobRespawnerBlockEntity(pos, state);
 	}
 
 	@Override
@@ -47,36 +40,29 @@ public class MobRespawnerBlock extends SpawnerBlock {
     }
 
 	@Override
-	public void appendTooltip(ItemStack stack, BlockView world, List<Text> tooltip, TooltipContext options) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if (world.isClient) {
+			if (player.isCreative() && !(player.getInventory().getMainHandStack().getItem() instanceof SpawnEggItem)) {
 
-		tooltip.add(ScreenTexts.EMPTY);
-		tooltip.add(Text.translatable("block.minecraft.spawner.desc1").formatted(Formatting.GRAY));
-		tooltip.add(ScreenTexts.space().append(Text.translatable("block.minecraft.spawner.desc2")).formatted(Formatting.BLUE));
+				BlockEntity blockEntity = world.getBlockEntity(pos);
+				if (blockEntity != null && blockEntity instanceof MobRespawnerBlockEntity) {
+					MobRespawnerBlockEntity mobRespawnerBlockEntity = (MobRespawnerBlockEntity)blockEntity;
 
-		//TODO impl some form of editing for nbt
-		/*
-		tooltip.add(ScreenTexts.EMPTY);
-		tooltip.add(Text.translatable("block.respite_bench.mob_respawner.tooltip.desc3").formatted(Formatting.GRAY));
-		tooltip.add(Text.translatable("block.respite_bench.mob_respawner.tooltip.desc4").formatted(Formatting.BLUE));
-		tooltip.add(Text.translatable("block.respite_bench.mob_respawner.tooltip.desc5").formatted(Formatting.BLUE));
-		*/
-
-		Optional<Text> optional = getEntityNameForTooltip(stack);
-        if (optional.isPresent()) {
-			tooltip.add(ScreenTexts.EMPTY);
-            tooltip.add(optional.get());
-        }
-	}
-
-	private Optional<Text> getEntityNameForTooltip(ItemStack stack) {
-        NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
-        if (nbtCompound != null && nbtCompound.contains("SpawnData", NbtElement.COMPOUND_TYPE)) {
-			String string = nbtCompound.getCompound("SpawnData").getCompound("entity").getString("id");
-			Identifier identifier = Identifier.tryParse(string);
-			if (identifier != null) {
-				return Registries.ENTITY_TYPE.getOrEmpty(identifier).map(entityType -> Text.translatable(entityType.getTranslationKey()).formatted(Formatting.GRAY));
+					NbtCompound nbt = mobRespawnerBlockEntity.getLogic().writeNbt(new NbtCompound());
+					MinecraftClient.getInstance().setScreen(
+						new MobRespawnerScreen(
+							Text.translatable("screen.respite_bench.mob_respawner"),
+							pos,
+							nbt.getInt(MobRespawnerLogic.MAX_CONNECTED_ENTITIES_KEY),
+							nbt.getInt(MobRespawnerLogic.SPAWN_COUNT_KEY),
+							nbt.getInt(MobRespawnerLogic.REQUIRED_PLAYER_RANGE_KEY),
+							nbt.getInt(MobRespawnerLogic.SPAWN_RANGE_KEY)
+						)
+					);
+					return ActionResult.PASS;
+				}
 			}
-        }
-        return Optional.empty();
-    }
+		}
+		return ActionResult.PASS;
+	}
 }

@@ -3,6 +3,7 @@ package amber1093.respite_bench;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -30,6 +31,8 @@ import amber1093.respite_bench.block.MobRespawnerBlock;
 import amber1093.respite_bench.blockentity.MobRespawnerBlockEntity;
 import amber1093.respite_bench.entity.BenchEntity;
 import amber1093.respite_bench.item.FlaskItem;
+import amber1093.respite_bench.packet.MobRespawnerUpdateC2SPacket;
+import amber1093.respite_bench.packethandler.MobRespawnerUpdatePacketHandler;
 
 public class RespiteBench implements ModInitializer {
 	public static final String MOD_ID = "respite_bench";
@@ -42,14 +45,14 @@ public class RespiteBench implements ModInitializer {
 	public static final Item FLASK_SHARD = registerItem("flask_shard", new Item(new FabricItemSettings()));
 
 	private static Item registerItem(String name, Item item) {
-		return Registry.register(Registries.ITEM, new Identifier(RespiteBench.MOD_ID, name), item);
+		return Registry.register(Registries.ITEM, new Identifier(MOD_ID, name), item);
 	}
 	//#endregion
 
 	//#region ItemGroups
 	public static final ItemGroup RESPITE_BENCH_GROUP = Registry.register(
 			Registries.ITEM_GROUP,
-			new Identifier(RespiteBench.MOD_ID, "respite_bench"),
+			new Identifier(MOD_ID, "respite_bench"),
 			FabricItemGroup.builder()
 				.displayName(Text.translatable("itemgroup.respite_bench"))
 				.icon(() -> new ItemStack(RespiteBench.FLASK))
@@ -70,32 +73,38 @@ public class RespiteBench implements ModInitializer {
 
 	private static Block registerBlock (String name, Block block) {
 		registerBlockItem(name, block);
-		return Registry.register(Registries.BLOCK, new Identifier(RespiteBench.MOD_ID, name), block);
+		return Registry.register(Registries.BLOCK, new Identifier(MOD_ID, name), block);
 	} 
 
 	private static Item registerBlockItem(String name, Block block) {
-		return Registry.register(Registries.ITEM, new Identifier(RespiteBench.MOD_ID, name), new BlockItem(block, new FabricItemSettings()));
+		return Registry.register(Registries.ITEM, new Identifier(MOD_ID, name), new BlockItem(block, new FabricItemSettings()));
 	}
 	//#endregion
 
 	//#region BlockEntity
 	/* //* BenchBlockEntity is currently unused
 	public static final BlockEntityType<BenchBlockEntity> BENCH_BLOCK_ENTITY = Registry.register(
-			Registries.BLOCK_ENTITY_TYPE, new Identifier(RespiteBench.MOD_ID, "bench_block_entity_type"), 
+			Registries.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "bench_block_entity_type"), 
 			FabricBlockEntityTypeBuilder.create(BenchBlockEntity::new, RespiteBench.BENCH).build());
 	*/
 	public static final BlockEntityType<MobRespawnerBlockEntity> MOB_RESPAWER_BLOCK_ENTITY_TYPE = Registry.register(
-			Registries.BLOCK_ENTITY_TYPE, new Identifier(RespiteBench.MOD_ID, "mob_respawner_block_entity_type"),
+			Registries.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "mob_respawner_block_entity_type"),
 			FabricBlockEntityTypeBuilder.create(MobRespawnerBlockEntity::new, RespiteBench.MOB_RESPAWNER).build());
 	//#endregion
 	
 	//#region Entity
-	public static final EntityType<BenchEntity> BENCH_ENTITY = Registry.register(Registries.ENTITY_TYPE, new Identifier(RespiteBench.MOD_ID, "bench_entity"),
+	public static final EntityType<BenchEntity> BENCH_ENTITY = Registry.register(Registries.ENTITY_TYPE, new Identifier(MOD_ID, "bench_entity"),
 			FabricEntityTypeBuilder.create(SpawnGroup.MISC, BenchEntity::new).disableSummon().dimensions(EntityDimensions.fixed(0, 1f)).fireImmune().build());
+	//#endregion
+
+	//#region Networking
+	public static final Identifier MOB_RESPAWNER_UPDATE_PACKET_ID = new Identifier(MOD_ID, "mob_respawner_update");
 	//#endregion
 
 	@Override
 	public void onInitialize() {
-
+		ServerPlayNetworking.registerGlobalReceiver(MobRespawnerUpdateC2SPacket.TYPE, (packet, player, responseSender) -> {
+			MobRespawnerUpdatePacketHandler.updateMobRespawnerSettings(packet, player);
+		});
 	}
 }

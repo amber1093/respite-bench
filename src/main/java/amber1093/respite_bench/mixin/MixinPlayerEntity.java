@@ -22,8 +22,7 @@ import net.minecraft.world.World;
 
 /**
  * <p>Mixins to {@link PlayerEntity#findRespawnPosition} and {@link PlayerEntity#dropInventory}.</p>
- * Adds 
- * TODO update javadoc
+ * Adds logic required to make {@link BenchBlock} work as a spawn point
  */
 @Mixin(PlayerEntity.class)
 public abstract class MixinPlayerEntity extends LivingEntity {

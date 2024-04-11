@@ -54,4 +54,9 @@ public class FlaskItem extends Item {
 	public SoundEvent getEatSound() {
 		return SoundEvents.ENTITY_GENERIC_DRINK;
 	}
+
+	@Override
+	public int getMaxUseTime(ItemStack stack) {
+		return 15;
+	}
 }

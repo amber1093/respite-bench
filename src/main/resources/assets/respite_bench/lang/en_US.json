@@ -4,10 +4,18 @@
 	"item.respite_bench.flask_shard": "Flask Shard",
 
 	"block.respite_bench.mob_respawner": "Mob Respawner",
-	"block.respite_bench.mob_respawner.tooltip.desc3": "Interact while Sneaking:",
-	"block.respite_bench.mob_respawner.tooltip.desc4": " Sets mob spawn location",
-	"block.respite_bench.mob_respawner.tooltip.desc5": " Complete this action by interacting with the target block",
 	"block.respite_bench.bench": "Bench",
 
-	"itemgroup.respite_bench": "Respite Bench"
+	"itemgroup.respite_bench": "Respite Bench",
+
+	"screen.respite_bench.mob_respawner": "Mob Respawner",
+	"screen.respite_bench.mob_respawner.maxconnectedentities": "Max Connected Entities",
+	"screen.respite_bench.mob_respawner.spawncount": "Spawn Count",
+	"screen.respite_bench.mob_respawner.requiredplayerrange": "Required Player Range",
+	"screen.respite_bench.mob_respawner.spawnrange": "Spawn Range",
+	"screen.respite_bench.mob_respawner.entitydata": "Entity Data",
+	"screen.respite_bench.mob_respawner.entitydata.clear": "Clear",
+	"screen.respite_bench.mob_respawner.connectedentitiesuuid": "Connected Entities",
+	"screen.respite_bench.mob_respawner.connectedentitiesuuid.disconnectall": "Disconnect all"
+
 }

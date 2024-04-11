@@ -1,7 +1,5 @@
 package amber1093.respite_bench.blockentity;
 
-import org.jetbrains.annotations.Nullable;
-
 import amber1093.respite_bench.RespiteBench;
 import amber1093.respite_bench.event.EntityDeathCallback;
 import amber1093.respite_bench.event.UseBenchCallback;
@@ -36,6 +34,7 @@ public class MobRespawnerBlockEntity extends BlockEntity {
 			}
 			return result;
 		});
+
 	}
 
 	public final MobRespawnerLogic logic = new MobRespawnerLogic() {
@@ -46,8 +45,8 @@ public class MobRespawnerBlockEntity extends BlockEntity {
         }
 
         @Override
-        public void setSpawnEntry(@Nullable World world, BlockPos pos, MobSpawnerEntry spawnEntry) {
-            super.setSpawnEntry(world, pos, spawnEntry);
+        public void setSpawnEntry(MobSpawnerEntry spawnEntry) {
+            super.setSpawnEntry(spawnEntry);
             if (world != null) {
                 BlockState blockState = world.getBlockState(pos);
                 world.updateListeners(pos, blockState, blockState, Block.NO_REDRAW);
@@ -57,14 +56,12 @@ public class MobRespawnerBlockEntity extends BlockEntity {
 
     @Override
     public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
-        this.logic.readNbt(this.world, this.pos, nbt);
+        this.logic.readNbt(nbt);
     }
 
     @Override
     protected void writeNbt(NbtCompound nbt) {
 		this.logic.writeNbt(nbt);
-        super.writeNbt(nbt);
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, MobRespawnerBlockEntity blockEntity) {
@@ -78,7 +75,7 @@ public class MobRespawnerBlockEntity extends BlockEntity {
     @Override
     public NbtCompound toInitialChunkDataNbt() {
         NbtCompound nbtCompound = this.createNbt();
-        nbtCompound.remove("SpawnPotentials");
+        nbtCompound.remove(MobRespawnerLogic.SPAWN_POTENTIALS_KEY);
         return nbtCompound;
     }
 
@@ -115,4 +112,12 @@ public class MobRespawnerBlockEntity extends BlockEntity {
         return BlockEntityUpdateS2CPacket.create(this);
     }
 	
+	public void updateSettings(int maxConnectedEntities, int spawnCount, int requiredPlayerRange, int spawnRange) {
+		this.logic.updateSettings(
+			maxConnectedEntities,
+			spawnCount,
+			requiredPlayerRange,
+			spawnRange
+		);
+	}
 }
