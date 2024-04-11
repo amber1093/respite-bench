@@ -15,7 +15,7 @@
 	"screen.respite_bench.mob_respawner.maxconnectedentities.desc2": "NBT tag: MaxConnectedEntities\nType: int\nDefault: 1",
 
 	"screen.respite_bench.mob_respawner.spawncount": "Spawn attempts per tick",
-	"screen.respite_bench.mob_respawner.spawncount.desc1": "If it is allowed to, the respawner will attempt to spawn this many mobs every tick.",
+	"screen.respite_bench.mob_respawner.spawncount.desc1": "If it is allowed to, the respawner will attempt to spawn this many mobs every tick. Warning: High numbers can cause lag.",
 	"screen.respite_bench.mob_respawner.spawncount.desc2": "NBT tag: SpawnCount\nType: int\nDefault: 1",
 
 	"screen.respite_bench.mob_respawner.requiredplayerrange": "Required player range",
@@ -27,7 +27,7 @@
 	"screen.respite_bench.mob_respawner.spawnrange.desc2": "NBT tag: SpawnRange\nType: int\nDefault: 2",
 	
 	"screen.respite_bench.mob_respawner.entitydata": "Entity data",
-	"screen.respite_bench.mob_respawner.entitydata.desc1": "Defines the entity the respawner will spawn.\n\nTip: The respawner can read NBT data from custom spawn eggs. Using multiple will cause their NBT to get mixed up inside the respawner. Try it out!",
+	"screen.respite_bench.mob_respawner.entitydata.desc1": "Defines what the respawner will spawn.\n\nTip: The respawner can read NBT data from custom spawn eggs. Using multiple will cause their NBT to get mixed up inside the respawner. Try it out!",
 	"screen.respite_bench.mob_respawner.entitydata.desc2": "NBT tag: SpawnData\nType: compound{entity:{...}}\nDefault: empty",
 	"screen.respite_bench.mob_respawner.entitydata.clear": "Clear",
 

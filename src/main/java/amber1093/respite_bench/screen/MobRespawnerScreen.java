@@ -17,6 +17,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
+//TODO close screen when block is broken
 @Environment(EnvType.CLIENT)
 public class MobRespawnerScreen extends Screen {
 
@@ -61,33 +62,37 @@ public class MobRespawnerScreen extends Screen {
 		
 
 		//#region textfield constructors
-		maxConnectedEntitiesWidget = new TextFieldWidget(
+		this.maxConnectedEntitiesWidget = new TextFieldWidget(
 			this.textRenderer,
 			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + WIDGET_SPACING,
 			TEXTFIELD_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.literal(String.valueOf(this.maxConnectedEntities))
+			Text.translatable("screen.respite_bench.mob_respawner.maxconnectedentities")
 		);
+		this.maxConnectedEntitiesWidget.setText(String.valueOf(this.maxConnectedEntities));
 
-		spawnCountWidget = new TextFieldWidget(
+		this.spawnCountWidget = new TextFieldWidget(
 			this.textRenderer,
 			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 2),
 			TEXTFIELD_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.literal(String.valueOf(this.spawnCount))
+			Text.translatable("screen.respite_bench.mob_respawner.spawncount")
 		);
+		this.spawnCountWidget.setText(String.valueOf(this.spawnCount));
 
-		requiredPlayerRangeWidget = new TextFieldWidget(
+		this.requiredPlayerRangeWidget = new TextFieldWidget(
 			this.textRenderer,
 			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 3),
 			TEXTFIELD_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.literal(String.valueOf(this.requiredPlayerRange))
+			Text.translatable("screen.respite_bench.mob_respawner.requiredplayerrange")
 		);
+		this.requiredPlayerRangeWidget.setText(String.valueOf(this.requiredPlayerRange));
 
-		spawnRangeWidget = new TextFieldWidget(
+		this.spawnRangeWidget = new TextFieldWidget(
 			this.textRenderer,
 			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 4),
 			TEXTFIELD_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.literal(String.valueOf(this.spawnRange))
+			Text.translatable("screen.respite_bench.mob_respawner.spawnrange")
 		);
+		this.spawnRangeWidget.setText(String.valueOf(this.spawnRange));
 		//#endregion
 
 		//#region button constructors
@@ -187,10 +192,10 @@ public class MobRespawnerScreen extends Screen {
 		addDrawable(connectedEntitiesTextWidget);
 
 		//add textfields
-		addDrawableChild(maxConnectedEntitiesWidget);
-		addDrawableChild(spawnCountWidget);
-		addDrawableChild(requiredPlayerRangeWidget);
-		addDrawableChild(spawnRangeWidget);
+		addDrawableChild(this.maxConnectedEntitiesWidget);
+		addDrawableChild(this.spawnCountWidget);
+		addDrawableChild(this.requiredPlayerRangeWidget);
+		addDrawableChild(this.spawnRangeWidget);
 
 		//add buttons
 		addDrawableChild(entityDataClearWidget);
@@ -221,24 +226,24 @@ public class MobRespawnerScreen extends Screen {
 
 	@Override
 	public void close() {
-		if (spawnRangeWidget != null) {
+		if (this.spawnRangeWidget != null) {
 
-			String maxConnectedEntitiesString = maxConnectedEntitiesWidget.getText();
-			String spawnCountString = spawnCountWidget.getText();
-			String requiredPlayerRangeString = requiredPlayerRangeWidget.getText();
-			String spawnRangeString = spawnRangeWidget.getText();
+			String maxConnectedEntitiesString = this.maxConnectedEntitiesWidget.getText();
+			String spawnCountString = this.spawnCountWidget.getText();
+			String requiredPlayerRangeString = this.requiredPlayerRangeWidget.getText();
+			String spawnRangeString = this.spawnRangeWidget.getText();
 			
-			int maxConnectedEntities = (maxConnectedEntitiesString == "" ? -1 : Integer.parseInt(maxConnectedEntitiesString.replaceAll("[\\D]", "")));
-			int spawnCount = (spawnCountString == "" ? -1 : Integer.parseInt(spawnCountString.replaceAll("[\\D]", "")));
-			int requiredPlayerRange = (requiredPlayerRangeString == "" ? -1 : Integer.parseInt(requiredPlayerRangeString.replaceAll("[\\D]", "")));
-			int spawnRange = (spawnRangeString == "" ? -1 : Integer.parseInt(spawnRangeString.replaceAll("[\\D]", "")));
+			this.maxConnectedEntities = (maxConnectedEntitiesString == "" ? -1 : Integer.parseInt(maxConnectedEntitiesString.replaceAll("[\\D]", "")));
+			this.spawnCount = (spawnCountString == "" ? -1 : Integer.parseInt(spawnCountString.replaceAll("[\\D]", "")));
+			this.requiredPlayerRange = (requiredPlayerRangeString == "" ? -1 : Integer.parseInt(requiredPlayerRangeString.replaceAll("[\\D]", "")));
+			this.spawnRange = (spawnRangeString == "" ? -1 : Integer.parseInt(spawnRangeString.replaceAll("[\\D]", "")));
 
 			ClientPlayNetworking.send(new MobRespawnerUpdateC2SPacket(
 					this.blockPos,
-					maxConnectedEntities,
-					spawnCount,
-					requiredPlayerRange,
-					spawnRange,
+					this.maxConnectedEntities,
+					this.spawnCount,
+					this.requiredPlayerRange,
+					this.spawnRange,
 					this.shouldClearEntityData,
 					this.shouldDisconnectEntities
 			));

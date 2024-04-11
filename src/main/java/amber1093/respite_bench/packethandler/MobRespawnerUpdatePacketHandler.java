@@ -28,12 +28,10 @@ public interface MobRespawnerUpdatePacketHandler extends PlayPacketHandler<Fabri
 
 			mobRespawnerBlockEntity.updateSettings(packet.maxConnectedEntities(), packet.spawnCount(), packet.requiredPlayerRange(), packet.spawnRange());
 			
-			//TODO renderer does not get visually updated
 			if (packet.shouldClearEntityData()) {
 				logic.setSpawnEntry(null);
 				logic.resetRenderedEntity();
 				logic.getRenderedEntity(world, world.getRandom(), blockPos);
-				logic.sendStatus(world, blockPos, 1);
 			}
 			if (packet.shouldDisconnectEntities()) {
 				logic.getConnectedEntitiesUuid().clear();
