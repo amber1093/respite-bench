@@ -1,6 +1,3 @@
-/*
- * Decompiled with CFR 0.2.1 (FabricMC 53fa44c9).
- */
 package amber1093.respite_bench.logic;
 
 import com.mojang.logging.LogUtils;
@@ -16,7 +13,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -224,6 +220,7 @@ public abstract class MobRespawnerLogic {
 			//stop if max entity limit is reached
 			currentConnectedEntityAmount += 1;
 			if (currentConnectedEntityAmount >= maxConnectedEntities) {
+				this.updateSpawns(world, pos, false);
 				break;
 			}
         }
@@ -239,6 +236,11 @@ public abstract class MobRespawnerLogic {
         this.spawnPotentials.getOrEmpty(random).ifPresent(spawnPotential -> this.setSpawnEntry((MobSpawnerEntry)spawnPotential.getData()));
         this.sendStatus(world, pos, 1);
     }
+
+	public void setCanSpawn(World world, BlockPos pos, boolean canSpawn) {
+		this.canSpawn = canSpawn;
+		this.sendStatus(world, pos, 1);
+	}
 
     public void readNbt(NbtCompound nbt) {
 
@@ -343,12 +345,9 @@ public abstract class MobRespawnerLogic {
         this.getSpawnEntry(world, random, pos).getNbt().putString("id", Registries.ENTITY_TYPE.getId(type).toString());
     }
 
-	/** 
-	 * Reads and merges NBT from {@link SpawnEggItem}
-	 */
-	public void setEntityNbt(@Nullable NbtCompound nbtCompound, @Nullable World world, Random random, BlockPos pos) {
-		if (nbtCompound != null) {
-			this.getSpawnEntry(world, random, pos).getNbt().copyFrom(nbtCompound.getCompound("EntityTag")).copyFrom(getPersistentTag());
+	public void setEntityNbt(@Nullable NbtCompound nbt, @Nullable World world, Random random, BlockPos pos) {
+		if (nbt != null) {
+			this.getSpawnEntry(world, random, pos).getNbt().copyFrom(nbt.getCompound("EntityTag")).copyFrom(getPersistentTag());
 		}
 		else {
 			this.getSpawnEntry(world, random, pos).getNbt().copyFrom(getPersistentTag());
@@ -378,10 +377,6 @@ public abstract class MobRespawnerLogic {
     public double getRotation() {
         return this.rotation;
     }
-
-	public void setCanSpawn(boolean canSpawn) {
-		this.canSpawn = canSpawn;
-	}
 
 	public List<UUID> getConnectedEntitiesUuid() {
 		return this.connectedEntitiesUuid;

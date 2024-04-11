@@ -24,21 +24,23 @@ public interface MobRespawnerUpdatePacketHandler extends PlayPacketHandler<Fabri
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity != null && blockEntity instanceof MobRespawnerBlockEntity) {
 			MobRespawnerBlockEntity mobRespawnerBlockEntity = (MobRespawnerBlockEntity)blockEntity;
+			MobRespawnerLogic logic = mobRespawnerBlockEntity.getLogic();
 
 			mobRespawnerBlockEntity.updateSettings(packet.maxConnectedEntities(), packet.spawnCount(), packet.requiredPlayerRange(), packet.spawnRange());
 			
 			//TODO renderer does not get visually updated
 			if (packet.shouldClearEntityData()) {
-				MobRespawnerLogic logic = mobRespawnerBlockEntity.getLogic();
 				logic.setSpawnEntry(null);
 				logic.resetRenderedEntity();
+				logic.getRenderedEntity(world, world.getRandom(), blockPos);
+				logic.sendStatus(world, blockPos, 1);
 			}
 			if (packet.shouldDisconnectEntities()) {
-				mobRespawnerBlockEntity.getLogic().getConnectedEntitiesUuid().clear();
+				logic.getConnectedEntitiesUuid().clear();
 			}
 			
 			blockEntity.markDirty();
-			world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
+			world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL); 
 			world.emitGameEvent((Entity)player, GameEvent.BLOCK_CHANGE, blockPos);
 		}
 	}

@@ -35,6 +35,7 @@ public class FlaskItem extends Item {
 			}
 
 			if (!world.isClient()) {
+				//TODO make potion effects configurable
 				new StatusEffectInstance(StatusEffects.INSTANT_HEALTH)
 						.getEffectType()
 						.applyInstantEffect(playerEntity, user, playerEntity, 1, 1);

@@ -22,13 +22,13 @@ public class MobRespawnerBlockEntity extends BlockEntity {
 		super(RespiteBench.MOB_RESPAWER_BLOCK_ENTITY_TYPE, pos, state);
 
 		UseBenchCallback.EVENT.register((canSpawn) -> {
-			logic.setCanSpawn(canSpawn);
+			this.logic.setCanSpawn(this.world, this.pos, canSpawn);
 			this.markDirty();
-			return logic.getConnectedEntitiesUuid();
+			return this.logic.getConnectedEntitiesUuid();
 		});
 
 		EntityDeathCallback.EVENT.register((uuidToRemove) -> {
-			boolean result = logic.removeEntityUuid(uuidToRemove);
+			boolean result = this.logic.removeEntityUuid(uuidToRemove);
 			if (result == true) {
 				this.markDirty();
 			}
@@ -113,11 +113,6 @@ public class MobRespawnerBlockEntity extends BlockEntity {
     }
 	
 	public void updateSettings(int maxConnectedEntities, int spawnCount, int requiredPlayerRange, int spawnRange) {
-		this.logic.updateSettings(
-			maxConnectedEntities,
-			spawnCount,
-			requiredPlayerRange,
-			spawnRange
-		);
+		this.logic.updateSettings(maxConnectedEntities, spawnCount, requiredPlayerRange, spawnRange);
 	}
 }

@@ -161,11 +161,11 @@ public class BenchBlock extends HorizontalFacingBlock {
 		if (!world.isClient()) {
 
 			//spawn and teleport BenchEntity
-			benchEntity = RespiteBench.BENCH_ENTITY.create(world);
-			benchEntity.setInvulnerable(true);
-			benchEntity.setPosition(pos.getX() + 0.5f, pos.getY() - 0.55f, pos.getZ() + 0.5f);
-			world.spawnEntity(benchEntity);
-			player.startRiding(benchEntity);
+			this.benchEntity = RespiteBench.BENCH_ENTITY.create(world);
+			this.benchEntity.setInvulnerable(true);
+			this.benchEntity.setPosition(pos.getX() + 0.5f, pos.getY() - 0.55f, pos.getZ() + 0.5f);
+			world.spawnEntity(this.benchEntity);
+			player.startRiding(this.benchEntity);
 			
 			//set spawn point
 			((ServerPlayerEntity)player).setSpawnPoint(world.getRegistryKey(), pos, player.getYaw(), false, true);
@@ -181,7 +181,7 @@ public class BenchBlock extends HorizontalFacingBlock {
 			List<UUID> uuidList = UseBenchCallback.EVENT.invoker().useBenchEvent(true);
 
 			//use the list from UseBenchCallback and discard all matching entities
-			DiscardConnectedEntityCallback.EVENT.invoker().discardConnectedEntities(uuidList);
+			DiscardConnectedEntityCallback.EVENT.invoker().discardConnectedEntities(uuidList);	//TODO make this a config
 
 			return ActionResult.SUCCESS;
 		}
@@ -209,13 +209,14 @@ public class BenchBlock extends HorizontalFacingBlock {
 		benchBlockEntity = new BenchBlockEntity(pos, state);
 		return benchBlockEntity;
 	}
-	 */
+	*/
 
+	//TODO BenchEntity is killed no matter which BenchBlock is broken
 	@Override
 	public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
 		super.onBroken(world, pos, state);
-		if (benchEntity != null && benchEntity.isAlive()) {
-			benchEntity.discard();
+		if (this.benchEntity != null && this.benchEntity.isAlive()) {
+			this.benchEntity.discard();
 		}
 	}
 }
