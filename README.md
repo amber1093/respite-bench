@@ -1,24 +1,21 @@
-# Respite Bench
+![[title.png]]
+## Souls-like mechanics in Minecraft!
 
-![Title](title.png)
+![[showcase-items.png]]
+This mod adds some mechanics from souls-like games in the form of a bench, flask and a new type of spawner, namely the Mob Respawner.
 
-## Description
+![[showcase-respawner.webp]]
+You can rest and refill your flasks at a bench. But be careful, as resting will allow all respawners to spawn mobs again!
 
-Inspired by games such as Dark Souls and Hollow Knight, this mod adds a few items to replicate common mechanics found in souls-like games, namely respawnable enemies and having rest points (bonfires, benches, etc.). Designed with map making in mind.
+![[showcase-settings.png]]
+The respawner can be adjusted to work however you see fit!
 
-## Content
+## Made for Custom Maps
 
-Respite Bench currently consists of a bench, flask and the Mob Respawner.
+This mod is designed for use in creating custom maps rather than fitting itself into classic survival gameplay. For this reason, none of the items are obtainable in survival by default.
 
-### Flasks
+## Other
 
-Flasks are re-usable health potions. Can be refilled at a bench. Flasks can be crafted by combining 3 flask shards.
+This is my first mod and there is still a lot I want to do with this mod. Porting to different versions or mod loaders is not planned for the time being.
 
-### Bench
-
-Acts as a rest point. Refills all empty flasks, removes all potion effects and fully heals the player.
-Using a bench will cause all Mob Respawners to be able to spawn mobs once again.
-
-### Mob Respawner
-
-Can spawn mobs, similar to the spawner. Works with custom spawn eggs. Instead of spawning mobs endlessly, it will keep track of the mobs it spawns and will not respawn them (until a bench is used).
+Feel free to include this in your map/modpack.
