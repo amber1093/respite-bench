@@ -1,13 +1,16 @@
-![[title.png]]
+![Respite Bench Logo](title.png)
 ## Souls-like mechanics in Minecraft!
 
-![[showcase-items.png]]
+![All items](showcase-items.png)
+
 This mod adds some mechanics from souls-like games in the form of a bench, flask and a new type of spawner, namely the Mob Respawner.
 
-![[showcase-respawner.webp]]
+![Bench and Respawner](showcase-respawner.webp)
+
 You can rest and refill your flasks at a bench. But be careful, as resting will allow all respawners to spawn mobs again!
 
-![[showcase-settings.png]]
+![Respawner settings](showcase-settings.png)
+
 The respawner can be adjusted to work however you see fit!
 
 ## Made for Custom Maps
