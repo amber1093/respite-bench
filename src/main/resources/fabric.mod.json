@@ -8,7 +8,7 @@
 		"amber1093"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
+		"homepage": "https://modrinth.com/mod/respite-bench",
 		"sources": "https://github.com/amber1093/respite-bench"
 	},
 	"license": "MIT",
@@ -30,11 +30,12 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.14.21",
-		"minecraft": "~1.20.1",
+		"minecraft": "=1.20.1",
 		"java": ">=17",
 		"fabric-api": "*"
 	},
 	"suggests": {
-		"another-mod": "*"
+		"modmenu": ">=7.2.2",
+		"cloth-config-fabric": ">=11.1.118"
 	}
 }
