@@ -1,7 +1,11 @@
 package amber1093.respite_bench;
 
 import amber1093.respite_bench.blockentityrenderer.MobRespawnerBlockEntityRenderer;
+import amber1093.respite_bench.config.RespiteBenchConfig;
 import amber1093.respite_bench.entity.BenchEntity;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.ConfigData.ValidationException;
+import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
@@ -13,8 +17,16 @@ import net.minecraft.client.render.entity.EntityRenderer;
 
 public class RespiteBenchClient implements ClientModInitializer {
 
+	public static RespiteBenchConfig config;
+
 	@Override
 	public void onInitializeClient() {
+
+		//register and read config
+		AutoConfig.register(RespiteBenchConfig.class, Toml4jConfigSerializer::new);
+		readConfig();
+
+		//other nonsense
 		BlockRenderLayerMap.INSTANCE.putBlock(RespiteBench.MOB_RESPAWNER, RenderLayer.getCutout());
 		BlockEntityRendererRegistryImpl.register(RespiteBench.MOB_RESPAWER_BLOCK_ENTITY_TYPE, MobRespawnerBlockEntityRenderer::new);
 		EntityRendererRegistry.register(RespiteBench.BENCH_ENTITY, new EntityRendererFactory<BenchEntity>() {
@@ -28,5 +40,14 @@ public class RespiteBenchClient implements ClientModInitializer {
 				};
 			}
 		});
+	}
+	
+	public static void readConfig() {
+		config = AutoConfig.getConfigHolder(RespiteBenchConfig.class).getConfig();
+		try {
+			config.validatePostLoad();
+		} catch (ValidationException e) {
+			e.printStackTrace();
+		}
 	}
 }
