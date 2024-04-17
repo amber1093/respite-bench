@@ -3,7 +3,6 @@ package amber1093.respite_bench.packethandler;
 import amber1093.respite_bench.blockentity.MobRespawnerBlockEntity;
 import amber1093.respite_bench.logic.MobRespawnerLogic;
 import amber1093.respite_bench.packet.MobRespawnerUpdateC2SPacket;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.PlayPacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,8 +13,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
+//TODO try changing extends to implements
 @FunctionalInterface
-public interface MobRespawnerUpdatePacketHandler extends PlayPacketHandler<FabricPacket> {
+public interface MobRespawnerUpdatePacketHandler
+extends PlayPacketHandler<MobRespawnerUpdateC2SPacket> {
 	static void updateMobRespawnerSettings(MobRespawnerUpdateC2SPacket packet, ServerPlayerEntity player) {
 		
 		World world = player.getWorld();

@@ -4,6 +4,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.Join;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -20,23 +22,32 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import amber1093.respite_bench.block.BenchBlock;
 import amber1093.respite_bench.block.MobRespawnerBlock;
 import amber1093.respite_bench.blockentity.MobRespawnerBlockEntity;
+import amber1093.respite_bench.config.RespiteBenchConfig;
 import amber1093.respite_bench.entity.BenchEntity;
 import amber1093.respite_bench.item.FlaskItem;
 import amber1093.respite_bench.packet.MobRespawnerUpdateC2SPacket;
+import amber1093.respite_bench.packet.RespiteBenchConfigUpdatePacket;
 import amber1093.respite_bench.packethandler.MobRespawnerUpdatePacketHandler;
+import amber1093.respite_bench.packethandler.RespiteBenchConfigUpdateC2SPacketHandler;
 
-public class RespiteBench implements ModInitializer {
+public class RespiteBench implements ModInitializer, Join {
 	public static final String MOD_ID = "respite_bench";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+	@Nullable
+	public static RespiteBenchConfig serverconfig = null;
 
 	//#region Items
 	public static final FoodComponent FLASK_FOOD_COMPONENT = new FoodComponent.Builder().alwaysEdible().build();
@@ -99,12 +110,33 @@ public class RespiteBench implements ModInitializer {
 
 	//#region Networking
 	public static final Identifier MOB_RESPAWNER_UPDATE_PACKET_ID = new Identifier(MOD_ID, "mob_respawner_update");
+	public static final Identifier CONFIG_UPDATE_PACKET_ID = new Identifier(MOD_ID, "config_update");
 	//#endregion
 
 	@Override
 	public void onInitialize() {
-		ServerPlayNetworking.registerGlobalReceiver(MobRespawnerUpdateC2SPacket.TYPE, (packet, player, responseSender) -> {
-			MobRespawnerUpdatePacketHandler.updateMobRespawnerSettings(packet, player);
-		});
+		//register packet for MobRespawnerScreen
+		ServerPlayNetworking.registerGlobalReceiver(
+			MobRespawnerUpdateC2SPacket.TYPE,
+			(packet, player, responseSender) -> {
+				MobRespawnerUpdatePacketHandler.updateMobRespawnerSettings(packet, player);
+			}
+		);
+
+		//register packet for updating config
+		ServerPlayNetworking.registerGlobalReceiver(
+			RespiteBenchConfigUpdatePacket.TYPE, 
+			(packet, player, responseSender) -> {
+				RespiteBenchConfigUpdateC2SPacketHandler.updateConfigSettings(packet, player);
+			}
+		);
+	}
+
+	@Override
+	public void onPlayReady(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
+		if (serverconfig != null) {
+			ServerPlayNetworking.send(handler.getPlayer(), new RespiteBenchConfigUpdatePacket(serverconfig));
+		}
+		LOGGER.info("S2C onPlayReady packet sent"); //DEBUG
 	}
 }

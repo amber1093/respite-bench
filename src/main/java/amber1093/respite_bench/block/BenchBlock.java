@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import amber1093.respite_bench.RespiteBench;
+import amber1093.respite_bench.RespiteBenchClient;
 import amber1093.respite_bench.entity.BenchEntity;
 import amber1093.respite_bench.event.DiscardConnectedEntityCallback;
 import amber1093.respite_bench.event.UseBenchCallback;
@@ -153,27 +154,34 @@ public class BenchBlock extends HorizontalFacingBlock {
 		return this.getShape(state);
 	}
 
-	//TODO (config) make bench work without sitting on it
 	//TODO (config) make bench work in an aoe 
 	//TODO run this when player respawns
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		
 		if (!world.isClient()) {
 
 			//spawn and teleport BenchEntity
-			this.benchEntity = RespiteBench.BENCH_ENTITY.create(world);
-			this.benchEntity.setInvulnerable(true);
-			this.benchEntity.setPosition(pos.getX() + 0.5f, pos.getY() - 0.55f, pos.getZ() + 0.5f);
-			world.spawnEntity(this.benchEntity);
-			player.startRiding(this.benchEntity);
-			
+			if (RespiteBenchClient.getBenchRestInstantly() == false) {
+				this.benchEntity = RespiteBench.BENCH_ENTITY.create(world);
+				this.benchEntity.setInvulnerable(true);
+				this.benchEntity.setPosition(pos.getX() + 0.5f, pos.getY() - 0.55f, pos.getZ() + 0.5f);
+				world.spawnEntity(this.benchEntity);
+				player.startRiding(this.benchEntity);
+			}
+
 			//set spawn point
-			((ServerPlayerEntity)player).setSpawnPoint(world.getRegistryKey(), pos, player.getYaw(), false, true);
+			if (RespiteBenchClient.getBenchSetSpawnPoint()) {
+				((ServerPlayerEntity)player).setSpawnPoint(world.getRegistryKey(), pos, player.getYaw(), false, true);
+			}
 
 			//heal and clear status from player
 			player.heal(player.getMaxHealth());
-			player.clearStatusEffects();	//TODO make this a config
-			
+
+			if (RespiteBenchClient.getBenchClearPotionEffects()) {
+				player.clearStatusEffects();
+			}
+
 			//replace all EmptyFlask with Flask
 			refillFlasks(player.getInventory());
 
@@ -181,11 +189,11 @@ public class BenchBlock extends HorizontalFacingBlock {
 			List<UUID> uuidList = UseBenchCallback.EVENT.invoker().useBenchEvent(true);
 
 			//use the list from UseBenchCallback and discard all matching entities
-			DiscardConnectedEntityCallback.EVENT.invoker().discardConnectedEntities(uuidList);	//TODO make this a config
+			DiscardConnectedEntityCallback.EVENT.invoker().discardConnectedEntities(uuidList);
 
 			return ActionResult.SUCCESS;
 		}
-		return ActionResult.PASS;
+		return ActionResult.SUCCESS;
 	}
 
 	public static void refillFlasks(PlayerInventory playerInventory) {

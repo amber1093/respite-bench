@@ -1,32 +1,53 @@
 package amber1093.respite_bench;
 
+import org.jetbrains.annotations.Nullable;
+
 import amber1093.respite_bench.blockentityrenderer.MobRespawnerBlockEntityRenderer;
 import amber1093.respite_bench.config.RespiteBenchConfig;
+import amber1093.respite_bench.config.RespiteBenchConfigSave;
 import amber1093.respite_bench.entity.BenchEntity;
+import amber1093.respite_bench.packet.RespiteBenchConfigUpdatePacket;
+import amber1093.respite_bench.packethandler.RespiteBenchConfigUpdateS2CPacketHandler;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData.ValidationException;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.Disconnect;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.impl.client.rendering.BlockEntityRendererRegistryImpl;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.util.Identifier;
 import net.minecraft.client.render.entity.EntityRenderer;
 
-public class RespiteBenchClient implements ClientModInitializer {
+public class RespiteBenchClient implements ClientModInitializer, Disconnect {
 
 	public static RespiteBenchConfig config;
+	@Nullable
+	public static RespiteBenchConfig configoverride = null;
 
 	@Override
 	public void onInitializeClient() {
+		//register S2C config update handler
+		ClientPlayNetworking.registerGlobalReceiver(
+			RespiteBenchConfigUpdatePacket.TYPE,
+			(packet, player, responseSender) -> {
+				RespiteBenchConfigUpdateS2CPacketHandler.applyConfigSettings(packet);
+			}
+		);
 
 		//register and read config
 		AutoConfig.register(RespiteBenchConfig.class, Toml4jConfigSerializer::new);
 		readConfig();
 
-		//other nonsense
+		//save button press event
+		AutoConfig.getConfigHolder(RespiteBenchConfig.class).registerSaveListener(new RespiteBenchConfigSave());
+
+		// other nonsense
 		BlockRenderLayerMap.INSTANCE.putBlock(RespiteBench.MOB_RESPAWNER, RenderLayer.getCutout());
 		BlockEntityRendererRegistryImpl.register(RespiteBench.MOB_RESPAWER_BLOCK_ENTITY_TYPE, MobRespawnerBlockEntityRenderer::new);
 		EntityRendererRegistry.register(RespiteBench.BENCH_ENTITY, new EntityRendererFactory<BenchEntity>() {
@@ -41,13 +62,38 @@ public class RespiteBenchClient implements ClientModInitializer {
 			}
 		});
 	}
-	
-	public static void readConfig() {
+
+	private static void readConfig() {
 		config = AutoConfig.getConfigHolder(RespiteBenchConfig.class).getConfig();
 		try {
 			config.validatePostLoad();
 		} catch (ValidationException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
+		RespiteBenchClient.configoverride = null;
+	}
+
+	public static int getFlaskHealAmount() {
+		return (configoverride == null ? config.flask.healAmount : configoverride.flask.healAmount);
+	}
+
+	public static int getFlaskUseTime() {
+		return (configoverride == null ? config.flask.useTime : configoverride.flask.useTime);
+	}
+
+	public static boolean getBenchRestInstantly() {
+		return (configoverride == null ? config.bench.restInstantly : configoverride.bench.restInstantly);
+	}
+	
+	public static boolean getBenchClearPotionEffects() {
+		return (configoverride == null ? config.bench.clearPotionEffects : configoverride.bench.clearPotionEffects);
+	}
+
+	public static boolean getBenchSetSpawnPoint() {
+		return (configoverride == null ? config.bench.setSpawnPoint : configoverride.bench.setSpawnPoint);
 	}
 }

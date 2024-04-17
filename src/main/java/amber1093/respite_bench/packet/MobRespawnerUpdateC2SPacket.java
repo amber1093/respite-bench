@@ -16,7 +16,12 @@ public record MobRespawnerUpdateC2SPacket(
 		boolean shouldDisconnectEntities
 ) implements FabricPacket {
 
-	public static final PacketType<MobRespawnerUpdateC2SPacket> TYPE = PacketType.create(RespiteBench.MOB_RESPAWNER_UPDATE_PACKET_ID, MobRespawnerUpdateC2SPacket::new);
+	public static final PacketType<MobRespawnerUpdateC2SPacket> TYPE = (
+		PacketType.create(
+			RespiteBench.MOB_RESPAWNER_UPDATE_PACKET_ID,
+			MobRespawnerUpdateC2SPacket::new
+		)
+	);
 
 	public MobRespawnerUpdateC2SPacket(PacketByteBuf buf) {
 		this(
@@ -42,7 +47,7 @@ public record MobRespawnerUpdateC2SPacket(
 	}
 
 	@Override
-	public PacketType<?> getType() {
+	public PacketType<MobRespawnerUpdateC2SPacket> getType() {
 		return TYPE;
 	}
 
