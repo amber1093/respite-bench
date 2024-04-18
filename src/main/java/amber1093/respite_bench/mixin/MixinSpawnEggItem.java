@@ -54,7 +54,6 @@ public abstract class MixinSpawnEggItem {
 				//if nbt is present, copy full nbt data
 				if (spawnEggNbt != null && spawnEggNbt.contains("EntityTag", NbtElement.COMPOUND_TYPE)) {
 
-					//RespiteBench.LOGGER.info("MixinSpawnEggItem spawnEggNbt" + spawnEggNbt.toString());	//DEBUG
 					mobRespawnerBlockEntity.setEntityNbt(spawnEggNbt, random);
 					mobRespawnerBlockEntity.resetRenderedEntity();
 				}

@@ -1,6 +1,5 @@
 package amber1093.respite_bench.packethandler;
 
-import amber1093.respite_bench.RespiteBench;
 import amber1093.respite_bench.RespiteBenchClient;
 import amber1093.respite_bench.packet.RespiteBenchConfigUpdatePacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.PlayPacketHandler;
@@ -11,6 +10,5 @@ extends PlayPacketHandler<RespiteBenchConfigUpdatePacket> {
 	public static void applyConfigSettings(RespiteBenchConfigUpdatePacket packet) {
 		//update configoverride
 		RespiteBenchClient.configoverride = packet.getConfig();
-		RespiteBench.LOGGER.info("S2C received"); //DEBUG
 	}
 }

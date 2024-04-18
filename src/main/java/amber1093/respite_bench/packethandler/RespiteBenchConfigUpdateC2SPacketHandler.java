@@ -12,7 +12,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public interface RespiteBenchConfigUpdateC2SPacketHandler
 extends PlayPacketHandler<RespiteBenchConfigUpdatePacket> {
 	public static void updateConfigSettings(RespiteBenchConfigUpdatePacket packet, ServerPlayerEntity player) {
-		RespiteBench.LOGGER.info("C2S received"); //DEBUG
 		MinecraftServer server = player.getServer();
 		if (server != null && (player.hasPermissionLevel(4) || server.isSingleplayer())) {
 
@@ -23,7 +22,6 @@ extends PlayPacketHandler<RespiteBenchConfigUpdatePacket> {
 			RespiteBenchConfigUpdatePacket newPacket = new RespiteBenchConfigUpdatePacket(packet.getConfig());
 			sendToAllPlayers(newPacket, server);
 
-			RespiteBench.LOGGER.info("C2Shandler: Sent all S2C packets"); //DEBUG
 		}
 	}
 

@@ -13,18 +13,16 @@ import me.shedaniel.autoconfig.ConfigData.ValidationException;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.Disconnect;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.impl.client.rendering.BlockEntityRendererRegistryImpl;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.util.Identifier;
 import net.minecraft.client.render.entity.EntityRenderer;
 
-public class RespiteBenchClient implements ClientModInitializer, Disconnect {
+public class RespiteBenchClient implements ClientModInitializer {
 
 	public static RespiteBenchConfig config;
 	@Nullable
@@ -32,6 +30,8 @@ public class RespiteBenchClient implements ClientModInitializer, Disconnect {
 
 	@Override
 	public void onInitializeClient() {
+
+
 		//register S2C config update handler
 		ClientPlayNetworking.registerGlobalReceiver(
 			RespiteBenchConfigUpdatePacket.TYPE,
@@ -46,6 +46,11 @@ public class RespiteBenchClient implements ClientModInitializer, Disconnect {
 
 		//save button press event
 		AutoConfig.getConfigHolder(RespiteBenchConfig.class).registerSaveListener(new RespiteBenchConfigSave());
+
+		//disconnect from server event
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+			RespiteBenchClient.configoverride = null;
+		});
 
 		// other nonsense
 		BlockRenderLayerMap.INSTANCE.putBlock(RespiteBench.MOB_RESPAWNER, RenderLayer.getCutout());
@@ -70,11 +75,6 @@ public class RespiteBenchClient implements ClientModInitializer, Disconnect {
 		} catch (ValidationException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
-		RespiteBenchClient.configoverride = null;
 	}
 
 	public static int getFlaskHealAmount() {

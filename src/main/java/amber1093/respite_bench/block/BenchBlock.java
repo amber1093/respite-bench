@@ -114,7 +114,6 @@ public class BenchBlock extends HorizontalFacingBlock {
 		return shape;
 	}
 
-
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(Properties.HORIZONTAL_FACING);
@@ -154,8 +153,8 @@ public class BenchBlock extends HorizontalFacingBlock {
 		return this.getShape(state);
 	}
 
-	//TODO (config) make bench work in an aoe 
 	//TODO run this when player respawns
+	//TODO add particle effects (and maybe sound effect)
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		

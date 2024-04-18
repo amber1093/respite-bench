@@ -11,13 +11,7 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class RespiteBenchConfig implements ConfigData {
 
-	public enum KEY {
-		FLASK_HEAL_AMOUNT,
-		FLASK_USE_TIME,
-		BENCH_REST_INSTANTLY,
-		BENCH_CLEAR_POTION_EFFECTS,
-		BENCH_SET_SPAWN_POINT
-	}
+	//TODO show overridden values (somehow)
 
 	@ConfigEntry.Gui.Excluded
 	public static final int FLASK_HEAL_AMOUNT_DEFAULT = 12;

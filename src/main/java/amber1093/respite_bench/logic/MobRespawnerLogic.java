@@ -276,7 +276,6 @@ public abstract class MobRespawnerLogic {
 			
 			for (int i = 0; i < nbtList.size(); i++) {
 				NbtCompound nbtCompound = nbtList.getCompound(i);
-				//LOGGER.debug("connectedEntitiesUuid nbtCompound[" + String.valueOf(i) + "] " + nbtCompound.toString()); //DEBUG
 				this.connectedEntitiesUuid.add(nbtCompound.getUuid(String.valueOf(i)));
 			}
 		}

@@ -4,8 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.Join;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -22,8 +21,6 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -42,7 +39,7 @@ import amber1093.respite_bench.packet.RespiteBenchConfigUpdatePacket;
 import amber1093.respite_bench.packethandler.MobRespawnerUpdatePacketHandler;
 import amber1093.respite_bench.packethandler.RespiteBenchConfigUpdateC2SPacketHandler;
 
-public class RespiteBench implements ModInitializer, Join {
+public class RespiteBench implements ModInitializer {
 	public static final String MOD_ID = "respite_bench";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -130,13 +127,12 @@ public class RespiteBench implements ModInitializer, Join {
 				RespiteBenchConfigUpdateC2SPacketHandler.updateConfigSettings(packet, player);
 			}
 		);
-	}
 
-	@Override
-	public void onPlayReady(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
-		if (serverconfig != null) {
-			ServerPlayNetworking.send(handler.getPlayer(), new RespiteBenchConfigUpdatePacket(serverconfig));
-		}
-		LOGGER.info("S2C onPlayReady packet sent"); //DEBUG
+		//player join server event
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+			if (serverconfig != null) {
+				ServerPlayNetworking.send(handler.getPlayer(), new RespiteBenchConfigUpdatePacket(serverconfig));
+			}
+		});
 	}
 }
