@@ -2,6 +2,8 @@ package amber1093.respite_bench.logic;
 
 import com.mojang.logging.LogUtils;
 
+import amber1093.respite_bench.RespiteBenchClient;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -163,13 +165,15 @@ public abstract class MobRespawnerLogic {
             if (!world.isSpaceEmpty(optional.get().createSimpleBoundingBox(d, e, f))) continue;
 
 			//check for spawn rules, peaceful mode, light levels, etc.
-            BlockPos blockPos = BlockPos.ofFloored(d, e, f);
-            if (!mobSpawnerEntry.getCustomSpawnRules().isPresent()
-					? !SpawnRestriction.canSpawn(optional.get(), world, SpawnReason.SPAWNER, blockPos, world.getRandom())
-					: !optional.get().getSpawnGroup().isPeaceful() && world.getDifficulty() == Difficulty.PEACEFUL
-							|| !(customSpawnRules = mobSpawnerEntry.getCustomSpawnRules().get()).blockLightLimit().contains(world.getLightLevel(LightType.BLOCK, blockPos))
-							|| !customSpawnRules.skyLightLimit().contains(world.getLightLevel(LightType.SKY, blockPos))) {
-				continue;
+			BlockPos blockPos = BlockPos.ofFloored(d, e, f);
+			if (RespiteBenchClient.getMobRespawnerIgnoreSpawnRules() == false) {	//TODO doesnt work if light level is above 12 for some reason
+				if (!mobSpawnerEntry.getCustomSpawnRules().isPresent()
+						? !SpawnRestriction.canSpawn(optional.get(), world, SpawnReason.SPAWNER, blockPos, world.getRandom())
+						: !optional.get().getSpawnGroup().isPeaceful() && world.getDifficulty() == Difficulty.PEACEFUL
+								|| !(customSpawnRules = mobSpawnerEntry.getCustomSpawnRules().get()).blockLightLimit().contains(world.getLightLevel(LightType.BLOCK, blockPos))
+								|| !customSpawnRules.skyLightLimit().contains(world.getLightLevel(LightType.SKY, blockPos))) {
+					continue;
+				}
 			}
 
 			//load entity

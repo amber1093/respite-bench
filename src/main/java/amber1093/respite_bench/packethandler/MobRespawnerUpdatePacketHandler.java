@@ -13,7 +13,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-//TODO try changing extends to implements
 @FunctionalInterface
 public interface MobRespawnerUpdatePacketHandler
 extends PlayPacketHandler<MobRespawnerUpdateC2SPacket> {

@@ -21,15 +21,15 @@ public class RespiteBenchConfig implements ConfigData {
 
 	@ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
 	public FlaskConfig flask = new FlaskConfig();
-
 	@ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
 	public BenchConfig bench = new BenchConfig();
+	@ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
+	public MobRespawnerConfig mobrespawner = new MobRespawnerConfig();
 
 
 	public static class FlaskConfig {
 		@ConfigEntry.Gui.Tooltip
 		public int healAmount = FLASK_HEAL_AMOUNT_DEFAULT;
-
 		@ConfigEntry.Gui.Tooltip
 		public int useTime = FLASK_USE_TIME_DEFAULT;
 	}
@@ -37,12 +37,15 @@ public class RespiteBenchConfig implements ConfigData {
 	public static class BenchConfig {
 		@ConfigEntry.Gui.Tooltip
 		public boolean restInstantly = false;
-
 		@ConfigEntry.Gui.Tooltip
 		public boolean clearPotionEffects = false;
-
 		@ConfigEntry.Gui.Tooltip
 		public boolean setSpawnPoint = true;
+	}
+
+	public static class MobRespawnerConfig {
+		@ConfigEntry.Gui.Tooltip
+		public boolean ignoreSpawnRules = false;
 	}
 
 

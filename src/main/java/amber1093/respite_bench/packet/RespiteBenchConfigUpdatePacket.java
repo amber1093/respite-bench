@@ -11,7 +11,8 @@ public record RespiteBenchConfigUpdatePacket(
 	int flask_useTime,
 	boolean bench_restInstantly,
 	boolean bench_clearPotionEffects,
-	boolean bench_setSpawnPoint
+	boolean bench_setSpawnPoint,
+	boolean mobrespawner_ignoreSpawnRules
 ) implements FabricPacket {
 
 	public static final PacketType<RespiteBenchConfigUpdatePacket> TYPE = (
@@ -27,6 +28,7 @@ public record RespiteBenchConfigUpdatePacket(
 			buf.readInt(),
 			buf.readBoolean(),
 			buf.readBoolean(),
+			buf.readBoolean(),
 			buf.readBoolean()
 		);
 	}
@@ -37,7 +39,8 @@ public record RespiteBenchConfigUpdatePacket(
 			config.flask.useTime,
 			config.bench.restInstantly,
 			config.bench.clearPotionEffects,
-			config.bench.setSpawnPoint
+			config.bench.setSpawnPoint,
+			config.mobrespawner.ignoreSpawnRules
 		);
 	}
 
@@ -48,11 +51,7 @@ public record RespiteBenchConfigUpdatePacket(
 		buf.writeBoolean(this.bench_restInstantly());
 		buf.writeBoolean(this.bench_clearPotionEffects());
 		buf.writeBoolean(this.bench_setSpawnPoint());
-	}
-
-	@Override
-	public PacketType<RespiteBenchConfigUpdatePacket> getType() {
-		return TYPE;
+		buf.writeBoolean(this.mobrespawner_ignoreSpawnRules());
 	}
 
 	public RespiteBenchConfig getConfig() {
@@ -62,6 +61,12 @@ public record RespiteBenchConfigUpdatePacket(
 		config.bench.restInstantly = this.bench_restInstantly();
 		config.bench.clearPotionEffects = this.bench_clearPotionEffects();
 		config.bench.setSpawnPoint = this.bench_setSpawnPoint();
+		config.mobrespawner.ignoreSpawnRules = this.mobrespawner_ignoreSpawnRules();
 		return config;
+	}
+
+	@Override
+	public PacketType<RespiteBenchConfigUpdatePacket> getType() {
+		return TYPE;
 	}
 }
