@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 1,
-	"id": "respite_bench",
+	"id": "respitebench",
 	"version": "${version}",
 	"name": "Respite Bench",
 	"description": "Souls-like mechanics in Minecraft!",
@@ -12,24 +12,24 @@
 		"sources": "https://github.com/amber1093/respite-bench"
 	},
 	"license": "MIT",
-	"icon": "assets/respite_bench/icon.png",
+	"icon": "assets/respitebench/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"amber1093.respite_bench.RespiteBench"
+			"amber1093.respitebench.RespiteBench"
 		],
 		"client": [
-			"amber1093.respite_bench.RespiteBenchClient"
+			"amber1093.respitebench.RespiteBenchClient"
 		],
 		"fabric-datagen": [
-			"amber1093.respite_bench.RespiteBenchDataGenerator"
+			"amber1093.respitebench.RespiteBenchDataGenerator"
 		],
 		"modmenu": [
-			"amber1093.respite_bench.config.ModMenuIntegration"
+			"amber1093.respitebench.config.ModMenuIntegration"
 		]
 	},
 	"mixins": [
-		"respite_bench.mixins.json"
+		"respitebench.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.14.21",

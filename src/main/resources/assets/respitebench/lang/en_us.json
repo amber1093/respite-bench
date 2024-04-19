@@ -1,0 +1,64 @@
+{
+	"item.respitebench.flask": "Flask",
+	"item.respitebench.empty_flask": "Empty Flask",
+	"item.respitebench.flask_shard": "Flask Shard",
+	"block.respitebench.mob_respawner": "Mob Respawner",
+	"block.respitebench.bench": "Bench",
+
+	"itemgroup.respitebench": "Respite Bench",
+
+
+	"screen.respitebench.mob_respawner": "Mob Respawner Settings",
+
+	"screen.respitebench.mob_respawner.maxconnectedentities": "Max spawn amount",
+	"screen.respitebench.mob_respawner.maxconnectedentities.desc1": "The respawner will stop after spawning this many mobs.",
+	"screen.respitebench.mob_respawner.maxconnectedentities.desc2": "NBT tag: MaxConnectedEntities\nType: int\nDefault: 1",
+
+	"screen.respitebench.mob_respawner.spawncount": "Spawn attempts per tick",
+	"screen.respitebench.mob_respawner.spawncount.desc1": "If it is allowed to, the respawner will attempt to spawn this many mobs every tick. Warning: High numbers can cause lag.",
+	"screen.respitebench.mob_respawner.spawncount.desc2": "NBT tag: SpawnCount\nType: int\nDefault: 1",
+
+	"screen.respitebench.mob_respawner.requiredplayerrange": "Required player range",
+	"screen.respitebench.mob_respawner.requiredplayerrange.desc1": "The player needs to be this close to the respawner before it can spawn anything.",
+	"screen.respitebench.mob_respawner.requiredplayerrange.desc2": "NBT tag: RequiredPlayerRange\nType: int\nDefault: 16",
+
+	"screen.respitebench.mob_respawner.spawnrange": "Spawn range",
+	"screen.respitebench.mob_respawner.spawnrange.desc1": "The respawner will only spawn mobs inside this range.",
+	"screen.respitebench.mob_respawner.spawnrange.desc2": "NBT tag: SpawnRange\nType: int\nDefault: 2",
+	
+	"screen.respitebench.mob_respawner.entitydata": "Entity data",
+	"screen.respitebench.mob_respawner.entitydata.desc1": "Defines what the respawner will spawn.\n\nTip: The respawner can read NBT data from custom spawn eggs. Using multiple will cause their NBT to get mixed up inside the respawner. Try it out!",
+	"screen.respitebench.mob_respawner.entitydata.desc2": "NBT tag: SpawnData\nType: compound{entity:{...}}\nDefault: empty",
+	"screen.respitebench.mob_respawner.entitydata.clear": "Clear",
+
+	"screen.respitebench.mob_respawner.connectedentitiesuuid": "Connected entities",
+	"screen.respitebench.mob_respawner.connectedentitiesuuid.desc1": "UUID list of entities spawned by this block. Used to keep track of entities spawned by this block.",
+	"screen.respitebench.mob_respawner.connectedentitiesuuid.desc2": "NBT tag: ConnectedEntitiesUuid\nType: compound[{UUID}, ...]\nDefault: empty",
+	"screen.respitebench.mob_respawner.connectedentitiesuuid.disconnectall": "Disconnect all",
+
+	"screen.respitebench.mob_respawner.sameasvanillaspawner": " (Same behavior as vanilla spawner)",
+
+
+	"text.autoconfig.respitebench.title": "Respite Bench Config",
+
+	"text.autoconfig.respitebench.option.flask": "Flask",
+	"text.autoconfig.respitebench.option.flask.healAmount": "Heal amount",
+	"text.autoconfig.respitebench.option.flask.healAmount.@Tooltip": "Drinking a flask will heal you for this amount.",
+	"text.autoconfig.respitebench.option.flask.useTime": "Drink time",
+	"text.autoconfig.respitebench.option.flask.useTime.@Tooltip": "Time required to drink a flask (in ticks).",
+
+	"text.autoconfig.respitebench.option.bench": "Bench",
+	"text.autoconfig.respitebench.option.bench.restInstantly": "Rest instantly",
+	"text.autoconfig.respitebench.option.bench.restInstantly.@Tooltip": "Disable sitting on the bench. Does not disable other features of it.",
+	"text.autoconfig.respitebench.option.bench.clearPotionEffects": "Can clear potion effects",
+	"text.autoconfig.respitebench.option.bench.clearPotionEffects.@Tooltip": "Allow benches to clear your potion effects.",
+	"text.autoconfig.respitebench.option.bench.setSpawnPoint": "Can set spawn point",
+	"text.autoconfig.respitebench.option.bench.setSpawnPoint.@Tooltip": "Allow benches to change your spawn point.",
+
+	"text.autoconfig.respitebench.option.mobrespawner": "Mob Respawner",
+	"text.autoconfig.respitebench.option.mobrespawner.ignoreSpawnRules": "Ignore spawn rules",
+	"text.autoconfig.respitebench.option.mobrespawner.ignoreSpawnRules.@Tooltip": "Makes respawners ignore all spawn conditions (requiring grass for animals, low light levels for hostile mobs, etc.)."
+	
+
+
+}

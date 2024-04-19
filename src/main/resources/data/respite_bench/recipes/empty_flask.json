@@ -1,12 +1,12 @@
 {
 	"type": "minecraft:crafting_shapeless",
 	"ingredients": [
-		{"item": "respite_bench:flask_shard"},
-		{"item": "respite_bench:flask_shard"},
-		{"item": "respite_bench:flask_shard"}
+		{"item": "respitebench:flask_shard"},
+		{"item": "respitebench:flask_shard"},
+		{"item": "respitebench:flask_shard"}
 	],
 	"result": {
-		"item": "respite_bench:empty_flask",
+		"item": "respitebench:empty_flask",
 		"count": 1
 	}
 }

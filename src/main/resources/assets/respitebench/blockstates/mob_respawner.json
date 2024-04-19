@@ -1,0 +1,5 @@
+{
+	"variants": {
+		"": { "model": "respitebench:block/mob_respawner" }
+	}
+}   
