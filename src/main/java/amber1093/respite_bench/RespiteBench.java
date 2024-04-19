@@ -31,20 +31,20 @@ import org.slf4j.LoggerFactory;
 import amber1093.respite_bench.block.BenchBlock;
 import amber1093.respite_bench.block.MobRespawnerBlock;
 import amber1093.respite_bench.blockentity.MobRespawnerBlockEntity;
-import amber1093.respite_bench.config.RespiteBenchConfig;
+import amber1093.respite_bench.config.ConfigMenu;
 import amber1093.respite_bench.entity.BenchEntity;
 import amber1093.respite_bench.item.FlaskItem;
 import amber1093.respite_bench.packet.MobRespawnerUpdateC2SPacket;
-import amber1093.respite_bench.packet.RespiteBenchConfigUpdatePacket;
+import amber1093.respite_bench.packet.ConfigUpdatePacket;
 import amber1093.respite_bench.packethandler.MobRespawnerUpdatePacketHandler;
-import amber1093.respite_bench.packethandler.RespiteBenchConfigUpdateC2SPacketHandler;
+import amber1093.respite_bench.packethandler.ConfigUpdatePacketC2SHandler;
 
 public class RespiteBench implements ModInitializer {
 	public static final String MOD_ID = "respitebench";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	@Nullable
-	public static RespiteBenchConfig serverconfig = null;
+	public static ConfigMenu serverconfig = null;
 
 	//#region Items
 	public static final FoodComponent FLASK_FOOD_COMPONENT = new FoodComponent.Builder().alwaysEdible().build();
@@ -122,16 +122,16 @@ public class RespiteBench implements ModInitializer {
 
 		//register packet for updating config
 		ServerPlayNetworking.registerGlobalReceiver(
-			RespiteBenchConfigUpdatePacket.TYPE, 
+			ConfigUpdatePacket.TYPE, 
 			(packet, player, responseSender) -> {
-				RespiteBenchConfigUpdateC2SPacketHandler.updateConfigSettings(packet, player);
+				ConfigUpdatePacketC2SHandler.updateConfigSettings(packet, player);
 			}
 		);
 
 		//player join server event
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			if (serverconfig != null) {
-				ServerPlayNetworking.send(handler.getPlayer(), new RespiteBenchConfigUpdatePacket(serverconfig));
+				ServerPlayNetworking.send(handler.getPlayer(), new ConfigUpdatePacket(serverconfig));
 			}
 		});
 	}

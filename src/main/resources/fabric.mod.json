@@ -25,7 +25,7 @@
 			"amber1093.respite_bench.RespiteBenchDataGenerator"
 		],
 		"modmenu": [
-			"amber1093.respite_bench.config.RespiteBenchModMenuIntegration"
+			"amber1093.respite_bench.config.ModMenuIntegration"
 		]
 	},
 	"mixins": [

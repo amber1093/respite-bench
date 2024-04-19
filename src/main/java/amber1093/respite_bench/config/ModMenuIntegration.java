@@ -9,9 +9,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-public class RespiteBenchModMenuIntegration implements ModMenuApi {
+public class ModMenuIntegration implements ModMenuApi {
 	@Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return parent -> AutoConfig.getConfigScreen(RespiteBenchConfig.class, parent).get();
+        return parent -> AutoConfig.getConfigScreen(ConfigMenu.class, parent).get();
     }
 }

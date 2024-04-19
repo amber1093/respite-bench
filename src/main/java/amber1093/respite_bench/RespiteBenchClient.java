@@ -3,11 +3,11 @@ package amber1093.respite_bench;
 import org.jetbrains.annotations.Nullable;
 
 import amber1093.respite_bench.blockentityrenderer.MobRespawnerBlockEntityRenderer;
-import amber1093.respite_bench.config.RespiteBenchConfig;
-import amber1093.respite_bench.config.RespiteBenchConfigSave;
+import amber1093.respite_bench.config.ConfigMenu;
+import amber1093.respite_bench.config.ConfigSave;
 import amber1093.respite_bench.entity.BenchEntity;
-import amber1093.respite_bench.packet.RespiteBenchConfigUpdatePacket;
-import amber1093.respite_bench.packethandler.RespiteBenchConfigUpdateS2CPacketHandler;
+import amber1093.respite_bench.packet.ConfigUpdatePacket;
+import amber1093.respite_bench.packethandler.ConfigUpdatePacketS2CHandler;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData.ValidationException;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
@@ -24,9 +24,9 @@ import net.minecraft.client.render.entity.EntityRenderer;
 
 public class RespiteBenchClient implements ClientModInitializer {
 
-	public static RespiteBenchConfig config;
+	public static ConfigMenu config;
 	@Nullable
-	public static RespiteBenchConfig configoverride = null;
+	public static ConfigMenu configoverride = null;
 
 	@Override
 	public void onInitializeClient() {
@@ -34,18 +34,18 @@ public class RespiteBenchClient implements ClientModInitializer {
 
 		//register S2C config update handler
 		ClientPlayNetworking.registerGlobalReceiver(
-			RespiteBenchConfigUpdatePacket.TYPE,
+			ConfigUpdatePacket.TYPE,
 			(packet, player, responseSender) -> {
-				RespiteBenchConfigUpdateS2CPacketHandler.applyConfigSettings(packet);
+				ConfigUpdatePacketS2CHandler.applyConfigSettings(packet);
 			}
 		);
 
 		//register and read config
-		AutoConfig.register(RespiteBenchConfig.class, Toml4jConfigSerializer::new);
+		AutoConfig.register(ConfigMenu.class, Toml4jConfigSerializer::new);
 		readConfig();
 
 		//save button press event
-		AutoConfig.getConfigHolder(RespiteBenchConfig.class).registerSaveListener(new RespiteBenchConfigSave());
+		AutoConfig.getConfigHolder(ConfigMenu.class).registerSaveListener(new ConfigSave());
 
 		//disconnect from server event
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
@@ -69,7 +69,7 @@ public class RespiteBenchClient implements ClientModInitializer {
 	}
 
 	private static void readConfig() {
-		config = AutoConfig.getConfigHolder(RespiteBenchConfig.class).getConfig();
+		config = AutoConfig.getConfigHolder(ConfigMenu.class).getConfig();
 		try {
 			config.validatePostLoad();
 		} catch (ValidationException e) {

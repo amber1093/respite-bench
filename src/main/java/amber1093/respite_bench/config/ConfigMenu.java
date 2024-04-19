@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 
 @Config(name = RespiteBench.MOD_ID)
 @Environment(EnvType.CLIENT)
-public class RespiteBenchConfig implements ConfigData {
+public class ConfigMenu implements ConfigData {
 
 	//TODO show overridden values (somehow)
 
