@@ -40,7 +40,7 @@ import amber1093.respite_bench.packethandler.MobRespawnerUpdatePacketHandler;
 import amber1093.respite_bench.packethandler.RespiteBenchConfigUpdateC2SPacketHandler;
 
 public class RespiteBench implements ModInitializer {
-	public static final String MOD_ID = "respite_bench";
+	public static final String MOD_ID = "respitebench";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	@Nullable

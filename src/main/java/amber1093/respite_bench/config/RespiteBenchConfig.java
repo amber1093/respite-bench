@@ -45,7 +45,7 @@ public class RespiteBenchConfig implements ConfigData {
 
 	public static class MobRespawnerConfig {
 		@ConfigEntry.Gui.Tooltip
-		public boolean ignoreSpawnRules = false;
+		public boolean ignoreSpawnRules = true;
 	}
 
 
