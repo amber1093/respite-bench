@@ -33,16 +33,16 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 
 //TODO better texture
 //TODO add wood variants
+//TODO BenchEntity is killed no matter which BenchBlock is broken
+
 
 public class BenchBlock extends HorizontalFacingBlock {
 
 	//* BenchBlockEntity is currently unused
 	//private BenchBlockEntity benchBlockEntity;
-	private BenchEntity benchEntity;
 	
 	private static final VoxelShape SHAPE_NORTH = createShape(Direction.NORTH);
 	private static final VoxelShape SHAPE_EAST = createShape(Direction.EAST);
@@ -125,7 +125,7 @@ public class BenchBlock extends HorizontalFacingBlock {
 	}
 
 	public VoxelShape getShape(BlockState state) {
-	Direction direction = state.get(FACING);
+		Direction direction = state.get(FACING);
 		switch (direction) {
 			case NORTH:
 				return SHAPE_NORTH;
@@ -157,16 +157,16 @@ public class BenchBlock extends HorizontalFacingBlock {
 	//TODO add particle effects (and maybe sound effect)
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		
-		if (!world.isClient()) {
+		rest(world, pos, player, RespiteBench.BENCH_ENTITY);
+		return ActionResult.SUCCESS;
+	}
 
+	public static void rest(World world, BlockPos pos, PlayerEntity player, EntityType<? extends BenchEntity> entityToRide) {
+
+		if (!world.isClient()) {
 			//spawn and teleport BenchEntity
 			if (RespiteBenchClient.getBenchRestInstantly() == false) {
-				this.benchEntity = RespiteBench.BENCH_ENTITY.create(world);
-				this.benchEntity.setInvulnerable(true);
-				this.benchEntity.setPosition(pos.getX() + 0.5f, pos.getY() - 0.55f, pos.getZ() + 0.5f);
-				world.spawnEntity(this.benchEntity);
-				player.startRiding(this.benchEntity);
+				sit(world, pos, player, entityToRide);
 			}
 
 			//set spawn point
@@ -189,10 +189,15 @@ public class BenchBlock extends HorizontalFacingBlock {
 
 			//use the list from UseBenchCallback and discard all matching entities
 			DiscardConnectedEntityCallback.EVENT.invoker().discardConnectedEntities(uuidList);
-
-			return ActionResult.SUCCESS;
 		}
-		return ActionResult.SUCCESS;
+	}
+
+	public static void sit(World world, BlockPos pos, PlayerEntity player, EntityType<? extends BenchEntity> entityToRide) {
+		BenchEntity benchEntity = entityToRide.create(world);
+		benchEntity.setInvulnerable(true);
+		benchEntity.setPosition(pos.getX() + 0.5f, pos.getY() - 0.55f, pos.getZ() + 0.5f);
+		world.spawnEntity(benchEntity);
+		player.startRiding(benchEntity);
 	}
 
 	public static void refillFlasks(PlayerInventory playerInventory) {
@@ -218,12 +223,4 @@ public class BenchBlock extends HorizontalFacingBlock {
 	}
 	*/
 
-	//TODO BenchEntity is killed no matter which BenchBlock is broken
-	@Override
-	public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
-		super.onBroken(world, pos, state);
-		if (this.benchEntity != null && this.benchEntity.isAlive()) {
-			this.benchEntity.discard();
-		}
-	}
 }
