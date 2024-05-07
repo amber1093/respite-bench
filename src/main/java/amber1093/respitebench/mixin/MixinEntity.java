@@ -41,16 +41,16 @@ public abstract class MixinEntity {
 
 	@Shadow
 	public UUID getUuid() {
-		return null;
+		throw new UnsupportedOperationException("Unimplemented method 'getUuid'");
 	}
 
 	@Shadow
 	public void discard() {
-		return;
+		throw new UnsupportedOperationException("Unimplemented method 'discard'");
 	}
 
 	@Shadow
 	public World getWorld() {
-		return null;
+		throw new UnsupportedOperationException("Unimplemented method 'getWorld'");
 	}
 }

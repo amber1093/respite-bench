@@ -49,6 +49,10 @@ public class BenchBlock extends HorizontalFacingBlock {
 	private static final VoxelShape SHAPE_WEST = createShape(Direction.WEST);
 	private static final VoxelShape SHAPE_SOUTH = createShape(Direction.SOUTH);
 
+	protected static float OFFSET_X = 0.5f;
+	protected static float OFFSET_Y = -0.55f;
+	protected static float OFFSET_Z = 0.5f;
+
 	public BenchBlock(Settings settings) {
 		super(settings);
 	}
@@ -124,7 +128,7 @@ public class BenchBlock extends HorizontalFacingBlock {
 		return super.getPlacementState(context).with(Properties.HORIZONTAL_FACING, context.getHorizontalPlayerFacing().getOpposite());
 	}
 
-	public VoxelShape getShape(BlockState state) {
+	public static VoxelShape getShape(BlockState state) {
 		Direction direction = state.get(FACING);
 		switch (direction) {
 			case NORTH:
@@ -145,12 +149,12 @@ public class BenchBlock extends HorizontalFacingBlock {
 
 	@Override
 	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return this.getShape(state);
+		return getShape(state);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return this.getShape(state);
+		return getShape(state);
 	}
 
 	//TODO run this when player respawns
@@ -184,18 +188,15 @@ public class BenchBlock extends HorizontalFacingBlock {
 			//replace all EmptyFlask with Flask
 			refillFlasks(player.getInventory());
 
-			//allow all mob respawners to spawn mobs once
-			List<UUID> uuidList = UseBenchCallback.EVENT.invoker().useBenchEvent(true);
-
-			//use the list from UseBenchCallback and discard all matching entities
-			DiscardConnectedEntityCallback.EVENT.invoker().discardConnectedEntities(uuidList);
+			//discard previous mobs and download new mobs
+			mobRespawnerUpdate();
 		}
 	}
 
 	public static void sit(World world, BlockPos pos, PlayerEntity player, EntityType<? extends BenchEntity> entityToRide) {
 		BenchEntity benchEntity = entityToRide.create(world);
 		benchEntity.setInvulnerable(true);
-		benchEntity.setPosition(pos.getX() + 0.5f, pos.getY() - 0.55f, pos.getZ() + 0.5f);
+		benchEntity.setPosition(pos.getX() + OFFSET_X, pos.getY() + OFFSET_Y, pos.getZ() + OFFSET_Z);
 		world.spawnEntity(benchEntity);
 		player.startRiding(benchEntity);
 	}
@@ -213,6 +214,14 @@ public class BenchBlock extends HorizontalFacingBlock {
 	//no need to copy paste all that code :)
 	public static Optional<Vec3d> findRespawnPosition(EntityType<?> entity, CollisionView world, BlockPos pos) {
 		return RespawnAnchorBlock.findRespawnPosition(entity, world, pos);
+	}
+
+	public static void mobRespawnerUpdate() {
+		//allow all mob respawners to spawn mobs once
+		List<UUID> uuidList = UseBenchCallback.EVENT.invoker().useBenchEvent(true);
+
+		//use the list from UseBenchCallback and discard all matching entities
+		DiscardConnectedEntityCallback.EVENT.invoker().discardConnectedEntities(uuidList);
 	}
 
 	/* //* BenchBlockEntity is currently unused
