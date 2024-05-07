@@ -24,6 +24,9 @@ public class FlaskItem extends Item {
 		if (player != null) {
 			player.incrementStat(Stats.USED.getOrCreateStat(this));
 			if (!player.getAbilities().creativeMode) {
+
+				player.heal(RespiteBenchClient.getFlaskHealAmount());
+
 				stack.decrement(1);
 				if (stack.isEmpty()) {
 					return new ItemStack(RespiteBench.EMPTY_FLASK);
@@ -31,8 +34,6 @@ public class FlaskItem extends Item {
 				else {
 					player.getInventory().insertStack(new ItemStack(RespiteBench.EMPTY_FLASK));
 				}
-
-				player.heal(RespiteBenchClient.getFlaskHealAmount());
 			}
 		}
 		return stack;
