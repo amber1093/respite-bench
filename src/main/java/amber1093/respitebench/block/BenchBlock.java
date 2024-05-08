@@ -189,7 +189,7 @@ public class BenchBlock extends HorizontalFacingBlock {
 			refillFlasks(player.getInventory());
 
 			//discard previous mobs and download new mobs
-			mobRespawnerUpdate();
+			mobRespawnerReset(true);
 		}
 	}
 
@@ -216,9 +216,9 @@ public class BenchBlock extends HorizontalFacingBlock {
 		return RespawnAnchorBlock.findRespawnPosition(entity, world, pos);
 	}
 
-	public static void mobRespawnerUpdate() {
+	public static void mobRespawnerReset(boolean allowRespawningNewMobs) {
 		//allow all mob respawners to spawn mobs once
-		List<UUID> uuidList = UseBenchCallback.EVENT.invoker().useBenchEvent(true);
+		List<UUID> uuidList = UseBenchCallback.EVENT.invoker().useBenchEvent(allowRespawningNewMobs);
 
 		//use the list from UseBenchCallback and discard all matching entities
 		DiscardConnectedEntityCallback.EVENT.invoker().discardConnectedEntities(uuidList);

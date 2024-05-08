@@ -63,7 +63,7 @@ public class RespiteBench implements ModInitializer {
 			new Identifier(MOD_ID, "respitebench"),
 			FabricItemGroup.builder()
 				.displayName(Text.translatable("itemgroup.respitebench"))
-				.icon(() -> new ItemStack(RespiteBench.FLASK))
+				.icon(() -> new ItemStack(RespiteBench.BENCH))
 				.entries((displayContext, entries) -> {
 					entries.add(RespiteBench.FLASK);
 					entries.add(RespiteBench.EMPTY_FLASK);

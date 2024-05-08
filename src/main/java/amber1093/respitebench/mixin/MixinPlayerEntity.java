@@ -38,7 +38,7 @@ public abstract class MixinPlayerEntity extends LivingEntity {
 	@Inject(at = @At("HEAD"), method = "findRespawnPosition", cancellable = true)
 	private static Optional<Vec3d> onFindRespawnPosition(ServerWorld world, BlockPos pos, float angle, boolean forced, boolean alive, CallbackInfoReturnable<Optional<Vec3d>> callbackInfoReturnable) {
 
-		BenchBlock.mobRespawnerUpdate();
+		BenchBlock.mobRespawnerReset(true);
 
 		if (world.getBlockState(pos).getBlock() instanceof BenchBlock) {
 			Optional<Vec3d> optional = BenchBlock.findRespawnPosition(EntityType.PLAYER, world, pos);
