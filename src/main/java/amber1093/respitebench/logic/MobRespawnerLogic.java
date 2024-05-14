@@ -3,6 +3,7 @@ package amber1093.respitebench.logic;
 import com.mojang.logging.LogUtils;
 
 import amber1093.respitebench.RespiteBenchClient;
+import amber1093.respitebench.packet.MobRespawnerUpdateC2SPacket;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,7 @@ import org.slf4j.Logger;
 public abstract class MobRespawnerLogic {
     public static final String SPAWN_DATA_KEY = "SpawnData";
 	public static final String CAN_SPAWN_KEY = "CanSpawn";
+	public static final String ACTIVE_KEY = "Active";
 	public static final String SPAWN_POTENTIALS_KEY = "SpawnPotentials";
 	public static final String MAX_CONNECTED_ENTITIES_KEY = "MaxConnectedEntities";
 	public static final String SPAWN_COUNT_KEY = "SpawnCount";
@@ -73,6 +75,7 @@ public abstract class MobRespawnerLogic {
 	private List<UUID> connectedEntitiesUuid = new ArrayList<>();
 	public int maxConnectedEntities = 1;
 
+	public boolean active = true;
     public boolean canSpawn = false;
     public int spawnCount = 1;
     public int spawnRange = 2;
@@ -122,7 +125,7 @@ public abstract class MobRespawnerLogic {
 
     public void serverTick(ServerWorld world, BlockPos pos) {
 
-        if (!this.isPlayerInRange(world, pos) || !this.canSpawn) {
+        if (!this.isPlayerInRange(world, pos) || !this.canSpawn || !this.active) {
             return;
         }
 
@@ -248,6 +251,10 @@ public abstract class MobRespawnerLogic {
 
     public void readNbt(NbtCompound nbt) {
 
+		if (nbt.contains(ACTIVE_KEY)) {
+			this.active = nbt.getBoolean(ACTIVE_KEY);
+		}
+
 		if (nbt.contains(CAN_SPAWN_KEY)) {
 			this.canSpawn = nbt.getBoolean(CAN_SPAWN_KEY);
 		}
@@ -292,6 +299,7 @@ public abstract class MobRespawnerLogic {
     }
 
     public NbtCompound writeNbt(NbtCompound nbt) {
+		nbt.putBoolean(ACTIVE_KEY, this.active);
         nbt.putBoolean(CAN_SPAWN_KEY, this.canSpawn);
         nbt.putShort(SPAWN_COUNT_KEY, (short)this.spawnCount);
         nbt.putShort(REQUIRED_PLAYER_RANGE_KEY, (short)this.requiredPlayerRange);
@@ -393,23 +401,25 @@ public abstract class MobRespawnerLogic {
 		return this.connectedEntitiesUuid.size();
 	}
 
-	public void updateSettings(int maxConnectedEntities, int spawnCount, int requiredPlayerRange, int spawnRange) {
+	public void updateSettings(MobRespawnerUpdateC2SPacket packet) {
 
 		if (maxConnectedEntities >= 0) {
-			this.maxConnectedEntities = maxConnectedEntities;
+			this.maxConnectedEntities = packet.maxConnectedEntities();
 		}
 
 		if (spawnCount >= 0) {
-			this.spawnCount = spawnCount;
+			this.spawnCount = packet.spawnCount();
 		}
 
 		if (requiredPlayerRange >= 0) {
-			this.requiredPlayerRange = requiredPlayerRange;
+			this.requiredPlayerRange = packet.requiredPlayerRange();
 		}
 
 		if (spawnRange >= 0) {
-			this.spawnRange = spawnRange;
+			this.spawnRange = packet.spawnRange();
 		}
+
+		this.active = packet.active();
 	}
 }
 

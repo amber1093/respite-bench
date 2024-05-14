@@ -26,7 +26,7 @@ extends PlayPacketHandler<MobRespawnerUpdateC2SPacket> {
 			MobRespawnerBlockEntity mobRespawnerBlockEntity = (MobRespawnerBlockEntity)blockEntity;
 			MobRespawnerLogic logic = mobRespawnerBlockEntity.getLogic();
 
-			mobRespawnerBlockEntity.updateSettings(packet.maxConnectedEntities(), packet.spawnCount(), packet.requiredPlayerRange(), packet.spawnRange());
+			mobRespawnerBlockEntity.updateSettings(packet);
 			
 			if (packet.shouldClearEntityData()) {
 				logic.setSpawnEntry(null);

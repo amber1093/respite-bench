@@ -4,6 +4,7 @@ import amber1093.respitebench.RespiteBench;
 import amber1093.respitebench.event.EntityDeathCallback;
 import amber1093.respitebench.event.UseBenchCallback;
 import amber1093.respitebench.logic.MobRespawnerLogic;
+import amber1093.respitebench.packet.MobRespawnerUpdateC2SPacket;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -112,7 +113,7 @@ public class MobRespawnerBlockEntity extends BlockEntity {
         return BlockEntityUpdateS2CPacket.create(this);
     }
 	
-	public void updateSettings(int maxConnectedEntities, int spawnCount, int requiredPlayerRange, int spawnRange) {
-		this.logic.updateSettings(maxConnectedEntities, spawnCount, requiredPlayerRange, spawnRange);
+	public void updateSettings(MobRespawnerUpdateC2SPacket packet) {
+		this.logic.updateSettings(packet);
 	}
 }

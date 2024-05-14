@@ -56,7 +56,8 @@ public class MobRespawnerBlock extends SpawnerBlock {
 							nbt.getInt(MobRespawnerLogic.MAX_CONNECTED_ENTITIES_KEY),
 							nbt.getInt(MobRespawnerLogic.SPAWN_COUNT_KEY),
 							nbt.getInt(MobRespawnerLogic.REQUIRED_PLAYER_RANGE_KEY),
-							nbt.getInt(MobRespawnerLogic.SPAWN_RANGE_KEY)
+							nbt.getInt(MobRespawnerLogic.SPAWN_RANGE_KEY),
+							nbt.getBoolean(MobRespawnerLogic.ACTIVE_KEY)
 						)
 					);
 					return ActionResult.PASS;

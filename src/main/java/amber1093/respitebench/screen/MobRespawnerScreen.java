@@ -37,6 +37,7 @@ public class MobRespawnerScreen extends Screen {
 	public int spawnCount;
 	public int requiredPlayerRange;
 	public int spawnRange;
+	public boolean active;
 	public boolean shouldClearEntityData = false;
 	public boolean shouldDisconnectEntities = false;
 
@@ -45,13 +46,14 @@ public class MobRespawnerScreen extends Screen {
 	public TextFieldWidget requiredPlayerRangeWidget;
 	public TextFieldWidget spawnRangeWidget;
 
-	public MobRespawnerScreen(Text title, BlockPos pos, int maxConnectedEntities, int spawnCount, int requiredPlayerRange, int spawnRange) {
+	public MobRespawnerScreen(Text title, BlockPos pos, int maxConnectedEntities, int spawnCount, int requiredPlayerRange, int spawnRange, boolean active) {
 		super(title);
 		this.blockPos = pos;
 		this.maxConnectedEntities = maxConnectedEntities;
 		this.spawnCount = spawnCount;
 		this.requiredPlayerRange = requiredPlayerRange;
 		this.spawnRange = spawnRange;
+		this.active = active;
 	}
 
 	@Override
@@ -245,7 +247,8 @@ public class MobRespawnerScreen extends Screen {
 					this.requiredPlayerRange,
 					this.spawnRange,
 					this.shouldClearEntityData,
-					this.shouldDisconnectEntities
+					this.shouldDisconnectEntities,
+					this.active
 			));
 
 		}
