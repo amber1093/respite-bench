@@ -58,6 +58,7 @@ public abstract class MobRespawnerLogic {
     public static final String SPAWN_DATA_KEY = "SpawnData";
 	public static final String CAN_SPAWN_KEY = "CanSpawn";
 	public static final String ACTIVE_KEY = "Active";
+	public static final String ONE_OFF_KEY = "OneOff";
 	public static final String SPAWN_POTENTIALS_KEY = "SpawnPotentials";
 	public static final String MAX_CONNECTED_ENTITIES_KEY = "MaxConnectedEntities";
 	public static final String SPAWN_COUNT_KEY = "SpawnCount";
@@ -75,8 +76,9 @@ public abstract class MobRespawnerLogic {
 	private List<UUID> connectedEntitiesUuid = new ArrayList<>();
 	public int maxConnectedEntities = 1;
 
-	public boolean active = true;
     public boolean canSpawn = false;
+	public boolean active = true;
+	public boolean oneOff = false;
     public int spawnCount = 1;
     public int spawnRange = 2;
     public int requiredPlayerRange = 16;
@@ -255,6 +257,10 @@ public abstract class MobRespawnerLogic {
 			this.active = nbt.getBoolean(ACTIVE_KEY);
 		}
 
+		if (nbt.contains(ONE_OFF_KEY)) {
+			this.oneOff = nbt.getBoolean(ONE_OFF_KEY);
+		}
+
 		if (nbt.contains(CAN_SPAWN_KEY)) {
 			this.canSpawn = nbt.getBoolean(CAN_SPAWN_KEY);
 		}
@@ -300,6 +306,7 @@ public abstract class MobRespawnerLogic {
 
     public NbtCompound writeNbt(NbtCompound nbt) {
 		nbt.putBoolean(ACTIVE_KEY, this.active);
+		nbt.putBoolean(ONE_OFF_KEY, this.oneOff);
         nbt.putBoolean(CAN_SPAWN_KEY, this.canSpawn);
         nbt.putShort(SPAWN_COUNT_KEY, (short)this.spawnCount);
         nbt.putShort(REQUIRED_PLAYER_RANGE_KEY, (short)this.requiredPlayerRange);
@@ -309,9 +316,9 @@ public abstract class MobRespawnerLogic {
         }
 		nbt.put(SPAWN_POTENTIALS_KEY, MobSpawnerEntry.DATA_POOL_CODEC.encodeStart(NbtOps.INSTANCE, this.spawnPotentials).result().orElseThrow());
 
-		if (this.connectedEntitiesUuid.size() > 0) {
+		if (this.getConnectedEntityAmount() > 0) {
 			NbtList nbtList = new NbtList();
-			for (int i = 0; i < this.connectedEntitiesUuid.size(); i++) {
+			for (int i = 0; i < this.getConnectedEntityAmount(); i++) {
 				NbtCompound nbtCompound = new NbtCompound();
 				nbtCompound.putUuid(String.valueOf(i), this.connectedEntitiesUuid.get(i));
 				nbtList.add(nbtCompound);
@@ -338,10 +345,6 @@ public abstract class MobRespawnerLogic {
         return this.renderedEntity;
     }
 
-	public void resetRenderedEntity() {
-		this.renderedEntity = null;
-	}
-
     public boolean handleStatus(World world, int status) {
         if (status == 1) {
             if (world.isClient) {
@@ -365,12 +368,6 @@ public abstract class MobRespawnerLogic {
 		}
 	}
 
-	public static NbtCompound getPersistentTag() {
-		NbtCompound extraNbt = new NbtCompound(); 
-		extraNbt.putBoolean("PersistenceRequired", true);
-		return extraNbt;
-	}
-
     private MobSpawnerEntry getSpawnEntry(@Nullable World world, Random random, BlockPos pos) {
 		if (this.spawnEntry != null) {
 			return this.spawnEntry;
@@ -383,22 +380,18 @@ public abstract class MobRespawnerLogic {
 		this.spawnEntry = spawnEntry;
 	}
 
-    public abstract void sendStatus(World var1, BlockPos var2, int var3);
-
-    public double getRotation() {
-        return this.rotation;
-    }
-
-	public List<UUID> getConnectedEntitiesUuid() {
-		return this.connectedEntitiesUuid;
+	public static NbtCompound getPersistentTag() {
+		NbtCompound extraNbt = new NbtCompound(); 
+		extraNbt.putBoolean("PersistenceRequired", true);
+		return extraNbt;
 	}
 
 	public boolean removeEntityUuid(UUID uuidToRemove) {
-		return this.connectedEntitiesUuid.remove(uuidToRemove);
-	}
-
-	public int getConnectedEntityAmount() {
-		return this.connectedEntitiesUuid.size();
+		boolean success = this.connectedEntitiesUuid.remove(uuidToRemove);
+		if (success && !this.canSpawn && this.oneOff && this.active && this.getConnectedEntitiesUuid().isEmpty()) {
+			this.active = false;
+		}
+		return success;
 	}
 
 	public void updateSettings(MobRespawnerUpdateC2SPacket packet) {
@@ -420,6 +413,25 @@ public abstract class MobRespawnerLogic {
 		}
 
 		this.active = packet.active();
+		this.oneOff = packet.oneOff();
+	}
+
+    public abstract void sendStatus(World var1, BlockPos var2, int var3);
+
+    public double getRotation() {
+        return this.rotation;
+    }
+
+	public List<UUID> getConnectedEntitiesUuid() {
+		return this.connectedEntitiesUuid;
+	}
+
+	public int getConnectedEntityAmount() {
+		return this.connectedEntitiesUuid.size();
+	}
+
+	public void resetRenderedEntity() {
+		this.renderedEntity = null;
 	}
 }
 

@@ -23,7 +23,7 @@ public class MobRespawnerBlockEntity extends BlockEntity {
 		super(RespiteBench.MOB_RESPAWER_BLOCK_ENTITY_TYPE, pos, state);
 
 		UseBenchCallback.EVENT.register((canSpawn) -> {
-			this.logic.setCanSpawn(this.world, this.pos, canSpawn);
+			this.logic.setCanSpawn(this.getWorld(), this.getPos(), canSpawn);
 			this.markDirty();
 			return this.logic.getConnectedEntitiesUuid();
 		});
@@ -32,6 +32,11 @@ public class MobRespawnerBlockEntity extends BlockEntity {
 			boolean result = this.logic.removeEntityUuid(uuidToRemove);
 			if (result == true) {
 				this.markDirty();
+
+				if (this.getWorld() != null) {
+					BlockState blockState = this.getWorld().getBlockState(this.getPos());
+					this.getWorld().updateListeners(this.getPos(), blockState, blockState, Block.NO_REDRAW);
+				}
 			}
 			return result;
 		});

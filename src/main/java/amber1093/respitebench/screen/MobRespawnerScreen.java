@@ -21,7 +21,7 @@ import net.minecraft.util.math.BlockPos;
 public class MobRespawnerScreen extends Screen {
 
 	private static final int SCREEN_WIDTH = 250;
-	private static final int SCREEN_HEIGHT = 235;
+	private static final int SCREEN_HEIGHT = 245;
 	private static final int TEXTFIELD_WIDGET_WIDTH = 52;
 	private static final int BUTTON_WIDGET_WIDTH = 96;
 	private static final int SHORT_TEXT_WIDGET_WIDTH = 96;
@@ -37,17 +37,19 @@ public class MobRespawnerScreen extends Screen {
 	public int spawnCount;
 	public int requiredPlayerRange;
 	public int spawnRange;
-	public boolean active;
 	public boolean shouldClearEntityData = false;
 	public boolean shouldDisconnectEntities = false;
+	public boolean active;
+	public boolean oneOff;
 
+	public CheckboxWidget activeWidget;
+	public CheckboxWidget oneOffWidget;
 	public TextFieldWidget maxConnectedEntitiesWidget;
 	public TextFieldWidget spawnCountWidget;
 	public TextFieldWidget requiredPlayerRangeWidget;
 	public TextFieldWidget spawnRangeWidget;
-	public CheckboxWidget activeWidget;
 
-	public MobRespawnerScreen(Text title, BlockPos pos, int maxConnectedEntities, int spawnCount, int requiredPlayerRange, int spawnRange, boolean active) {
+	public MobRespawnerScreen(Text title, BlockPos pos, int maxConnectedEntities, int spawnCount, int requiredPlayerRange, int spawnRange, boolean active, boolean oneOff) {
 		super(title);
 		this.blockPos = pos;
 		this.maxConnectedEntities = maxConnectedEntities;
@@ -55,6 +57,7 @@ public class MobRespawnerScreen extends Screen {
 		this.requiredPlayerRange = requiredPlayerRange;
 		this.spawnRange = spawnRange;
 		this.active = active;
+		this.oneOff = oneOff;
 	}
 
 	@Override
@@ -66,7 +69,7 @@ public class MobRespawnerScreen extends Screen {
 		//#region textfield constructors
 		this.maxConnectedEntitiesWidget = new TextFieldWidget(
 			this.textRenderer,
-			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 2),
+			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 3),
 			TEXTFIELD_WIDGET_WIDTH, WIDGET_HEIGHT,
 			Text.translatable("screen.respitebench.mob_respawner.maxconnectedentities")
 		);
@@ -74,7 +77,7 @@ public class MobRespawnerScreen extends Screen {
 
 		this.spawnCountWidget = new TextFieldWidget(
 			this.textRenderer,
-			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 3),
+			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 4),
 			TEXTFIELD_WIDGET_WIDTH, WIDGET_HEIGHT,
 			Text.translatable("screen.respitebench.mob_respawner.spawncount")
 		);
@@ -82,7 +85,7 @@ public class MobRespawnerScreen extends Screen {
 
 		this.requiredPlayerRangeWidget = new TextFieldWidget(
 			this.textRenderer,
-			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 4),
+			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 5),
 			TEXTFIELD_WIDGET_WIDTH, WIDGET_HEIGHT,
 			Text.translatable("screen.respitebench.mob_respawner.requiredplayerrange")
 		);
@@ -90,7 +93,7 @@ public class MobRespawnerScreen extends Screen {
 
 		this.spawnRangeWidget = new TextFieldWidget(
 			this.textRenderer,
-			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 5),
+			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 6),
 			TEXTFIELD_WIDGET_WIDTH, WIDGET_HEIGHT,
 			Text.translatable("screen.respitebench.mob_respawner.spawnrange")
 		);
@@ -106,15 +109,24 @@ public class MobRespawnerScreen extends Screen {
 			this.active
 		);
 
+		oneOffWidget = new CheckboxWidget(
+			rightEdge - WIDGET_HEIGHT,
+			topEdge + (WIDGET_SPACING * 2),
+			WIDGET_HEIGHT, WIDGET_HEIGHT,
+			ScreenTexts.EMPTY,
+			this.oneOff
+		);
+
 		ButtonWidget entityDataClearWidget = (
 			ButtonWidget.builder(
 				Text.translatable("screen.respitebench.mob_respawner.entitydata.clear"),
 				button -> {
 					this.shouldClearEntityData = true;
+					this.cancelled = false;
 					close();
 				}
 			)
-			.dimensions(rightEdge - BUTTON_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 6), BUTTON_WIDGET_WIDTH, WIDGET_HEIGHT)
+			.dimensions(rightEdge - BUTTON_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 7), BUTTON_WIDGET_WIDTH, WIDGET_HEIGHT)
 			.build()
 		);
 
@@ -123,10 +135,11 @@ public class MobRespawnerScreen extends Screen {
 				Text.translatable("screen.respitebench.mob_respawner.connectedentitiesuuid.disconnectall"),
 				button -> {
 					this.shouldDisconnectEntities = true;
+					this.cancelled = false;
 					close();
 				}
 			)
-			.dimensions(rightEdge - BUTTON_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 7), BUTTON_WIDGET_WIDTH, WIDGET_HEIGHT)
+			.dimensions(rightEdge - BUTTON_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 8), BUTTON_WIDGET_WIDTH, WIDGET_HEIGHT)
 			.build()
 		);
 
@@ -170,43 +183,50 @@ public class MobRespawnerScreen extends Screen {
 			this.textRenderer
 		);
 
-		TextWidget maxConnectedEntitiesTextWidget = new TextWidget(
+		TextWidget oneOffTextWidget = new TextWidget(
 			leftEdge, topEdge + (WIDGET_SPACING * 2),
+			LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT,
+			Text.translatable("screen.respitebench.mob_respawner.oneoff"),
+			this.textRenderer
+		);
+		
+		TextWidget maxConnectedEntitiesTextWidget = new TextWidget(
+			leftEdge, topEdge + (WIDGET_SPACING * 3),
 			LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT,
 			Text.translatable("screen.respitebench.mob_respawner.maxconnectedentities"),
 			this.textRenderer
 		);
 
 		TextWidget spawnCountTextWidget = new TextWidget(
-			leftEdge, topEdge + (WIDGET_SPACING * 3),
+			leftEdge, topEdge + (WIDGET_SPACING * 4),
 			LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT,
 			Text.translatable("screen.respitebench.mob_respawner.spawncount"),
 			this.textRenderer
 		);
 
 		TextWidget requiredPlayerRangeTextWidget = new TextWidget(
-			leftEdge, topEdge + (WIDGET_SPACING * 4),
+			leftEdge, topEdge + (WIDGET_SPACING * 5),
 			LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT,
 			Text.translatable("screen.respitebench.mob_respawner.requiredplayerrange"),
 			this.textRenderer
 		);
 
 		TextWidget spawnRangeTextWidget = new TextWidget(
-			leftEdge, topEdge + (WIDGET_SPACING * 5),
+			leftEdge, topEdge + (WIDGET_SPACING * 6),
 			LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT,
 			Text.translatable("screen.respitebench.mob_respawner.spawnrange"),
 			this.textRenderer
 		);
 
 		TextWidget entityDataTextWidget = new TextWidget(
-			leftEdge, topEdge + (WIDGET_SPACING * 6),
+			leftEdge, topEdge + (WIDGET_SPACING * 7),
 			SHORT_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT,
 			Text.translatable("screen.respitebench.mob_respawner.entitydata"),
 			this.textRenderer
 		);
 
 		TextWidget connectedEntitiesTextWidget = new TextWidget(
-			leftEdge, topEdge + (WIDGET_SPACING * 7),
+			leftEdge, topEdge + (WIDGET_SPACING * 8),
 			SHORT_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT,
 			Text.translatable("screen.respitebench.mob_respawner.connectedentitiesuuid"),
 			this.textRenderer
@@ -218,6 +238,7 @@ public class MobRespawnerScreen extends Screen {
 		//set alignments
 		titleTextWidget					.alignCenter();
 		activeTextWidget				.alignLeft();
+		oneOffTextWidget				.alignLeft();
 		maxConnectedEntitiesTextWidget	.alignLeft();
 		spawnCountTextWidget			.alignLeft();
 		requiredPlayerRangeTextWidget	.alignLeft();
@@ -227,6 +248,7 @@ public class MobRespawnerScreen extends Screen {
 
 		//set tooltips
 		activeTextWidget				.setTooltip(getTextWidgetTooltip("active", false));
+		oneOffTextWidget				.setTooltip(getTextWidgetTooltip("oneoff", false));
 		maxConnectedEntitiesTextWidget	.setTooltip(getTextWidgetTooltip("maxconnectedentities", false));
 		spawnCountTextWidget			.setTooltip(getTextWidgetTooltip("spawncount", true));	
 		requiredPlayerRangeTextWidget	.setTooltip(getTextWidgetTooltip("requiredplayerrange", true));	
@@ -236,6 +258,7 @@ public class MobRespawnerScreen extends Screen {
 
 		//set text color
 		activeTextWidget				.setTextColor(TEXT_COLOR);
+		oneOffTextWidget				.setTextColor(TEXT_COLOR);
 		maxConnectedEntitiesTextWidget	.setTextColor(TEXT_COLOR);
 		spawnCountTextWidget			.setTextColor(TEXT_COLOR);
 		requiredPlayerRangeTextWidget	.setTextColor(TEXT_COLOR);
@@ -247,6 +270,7 @@ public class MobRespawnerScreen extends Screen {
 		//add texts
 		addDrawable(titleTextWidget);
 		addDrawable(activeTextWidget);
+		addDrawable(oneOffTextWidget);
 		addDrawable(maxConnectedEntitiesTextWidget);
 		addDrawable(spawnCountTextWidget);
 		addDrawable(requiredPlayerRangeTextWidget);
@@ -256,6 +280,7 @@ public class MobRespawnerScreen extends Screen {
 
 		//add textfields and buttons
 		addDrawableChild(this.activeWidget);
+		addDrawableChild(this.oneOffWidget);
 		addDrawableChild(this.maxConnectedEntitiesWidget);
 		addDrawableChild(this.spawnCountWidget);
 		addDrawableChild(this.requiredPlayerRangeWidget);
@@ -288,6 +313,7 @@ public class MobRespawnerScreen extends Screen {
 			this.spawnRange = (spawnRangeString == "" ? -1 : Integer.parseInt(spawnRangeString.replaceAll("[\\D]", "")));
 
 			this.active = activeWidget.isChecked();
+			this.oneOff = oneOffWidget.isChecked();
 
 			ClientPlayNetworking.send(new MobRespawnerUpdateC2SPacket(
 					this.blockPos,
@@ -297,7 +323,8 @@ public class MobRespawnerScreen extends Screen {
 					this.spawnRange,
 					this.shouldClearEntityData,
 					this.shouldDisconnectEntities,
-					this.active
+					this.active,
+					this.oneOff
 			));
 		}
 		super.close();

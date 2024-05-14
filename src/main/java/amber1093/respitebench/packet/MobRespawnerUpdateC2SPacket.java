@@ -14,7 +14,8 @@ public record MobRespawnerUpdateC2SPacket(
 		int spawnRange,
 		boolean shouldClearEntityData,
 		boolean shouldDisconnectEntities,
-		boolean active
+		boolean active,
+		boolean oneOff
 ) implements FabricPacket {
 
 	public static final PacketType<MobRespawnerUpdateC2SPacket> TYPE = (
@@ -33,6 +34,7 @@ public record MobRespawnerUpdateC2SPacket(
 			buf.readInt(),
 			buf.readBoolean(),
 			buf.readBoolean(),
+			buf.readBoolean(),
 			buf.readBoolean()
 		);
 	}
@@ -47,6 +49,7 @@ public record MobRespawnerUpdateC2SPacket(
 		buf.writeBoolean(shouldClearEntityData);
 		buf.writeBoolean(shouldDisconnectEntities);
 		buf.writeBoolean(active);
+		buf.writeBoolean(oneOff);
 	}
 
 	@Override
