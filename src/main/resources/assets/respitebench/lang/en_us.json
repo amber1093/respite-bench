@@ -8,7 +8,12 @@
 	"itemgroup.respitebench": "Respite Bench",
 
 
+
 	"screen.respitebench.mob_respawner": "Mob Respawner Settings",
+
+	"screen.respitebench.mob_respawner.active": "Active",
+	"screen.respitebench.mob_respawner.active.desc1": "Enable/disable all spawns from this block.",
+	"screen.respitebench.mob_respawner.active.desc2": "NBT tag: Active\nType: boolean\nDefault: true",
 
 	"screen.respitebench.mob_respawner.maxconnectedentities": "Max spawn amount",
 	"screen.respitebench.mob_respawner.maxconnectedentities.desc1": "The respawner will stop after spawning this many mobs.",
@@ -37,6 +42,7 @@
 	"screen.respitebench.mob_respawner.connectedentitiesuuid.disconnectall": "Disconnect all",
 
 	"screen.respitebench.mob_respawner.sameasvanillaspawner": " (Same behavior as vanilla spawner)",
+
 
 
 	"text.autoconfig.respitebench.title": "Respite Bench Config",
