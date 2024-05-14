@@ -4,6 +4,7 @@ import amber1093.respitebench.packet.MobRespawnerUpdateC2SPacket;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
@@ -62,9 +64,10 @@ public class MobRespawnerScreen extends Screen {
 
 	@Override
 	protected void init() {
-		int leftEdge = getLeftEdge(width);
-		int rightEdge = getRightEdge(width);
-		int topEdge = getTopEdge(height);
+		int leftEdge = getLeftEdge(this.width);
+		int rightEdge = getRightEdge(this.width);
+		int topEdge = getTopEdge(this.height);
+
 
 		//#region textfield constructors
 		this.maxConnectedEntitiesWidget = new TextFieldWidget(
@@ -169,114 +172,24 @@ public class MobRespawnerScreen extends Screen {
 		);
 		//#endregion
 
-		//#region text constructors
+
+		//title text
 		TextWidget titleTextWidget = new TextWidget(
 			leftEdge, topEdge,
 			SCREEN_WIDTH, WIDGET_HEIGHT,
 			title, this.textRenderer
 		);
 
-		TextWidget activeTextWidget = new TextWidget(
-			leftEdge, topEdge + WIDGET_SPACING,
-			LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.translatable("screen.respitebench.mob_respawner.active"),
-			this.textRenderer
-		);
-
-		TextWidget oneOffTextWidget = new TextWidget(
-			leftEdge, topEdge + (WIDGET_SPACING * 2),
-			LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.translatable("screen.respitebench.mob_respawner.oneoff"),
-			this.textRenderer
-		);
-		
-		TextWidget maxConnectedEntitiesTextWidget = new TextWidget(
-			leftEdge, topEdge + (WIDGET_SPACING * 3),
-			LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.translatable("screen.respitebench.mob_respawner.maxconnectedentities"),
-			this.textRenderer
-		);
-
-		TextWidget spawnCountTextWidget = new TextWidget(
-			leftEdge, topEdge + (WIDGET_SPACING * 4),
-			LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.translatable("screen.respitebench.mob_respawner.spawncount"),
-			this.textRenderer
-		);
-
-		TextWidget requiredPlayerRangeTextWidget = new TextWidget(
-			leftEdge, topEdge + (WIDGET_SPACING * 5),
-			LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.translatable("screen.respitebench.mob_respawner.requiredplayerrange"),
-			this.textRenderer
-		);
-
-		TextWidget spawnRangeTextWidget = new TextWidget(
-			leftEdge, topEdge + (WIDGET_SPACING * 6),
-			LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.translatable("screen.respitebench.mob_respawner.spawnrange"),
-			this.textRenderer
-		);
-
-		TextWidget entityDataTextWidget = new TextWidget(
-			leftEdge, topEdge + (WIDGET_SPACING * 7),
-			SHORT_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.translatable("screen.respitebench.mob_respawner.entitydata"),
-			this.textRenderer
-		);
-
-		TextWidget connectedEntitiesTextWidget = new TextWidget(
-			leftEdge, topEdge + (WIDGET_SPACING * 8),
-			SHORT_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.translatable("screen.respitebench.mob_respawner.connectedentitiesuuid"),
-			this.textRenderer
-		);
-		//#endregion
-
-		//#region text settings
-
-		//set alignments
-		titleTextWidget					.alignCenter();
-		activeTextWidget				.alignLeft();
-		oneOffTextWidget				.alignLeft();
-		maxConnectedEntitiesTextWidget	.alignLeft();
-		spawnCountTextWidget			.alignLeft();
-		requiredPlayerRangeTextWidget	.alignLeft();
-		spawnRangeTextWidget			.alignLeft();
-		entityDataTextWidget			.alignLeft();
-		connectedEntitiesTextWidget		.alignLeft();
-
-		//set tooltips
-		activeTextWidget				.setTooltip(getTextWidgetTooltip("active", false));
-		oneOffTextWidget				.setTooltip(getTextWidgetTooltip("oneoff", false));
-		maxConnectedEntitiesTextWidget	.setTooltip(getTextWidgetTooltip("maxconnectedentities", false));
-		spawnCountTextWidget			.setTooltip(getTextWidgetTooltip("spawncount", true));	
-		requiredPlayerRangeTextWidget	.setTooltip(getTextWidgetTooltip("requiredplayerrange", true));	
-		spawnRangeTextWidget			.setTooltip(getTextWidgetTooltip("spawnrange", true));	
-		entityDataTextWidget			.setTooltip(getTextWidgetTooltip("entitydata", false));	
-		connectedEntitiesTextWidget		.setTooltip(getTextWidgetTooltip("connectedentitiesuuid", false));
-
-		//set text color
-		activeTextWidget				.setTextColor(TEXT_COLOR);
-		oneOffTextWidget				.setTextColor(TEXT_COLOR);
-		maxConnectedEntitiesTextWidget	.setTextColor(TEXT_COLOR);
-		spawnCountTextWidget			.setTextColor(TEXT_COLOR);
-		requiredPlayerRangeTextWidget	.setTextColor(TEXT_COLOR);
-		spawnRangeTextWidget			.setTextColor(TEXT_COLOR);
-		entityDataTextWidget			.setTextColor(TEXT_COLOR);
-		connectedEntitiesTextWidget		.setTextColor(TEXT_COLOR);
-		//#endregion
-
 		//add texts
 		addDrawable(titleTextWidget);
-		addDrawable(activeTextWidget);
-		addDrawable(oneOffTextWidget);
-		addDrawable(maxConnectedEntitiesTextWidget);
-		addDrawable(spawnCountTextWidget);
-		addDrawable(requiredPlayerRangeTextWidget);
-		addDrawable(spawnRangeTextWidget);
-		addDrawable(entityDataTextWidget);
-		addDrawable(connectedEntitiesTextWidget);
+		addDrawable(getTextWidget(leftEdge, topEdge, LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 1, "active", 					false, this.textRenderer));
+		addDrawable(getTextWidget(leftEdge, topEdge, LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 2, "oneoff", 					false, this.textRenderer));
+		addDrawable(getTextWidget(leftEdge, topEdge, LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 3, "maxconnectedentities", 	false, this.textRenderer));
+		addDrawable(getTextWidget(leftEdge, topEdge, LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 4, "spawncount", 				true, this.textRenderer));
+		addDrawable(getTextWidget(leftEdge, topEdge, LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 5, "requiredplayerrange", 	true, this.textRenderer));
+		addDrawable(getTextWidget(leftEdge, topEdge, LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 6, "spawnrange", 				true, this.textRenderer));
+		addDrawable(getTextWidget(leftEdge, topEdge, SHORT_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 7, "entitydata", 			false, this.textRenderer));
+		addDrawable(getTextWidget(leftEdge, topEdge, SHORT_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 8, "connectedentitiesuuid", 	false, this.textRenderer));
 
 		//add textfields and buttons
 		addDrawableChild(this.activeWidget);
@@ -303,14 +216,14 @@ public class MobRespawnerScreen extends Screen {
 
 			//parse player input then send it to the server
 			String maxConnectedEntitiesString = this.maxConnectedEntitiesWidget.getText();
-			String spawnCountString = this.spawnCountWidget.getText();
-			String requiredPlayerRangeString = this.requiredPlayerRangeWidget.getText();
-			String spawnRangeString = this.spawnRangeWidget.getText();
+			String spawnCountString = 			this.spawnCountWidget.getText();
+			String requiredPlayerRangeString = 	this.requiredPlayerRangeWidget.getText();
+			String spawnRangeString = 			this.spawnRangeWidget.getText();
 
-			this.maxConnectedEntities = (maxConnectedEntitiesString == "" ? -1 : Integer.parseInt(maxConnectedEntitiesString.replaceAll("[\\D]", "")));
-			this.spawnCount = (spawnCountString == "" ? -1 : Integer.parseInt(spawnCountString.replaceAll("[\\D]", "")));
-			this.requiredPlayerRange = (requiredPlayerRangeString == "" ? -1 : Integer.parseInt(requiredPlayerRangeString.replaceAll("[\\D]", "")));
-			this.spawnRange = (spawnRangeString == "" ? -1 : Integer.parseInt(spawnRangeString.replaceAll("[\\D]", "")));
+			this.maxConnectedEntities =	(maxConnectedEntitiesString ==	"" ? -1 : Integer.parseInt(maxConnectedEntitiesString	.replaceAll("[\\D]", "")));
+			this.spawnCount =			(spawnCountString == 			"" ? -1 : Integer.parseInt(spawnCountString				.replaceAll("[\\D]", "")));
+			this.requiredPlayerRange =	(requiredPlayerRangeString ==	"" ? -1 : Integer.parseInt(requiredPlayerRangeString	.replaceAll("[\\D]", "")));
+			this.spawnRange =			(spawnRangeString ==			"" ? -1 : Integer.parseInt(spawnRangeString				.replaceAll("[\\D]", "")));
 
 			this.active = activeWidget.isChecked();
 			this.oneOff = oneOffWidget.isChecked();
@@ -330,13 +243,31 @@ public class MobRespawnerScreen extends Screen {
 		super.close();
 	}
 
+	protected static TextWidget getTextWidget(int x, int y, int width, int height, int index, String key, boolean sameBehaviorAsVanillaSpawner, TextRenderer textRenderer) {
+		TextWidget widget = new TextWidget(
+			x,
+			y + (WIDGET_SPACING * index),
+			width, height,
+			getTextFromKey(key),
+			textRenderer
+		);
+		widget.alignLeft();
+		widget.setTextColor(TEXT_COLOR);
+		widget.setTooltip(getTextWidgetTooltip(key, sameBehaviorAsVanillaSpawner));
+		return widget;
+	}
+
 	protected static Tooltip getTextWidgetTooltip(String key, boolean sameBehaviorAsVanillaSpawner) {
 		return Tooltip.of(
-			Text.translatable("screen.respitebench.mob_respawner." + key).formatted(Formatting.AQUA)
-			.append(ScreenTexts.LINE_BREAK).append(ScreenTexts.LINE_BREAK).append(Text.translatable("screen.respitebench.mob_respawner." + key + ".desc1").formatted(Formatting.WHITE))
-			.append(Text.translatable(sameBehaviorAsVanillaSpawner ? "screen.respitebench.mob_respawner.sameasvanillaspawner" : "").formatted(Formatting.GRAY).formatted(Formatting.ITALIC))
-			.append(ScreenTexts.LINE_BREAK).append(ScreenTexts.LINE_BREAK).append(Text.translatable("screen.respitebench.mob_respawner." + key + ".desc2").formatted(Formatting.DARK_GRAY))
+			getTextFromKey(key).formatted(Formatting.AQUA)
+				.append(ScreenTexts.LINE_BREAK).append(ScreenTexts.LINE_BREAK).append(Text.translatable("screen.respitebench.mob_respawner." + key + ".desc1").formatted(Formatting.WHITE))
+				.append(Text.translatable(sameBehaviorAsVanillaSpawner ? "screen.respitebench.mob_respawner.sameasvanillaspawner" : "").formatted(Formatting.GRAY).formatted(Formatting.ITALIC))
+				.append(ScreenTexts.LINE_BREAK).append(ScreenTexts.LINE_BREAK).append(Text.translatable("screen.respitebench.mob_respawner." + key + ".desc2").formatted(Formatting.DARK_GRAY))
 		);
+	}
+
+	protected static MutableText getTextFromKey(String key) {
+		return Text.translatable("screen.respitebench.mob_respawner." + key);
 	}
 
 	protected static int getLeftEdge(int width) {
