@@ -12,40 +12,41 @@
 	"screen.respitebench.mob_respawner": "Mob Respawner Settings",
 
 	"screen.respitebench.mob_respawner.enabled": "Enabled",
-	"screen.respitebench.mob_respawner.enabled.desc1": "Enable/disable all spawns from this block.",
-	"screen.respitebench.mob_respawner.enabled.desc2": "NBT tag: Enabled\nType: boolean\nDefault: true",
+	"screen.respitebench.mob_respawner.enabled.description": "Enable/disable all spawns from this block.",
+	"screen.respitebench.mob_respawner.enabled.nbtinfo": "NBT tag: Enabled\nType: boolean\nDefault: true",
 	
 	"screen.respitebench.mob_respawner.oneoff": "One-off",
-	"screen.respitebench.mob_respawner.oneoff.desc1": "Makes this block disable itself after all of its mobs are defeated for the first time. Using a bench or dying will reset the progress towards this.",
-	"screen.respitebench.mob_respawner.oneoff.desc2": "NBT tag: OneOff\nType: boolean\nDefault: false",
+	"screen.respitebench.mob_respawner.oneoff.description": "Makes this block disable itself after all of its mobs are defeated for the first time.\n\nUsing a bench or dying will reset the progress towards this.",
+	"screen.respitebench.mob_respawner.oneoff.nbtinfo": "NBT tag: OneOff\nType: boolean\nDefault: false",
 
 	"screen.respitebench.mob_respawner.maxconnectedentities": "Max spawn amount",
-	"screen.respitebench.mob_respawner.maxconnectedentities.desc1": "The respawner will stop after spawning this many mobs.",
-	"screen.respitebench.mob_respawner.maxconnectedentities.desc2": "NBT tag: MaxConnectedEntities\nType: int\nDefault: 1",
+	"screen.respitebench.mob_respawner.maxconnectedentities.description": "The respawner will stop after spawning this many mobs.",
+	"screen.respitebench.mob_respawner.maxconnectedentities.nbtinfo": "NBT tag: MaxConnectedEntities\nType: int\nDefault: 1",
 
 	"screen.respitebench.mob_respawner.spawncount": "Spawn attempts per tick",
-	"screen.respitebench.mob_respawner.spawncount.desc1": "If it is allowed to, the respawner will attempt to spawn this many mobs every tick. Warning: High numbers can cause lag.",
-	"screen.respitebench.mob_respawner.spawncount.desc2": "NBT tag: SpawnCount\nType: int\nDefault: 1",
+	"screen.respitebench.mob_respawner.spawncount.description": "If it can, the respawner will attempt to spawn this many mobs every tick.",
+	"screen.respitebench.mob_respawner.spawncount.nbtinfo": "NBT tag: SpawnCount\nType: int\nDefault: 1",
 
 	"screen.respitebench.mob_respawner.requiredplayerrange": "Required player range",
-	"screen.respitebench.mob_respawner.requiredplayerrange.desc1": "The player needs to be this close to the respawner before it can spawn anything.",
-	"screen.respitebench.mob_respawner.requiredplayerrange.desc2": "NBT tag: RequiredPlayerRange\nType: int\nDefault: 16",
+	"screen.respitebench.mob_respawner.requiredplayerrange.description": "The player needs to be this close to the respawner before it can spawn anything.",
+	"screen.respitebench.mob_respawner.requiredplayerrange.nbtinfo": "NBT tag: RequiredPlayerRange\nType: int\nDefault: 16",
 
 	"screen.respitebench.mob_respawner.spawnrange": "Spawn range",
-	"screen.respitebench.mob_respawner.spawnrange.desc1": "The respawner will only spawn mobs inside this range.",
-	"screen.respitebench.mob_respawner.spawnrange.desc2": "NBT tag: SpawnRange\nType: int\nDefault: 2",
+	"screen.respitebench.mob_respawner.spawnrange.description": "The respawner will only spawn mobs inside this range.",
+	"screen.respitebench.mob_respawner.spawnrange.nbtinfo": "NBT tag: SpawnRange\nType: int\nDefault: 2",
 	
 	"screen.respitebench.mob_respawner.entitydata": "Entity data",
-	"screen.respitebench.mob_respawner.entitydata.desc1": "Defines what the respawner will spawn.\n\nTip: The respawner can read NBT data from custom spawn eggs. Using multiple will cause their NBT to get mixed up inside the respawner. Try it out!",
-	"screen.respitebench.mob_respawner.entitydata.desc2": "NBT tag: SpawnData\nType: compound{entity:{...}}\nDefault: empty",
+	"screen.respitebench.mob_respawner.entitydata.description": "Defines what the respawner will spawn.\n\nTip: The respawner can read NBT data from custom spawn eggs. Using multiple will cause their NBT to get mixed up inside the respawner. Try it out!",
+	"screen.respitebench.mob_respawner.entitydata.nbtinfo": "NBT tag: SpawnData\nType: compound{entity:{...}}\nDefault: empty",
 	"screen.respitebench.mob_respawner.entitydata.clear": "Clear",
 
 	"screen.respitebench.mob_respawner.connectedentitiesuuid": "Connected entities",
-	"screen.respitebench.mob_respawner.connectedentitiesuuid.desc1": "UUID list of entities spawned by this block. Used to keep track of entities spawned by this block.",
-	"screen.respitebench.mob_respawner.connectedentitiesuuid.desc2": "NBT tag: ConnectedEntitiesUuid\nType: compound[{UUID}, ...]\nDefault: empty",
+	"screen.respitebench.mob_respawner.connectedentitiesuuid.description": "UUID list of entities spawned by this block. Used to keep track of the ones that are still alive.",
+	"screen.respitebench.mob_respawner.connectedentitiesuuid.nbtinfo": "NBT tag: ConnectedEntitiesUuid\nType: compound[{UUID}, ...]\nDefault: empty",
 	"screen.respitebench.mob_respawner.connectedentitiesuuid.disconnectall": "Disconnect all",
 
 	"screen.respitebench.mob_respawner.sameasvanillaspawner": " (Same behavior as vanilla spawner)",
+	"screen.respitebench.mob_respawner.lagwarning": "\n\nHigh values can cause lag.",
 
 
 

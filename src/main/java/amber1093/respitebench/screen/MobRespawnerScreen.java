@@ -97,14 +97,14 @@ public class MobRespawnerScreen extends Screen {
 		Vector4i longTextDimensions =	new Vector4i(leftEdge, topEdge, LONG_TEXT_WIDTH, WIDGET_HEIGHT);
 		Vector4i shortTextDimensions =	new Vector4i(leftEdge, topEdge, SHORT_TEXT_WIDTH, WIDGET_HEIGHT);
 
-		addDrawable(getTextWidget(longTextDimensions, 1, "enabled", false, this.textRenderer));
-		addDrawable(getTextWidget(longTextDimensions, 2, "oneoff", false, this.textRenderer));
-		addDrawable(getTextWidget(longTextDimensions, 3, "maxconnectedentities", false, this.textRenderer));
-		addDrawable(getTextWidget(longTextDimensions, 4, "spawncount", true, this.textRenderer));
-		addDrawable(getTextWidget(longTextDimensions, 5, "requiredplayerrange", true, this.textRenderer));
-		addDrawable(getTextWidget(longTextDimensions, 6, "spawnrange", true, this.textRenderer));
-		addDrawable(getTextWidget(shortTextDimensions, 7, "entitydata", false, this.textRenderer));
-		addDrawable(getTextWidget(shortTextDimensions, 8, "connectedentitiesuuid", false, this.textRenderer));
+		addDrawable(getTextWidget(longTextDimensions, 1, "enabled",					false, false, this.textRenderer));
+		addDrawable(getTextWidget(longTextDimensions, 2, "oneoff",					false, false, this.textRenderer));
+		addDrawable(getTextWidget(longTextDimensions, 3, "maxconnectedentities",	false, true, this.textRenderer));
+		addDrawable(getTextWidget(longTextDimensions, 4, "spawncount",				true, true, this.textRenderer));
+		addDrawable(getTextWidget(longTextDimensions, 5, "requiredplayerrange",		true, false, this.textRenderer));
+		addDrawable(getTextWidget(longTextDimensions, 6, "spawnrange",				true, false, this.textRenderer));
+		addDrawable(getTextWidget(shortTextDimensions, 7, "entitydata",				false, false, this.textRenderer));
+		addDrawable(getTextWidget(shortTextDimensions, 8, "connectedentitiesuuid",	false, false, this.textRenderer));
 
 		//add checkboxes
 		addDrawableChild(this.enabledWidget);
@@ -226,8 +226,8 @@ public class MobRespawnerScreen extends Screen {
 		return widget;
 	}
 
-	protected static TextWidget getTextWidget(Vector4i dimensions, int row, String key, boolean sameAsVanillaSpawner, TextRenderer textRenderer) {
-		return getTextWidget(dimensions, row, getTextFromKey(key), getTooltip(key, sameAsVanillaSpawner), textRenderer);
+	protected static TextWidget getTextWidget(Vector4i dimensions, int row, String key, boolean sameAsVanilla, boolean lagWarning, TextRenderer textRenderer) {
+		return getTextWidget(dimensions, row, getTextFromKey(key), getTooltip(key, sameAsVanilla, lagWarning), textRenderer);
 	}
 
 	protected static TextWidget getTextWidget(Vector4i dimensions, int row, Text text, Tooltip tooltip, TextRenderer textRenderer) {
@@ -245,12 +245,13 @@ public class MobRespawnerScreen extends Screen {
 		return widget;
 	}
 
-	protected static Tooltip getTooltip(String key, boolean sameAsVanillaSpawner) {
+	protected static Tooltip getTooltip(String key, boolean sameAsVanilla, boolean lagWarning) {
 		return Tooltip.of(
 			getTextFromKey(key).formatted(Formatting.AQUA)
-				.append(ScreenTexts.LINE_BREAK).append(ScreenTexts.LINE_BREAK).append(getTextFromKey(key + ".desc1").formatted(Formatting.WHITE))
-				.append((sameAsVanillaSpawner ? getTextFromKey("sameasvanillaspawner") : Text.empty()).formatted(Formatting.GRAY).formatted(Formatting.ITALIC))
-				.append(ScreenTexts.LINE_BREAK).append(ScreenTexts.LINE_BREAK).append(getTextFromKey(key + ".desc2").formatted(Formatting.DARK_GRAY))
+				.append(Text.literal("\n\n")).append(getTextFromKey(key + ".description")			.formatted(Formatting.WHITE))
+				.append((sameAsVanilla ? getTextFromKey("sameasvanillaspawner") : Text.empty())	.formatted(Formatting.GRAY).formatted(Formatting.ITALIC))
+				.append((lagWarning ? getTextFromKey("lagwarning") : Text.empty())				.formatted(Formatting.YELLOW))
+				.append(Text.literal("\n\n")).append(getTextFromKey(key + ".nbtinfo")				.formatted(Formatting.DARK_GRAY))
 		);
 	}
 
