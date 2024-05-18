@@ -3,6 +3,7 @@ package amber1093.respitebench.logic;
 import com.mojang.logging.LogUtils;
 
 import amber1093.respitebench.RespiteBenchClient;
+import amber1093.respitebench.event.DiscardConnectedEntityCallback;
 import amber1093.respitebench.packet.MobRespawnerUpdateC2SPacket;
 
 import java.util.ArrayList;
@@ -411,6 +412,10 @@ public abstract class MobRespawnerLogic {
 
 		if (spawnRange >= 0) {
 			this.spawnRange = packet.spawnRange();
+		}
+
+		if (this.enabled == true && packet.enabled() == false) {
+			DiscardConnectedEntityCallback.EVENT.invoker().discardConnectedEntities(getConnectedEntitiesUuid());
 		}
 
 		this.enabled = packet.enabled();

@@ -8,9 +8,9 @@ import net.fabricmc.fabric.api.event.EventFactory;
 
 /**
  * <p>Used to discard entities connected to mob respawners.</p>
- * <p>Called whenever a player uses a bench.</p>
+ * <p>Called whenever a player respawns, uses a bench or disables a mob respawner.</p>
  * 
- * <p>Works in combination with {@link UseBenchCallback} because this depends on the {@code List<UUID>} provided by it.
+ * <p>Requires a {@code List<UUID>} provided by {@link UseBenchCallback} or directly by a {@link MobRespawnerLogic}
  */
 public interface DiscardConnectedEntityCallback {
 
