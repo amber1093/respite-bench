@@ -1,5 +1,7 @@
 package amber1093.respitebench.screen;
 
+import org.joml.Vector4i;
+
 import amber1093.respitebench.packet.MobRespawnerUpdateC2SPacket;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,6 +14,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.gui.widget.ButtonWidget.PressAction;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -24,10 +27,11 @@ public class MobRespawnerScreen extends Screen {
 
 	private static final int SCREEN_WIDTH = 250;
 	private static final int SCREEN_HEIGHT = 245;
-	private static final int TEXTFIELD_WIDGET_WIDTH = 52;
-	private static final int BUTTON_WIDGET_WIDTH = 96;
-	private static final int SHORT_TEXT_WIDGET_WIDTH = 96;
-	private static final int LONG_TEXT_WIDGET_WIDTH = 150;
+	private static final int TEXTFIELD_WIDTH = 52;
+	private static final int BUTTON_WIDTH = 96;
+	private static final int WIDE_BUTTON_WIDTH = (SCREEN_WIDTH / 2) - 4;
+	private static final int SHORT_TEXT_WIDTH = 96;
+	private static final int LONG_TEXT_WIDTH = 150;
 	private static final int WIDGET_HEIGHT = 20;
 	private static final int WIDGET_SPACING = 25;
 	private static final int TEXT_COLOR = 10526880;
@@ -67,43 +71,9 @@ public class MobRespawnerScreen extends Screen {
 		int leftEdge = getLeftEdge(this.width);
 		int rightEdge = getRightEdge(this.width);
 		int topEdge = getTopEdge(this.height);
+		int bottomEdge = getBottomEdge(this.height);
 
-
-		//#region textfield constructors
-		this.maxConnectedEntitiesWidget = new TextFieldWidget(
-			this.textRenderer,
-			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 3),
-			TEXTFIELD_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.translatable("screen.respitebench.mob_respawner.maxconnectedentities")
-		);
-		this.maxConnectedEntitiesWidget.setText(String.valueOf(this.maxConnectedEntities));
-
-		this.spawnCountWidget = new TextFieldWidget(
-			this.textRenderer,
-			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 4),
-			TEXTFIELD_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.translatable("screen.respitebench.mob_respawner.spawncount")
-		);
-		this.spawnCountWidget.setText(String.valueOf(this.spawnCount));
-
-		this.requiredPlayerRangeWidget = new TextFieldWidget(
-			this.textRenderer,
-			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 5),
-			TEXTFIELD_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.translatable("screen.respitebench.mob_respawner.requiredplayerrange")
-		);
-		this.requiredPlayerRangeWidget.setText(String.valueOf(this.requiredPlayerRange));
-
-		this.spawnRangeWidget = new TextFieldWidget(
-			this.textRenderer,
-			rightEdge - TEXTFIELD_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 6),
-			TEXTFIELD_WIDGET_WIDTH, WIDGET_HEIGHT,
-			Text.translatable("screen.respitebench.mob_respawner.spawnrange")
-		);
-		this.spawnRangeWidget.setText(String.valueOf(this.spawnRange));
-		//#endregion
-		
-		//#region button constructors
+		//checkbox constructors
 		activeWidget = new CheckboxWidget(
 			rightEdge - WIDGET_HEIGHT,
 			topEdge + WIDGET_SPACING,
@@ -120,88 +90,68 @@ public class MobRespawnerScreen extends Screen {
 			this.oneOff
 		);
 
-		ButtonWidget entityDataClearWidget = (
-			ButtonWidget.builder(
-				Text.translatable("screen.respitebench.mob_respawner.entitydata.clear"),
-				button -> {
-					this.shouldClearEntityData = true;
-					this.cancelled = false;
-					close();
-				}
-			)
-			.dimensions(rightEdge - BUTTON_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 7), BUTTON_WIDGET_WIDTH, WIDGET_HEIGHT)
-			.build()
-		);
+		//add title
+		addDrawable(new TextWidget(leftEdge, topEdge, SCREEN_WIDTH, WIDGET_HEIGHT, title, this.textRenderer));
 
-		ButtonWidget connectedEntitiesKillAllWidget = (
-			ButtonWidget.builder(
-				Text.translatable("screen.respitebench.mob_respawner.connectedentitiesuuid.disconnectall"),
-				button -> {
-					this.shouldDisconnectEntities = true;
-					this.cancelled = false;
-					close();
-				}
-			)
-			.dimensions(rightEdge - BUTTON_WIDGET_WIDTH, topEdge + (WIDGET_SPACING * 8), BUTTON_WIDGET_WIDTH, WIDGET_HEIGHT)
-			.build()
-		);
+		//add text
+		Vector4i longTextDimensions =	new Vector4i(leftEdge, topEdge, LONG_TEXT_WIDTH, WIDGET_HEIGHT);
+		Vector4i shortTextDimensions =	new Vector4i(leftEdge, topEdge, SHORT_TEXT_WIDTH, WIDGET_HEIGHT);
 
-		int finishButtonWidth = (SCREEN_WIDTH / 2) - 4;
-		ButtonWidget doneButtonWidget = (
-			ButtonWidget.builder(
-				ScreenTexts.DONE,
-				button -> {
-					this.cancelled = false;
-					close();
-				}
-			)
-			.dimensions(leftEdge, getBottomEdge(height) - WIDGET_HEIGHT, finishButtonWidth, WIDGET_HEIGHT)
-			.build()
-		);
+		addDrawable(getTextWidget(longTextDimensions, 1, "active", false, this.textRenderer));
+		addDrawable(getTextWidget(longTextDimensions, 2, "oneoff", false, this.textRenderer));
+		addDrawable(getTextWidget(longTextDimensions, 3, "maxconnectedentities", false, this.textRenderer));
+		addDrawable(getTextWidget(longTextDimensions, 4, "spawncount", true, this.textRenderer));
+		addDrawable(getTextWidget(longTextDimensions, 5, "requiredplayerrange", true, this.textRenderer));
+		addDrawable(getTextWidget(longTextDimensions, 6, "spawnrange", true, this.textRenderer));
+		addDrawable(getTextWidget(shortTextDimensions, 7, "entitydata", false, this.textRenderer));
+		addDrawable(getTextWidget(shortTextDimensions, 8, "connectedentitiesuuid", false, this.textRenderer));
 
-		ButtonWidget cancelButtonWidget = (
-			ButtonWidget.builder(
-				ScreenTexts.CANCEL,
-				button -> {
-					this.cancelled = true;
-					close();
-				}
-			)
-			.dimensions(rightEdge - finishButtonWidth, getBottomEdge(height) - WIDGET_HEIGHT, finishButtonWidth, WIDGET_HEIGHT)
-			.build()
-		);
-		//#endregion
-
-
-		//title text
-		TextWidget titleTextWidget = new TextWidget(
-			leftEdge, topEdge,
-			SCREEN_WIDTH, WIDGET_HEIGHT,
-			title, this.textRenderer
-		);
-
-		//add texts
-		addDrawable(titleTextWidget);
-		addDrawable(getTextWidget(leftEdge, topEdge, LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 1, "active", 					false, this.textRenderer));
-		addDrawable(getTextWidget(leftEdge, topEdge, LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 2, "oneoff", 					false, this.textRenderer));
-		addDrawable(getTextWidget(leftEdge, topEdge, LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 3, "maxconnectedentities", 	false, this.textRenderer));
-		addDrawable(getTextWidget(leftEdge, topEdge, LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 4, "spawncount", 				true, this.textRenderer));
-		addDrawable(getTextWidget(leftEdge, topEdge, LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 5, "requiredplayerrange", 	true, this.textRenderer));
-		addDrawable(getTextWidget(leftEdge, topEdge, LONG_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 6, "spawnrange", 				true, this.textRenderer));
-		addDrawable(getTextWidget(leftEdge, topEdge, SHORT_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 7, "entitydata", 			false, this.textRenderer));
-		addDrawable(getTextWidget(leftEdge, topEdge, SHORT_TEXT_WIDGET_WIDTH, WIDGET_HEIGHT, 8, "connectedentitiesuuid", 	false, this.textRenderer));
-
-		//add textfields and buttons
+		//add checkboxes
 		addDrawableChild(this.activeWidget);
 		addDrawableChild(this.oneOffWidget);
+
+
+		//add textfields
+		Vector4i textFieldDimensions =	new Vector4i(rightEdge - TEXTFIELD_WIDTH, topEdge, TEXTFIELD_WIDTH, WIDGET_HEIGHT);
+
+		this.maxConnectedEntitiesWidget =	getTextFieldWidget(textFieldDimensions, 3, this.maxConnectedEntities, "maxconnectedentities", this.textRenderer);
+		this.spawnCountWidget =				getTextFieldWidget(textFieldDimensions, 4, this.spawnCount, "spawncount", this.textRenderer);
+		this.requiredPlayerRangeWidget =	getTextFieldWidget(textFieldDimensions, 5, this.requiredPlayerRange, "requiredplayerrange", this.textRenderer);
+		this.spawnRangeWidget =				getTextFieldWidget(textFieldDimensions, 6, this.spawnRange, "spawnrange", this.textRenderer);
+
 		addDrawableChild(this.maxConnectedEntitiesWidget);
 		addDrawableChild(this.spawnCountWidget);
 		addDrawableChild(this.requiredPlayerRangeWidget);
 		addDrawableChild(this.spawnRangeWidget);
-		addDrawableChild(entityDataClearWidget);
-		addDrawableChild(connectedEntitiesKillAllWidget);
-		addDrawableChild(doneButtonWidget);
-		addDrawableChild(cancelButtonWidget);
+
+
+		//add buttons
+		Vector4i buttonDimensions = new Vector4i(rightEdge - BUTTON_WIDTH, topEdge, BUTTON_WIDTH, WIDGET_HEIGHT);
+
+		addDrawableChild(getButtonWidget(buttonDimensions, 7, "entitydata.clear", button -> {
+			this.shouldClearEntityData = true;
+			this.cancelled = false;
+			close();
+		}));
+
+		addDrawableChild(getButtonWidget(buttonDimensions, 8, "connectedentitiesuuid.disconnectall", button -> {
+			this.shouldDisconnectEntities = true;
+			this.cancelled = false;
+			close();
+		}));
+
+		Vector4i doneButtonDimensions = new Vector4i(leftEdge, bottomEdge - WIDGET_HEIGHT, WIDE_BUTTON_WIDTH, WIDGET_HEIGHT);
+		Vector4i cancelButtonDimensions = new Vector4i(rightEdge - WIDE_BUTTON_WIDTH, bottomEdge - WIDGET_HEIGHT, WIDE_BUTTON_WIDTH, WIDGET_HEIGHT);
+
+		addDrawableChild(getButtonWidget(doneButtonDimensions, 0, ScreenTexts.DONE, button -> {
+			this.cancelled = false;
+			close();
+		}));
+
+		addDrawableChild(getButtonWidget(cancelButtonDimensions, 0, ScreenTexts.CANCEL, button -> {
+			this.cancelled = true;
+			close();
+		}));
 	}
 
 	@Override
@@ -243,26 +193,64 @@ public class MobRespawnerScreen extends Screen {
 		super.close();
 	}
 
-	protected static TextWidget getTextWidget(int x, int y, int width, int height, int index, String key, boolean sameBehaviorAsVanillaSpawner, TextRenderer textRenderer) {
+	protected static ButtonWidget getButtonWidget(Vector4i dimensions, int row, String key, PressAction action) {
+		return getButtonWidget(dimensions, row, getTextFromKey(key), action);
+	}
+
+	protected static ButtonWidget getButtonWidget(Vector4i dimensions, int row, Text text, PressAction action) {
+		return ButtonWidget
+		.builder(text, action)
+		.dimensions(
+			dimensions.x(),
+			dimensions.y() + (WIDGET_SPACING * row),
+			dimensions.z(),
+			dimensions.w()
+		)
+		.build();
+	}
+
+	protected static TextFieldWidget getTextFieldWidget(Vector4i dimensions, int row, int value, String key, TextRenderer textRenderer) {
+		return getTextFieldWidget(dimensions, row, value, getTextFromKey(key), textRenderer);
+	}
+
+	protected static TextFieldWidget getTextFieldWidget(Vector4i dimensions, int row, int value, Text text, TextRenderer textRenderer) {
+		TextFieldWidget widget = new TextFieldWidget(
+			textRenderer,
+			dimensions.x(),
+			dimensions.y() + (WIDGET_SPACING * row),
+			dimensions.z(),
+			dimensions.w(),
+			text
+		);
+		widget.setText(String.valueOf(value));
+		return widget;
+	}
+
+	protected static TextWidget getTextWidget(Vector4i dimensions, int row, String key, boolean sameAsVanillaSpawner, TextRenderer textRenderer) {
+		return getTextWidget(dimensions, row, getTextFromKey(key), getTooltip(key, sameAsVanillaSpawner), textRenderer);
+	}
+
+	protected static TextWidget getTextWidget(Vector4i dimensions, int row, Text text, Tooltip tooltip, TextRenderer textRenderer) {
 		TextWidget widget = new TextWidget(
-			x,
-			y + (WIDGET_SPACING * index),
-			width, height,
-			getTextFromKey(key),
+			dimensions.x(),
+			dimensions.y() + (WIDGET_SPACING * row),
+			dimensions.z(),
+			dimensions.w(),
+			text,
 			textRenderer
 		);
 		widget.alignLeft();
 		widget.setTextColor(TEXT_COLOR);
-		widget.setTooltip(getTextWidgetTooltip(key, sameBehaviorAsVanillaSpawner));
+		widget.setTooltip(tooltip);
 		return widget;
 	}
 
-	protected static Tooltip getTextWidgetTooltip(String key, boolean sameBehaviorAsVanillaSpawner) {
+	protected static Tooltip getTooltip(String key, boolean sameAsVanillaSpawner) {
 		return Tooltip.of(
 			getTextFromKey(key).formatted(Formatting.AQUA)
-				.append(ScreenTexts.LINE_BREAK).append(ScreenTexts.LINE_BREAK).append(Text.translatable("screen.respitebench.mob_respawner." + key + ".desc1").formatted(Formatting.WHITE))
-				.append(Text.translatable(sameBehaviorAsVanillaSpawner ? "screen.respitebench.mob_respawner.sameasvanillaspawner" : "").formatted(Formatting.GRAY).formatted(Formatting.ITALIC))
-				.append(ScreenTexts.LINE_BREAK).append(ScreenTexts.LINE_BREAK).append(Text.translatable("screen.respitebench.mob_respawner." + key + ".desc2").formatted(Formatting.DARK_GRAY))
+				.append(ScreenTexts.LINE_BREAK).append(ScreenTexts.LINE_BREAK).append(getTextFromKey(key + ".desc1").formatted(Formatting.WHITE))
+				.append((sameAsVanillaSpawner ? getTextFromKey("sameasvanillaspawner") : Text.empty()).formatted(Formatting.GRAY).formatted(Formatting.ITALIC))
+				.append(ScreenTexts.LINE_BREAK).append(ScreenTexts.LINE_BREAK).append(getTextFromKey(key + ".desc2").formatted(Formatting.DARK_GRAY))
 		);
 	}
 

@@ -266,10 +266,12 @@ public abstract class MobRespawnerLogic {
 		}
 
         if (nbt.contains(SPAWN_DATA_KEY, NbtElement.COMPOUND_TYPE)) {
-            MobSpawnerEntry mobSpawnerEntry = MobSpawnerEntry.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound(SPAWN_DATA_KEY)).resultOrPartial(string -> LOGGER.warn("Invalid SpawnData: {}", string)).orElseGet(MobSpawnerEntry::new);
-            this.setSpawnEntry(mobSpawnerEntry);
+			// vanilla code that i dont understand
+			MobSpawnerEntry mobSpawnerEntry = MobSpawnerEntry.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound(SPAWN_DATA_KEY)).resultOrPartial(string -> LOGGER.warn("Invalid SpawnData: {}", string)).orElseGet(MobSpawnerEntry::new);
+			this.setSpawnEntry(mobSpawnerEntry);
         }
 
+		// vanilla code that i dont understand
         if (nbt.contains(SPAWN_POTENTIALS_KEY, NbtElement.LIST_TYPE)) {
             NbtList nbtList = nbt.getList(SPAWN_POTENTIALS_KEY, NbtElement.COMPOUND_TYPE);
             this.spawnPotentials = MobSpawnerEntry.DATA_POOL_CODEC.parse(NbtOps.INSTANCE, nbtList).resultOrPartial(error -> LOGGER.warn("Invalid SpawnPotentials list: {}", error)).orElseGet(DataPool::<MobSpawnerEntry>empty);
@@ -369,10 +371,9 @@ public abstract class MobRespawnerLogic {
 	}
 
     private MobSpawnerEntry getSpawnEntry(@Nullable World world, Random random, BlockPos pos) {
-		if (this.spawnEntry != null) {
-			return this.spawnEntry;
+		if (this.spawnEntry == null) {
+			this.setSpawnEntry(this.spawnPotentials.getOrEmpty(random).map(Weighted.Present::getData).orElseGet(MobSpawnerEntry::new));
         }
-        this.setSpawnEntry(this.spawnPotentials.getOrEmpty(random).map(Weighted.Present::getData).orElseGet(MobSpawnerEntry::new));
         return this.spawnEntry;
     }
 
