@@ -11,12 +11,12 @@
 
 	"screen.respitebench.mob_respawner": "Mob Respawner Settings",
 
-	"screen.respitebench.mob_respawner.active": "Active",
-	"screen.respitebench.mob_respawner.active.desc1": "Enable/disable all spawns from this block.",
-	"screen.respitebench.mob_respawner.active.desc2": "NBT tag: Active\nType: boolean\nDefault: true",
+	"screen.respitebench.mob_respawner.enabled": "Enabled",
+	"screen.respitebench.mob_respawner.enabled.desc1": "Enable/disable all spawns from this block.",
+	"screen.respitebench.mob_respawner.enabled.desc2": "NBT tag: Enabled\nType: boolean\nDefault: true",
 	
 	"screen.respitebench.mob_respawner.oneoff": "One-off",
-	"screen.respitebench.mob_respawner.oneoff.desc1": "Makes this block deactivate after all of its mobs are defeated for the first time. Using a bench or dying will reset the progress towards this.",
+	"screen.respitebench.mob_respawner.oneoff.desc1": "Makes this block disable itself after all of its mobs are defeated for the first time. Using a bench or dying will reset the progress towards this.",
 	"screen.respitebench.mob_respawner.oneoff.desc2": "NBT tag: OneOff\nType: boolean\nDefault: false",
 
 	"screen.respitebench.mob_respawner.maxconnectedentities": "Max spawn amount",

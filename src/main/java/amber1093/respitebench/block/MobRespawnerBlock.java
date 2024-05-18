@@ -57,7 +57,7 @@ public class MobRespawnerBlock extends SpawnerBlock {
 							nbt.getInt(MobRespawnerLogic.SPAWN_COUNT_KEY),
 							nbt.getInt(MobRespawnerLogic.REQUIRED_PLAYER_RANGE_KEY),
 							nbt.getInt(MobRespawnerLogic.SPAWN_RANGE_KEY),
-							nbt.getBoolean(MobRespawnerLogic.ACTIVE_KEY),
+							nbt.getBoolean(MobRespawnerLogic.ENABLED_KEY),
 							nbt.getBoolean(MobRespawnerLogic.ONE_OFF_KEY)
 						)
 					);

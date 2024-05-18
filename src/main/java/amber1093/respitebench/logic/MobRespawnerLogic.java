@@ -57,7 +57,7 @@ import org.slf4j.Logger;
 public abstract class MobRespawnerLogic {
     public static final String SPAWN_DATA_KEY = "SpawnData";
 	public static final String CAN_SPAWN_KEY = "CanSpawn";
-	public static final String ACTIVE_KEY = "Active";
+	public static final String ENABLED_KEY = "Enabled";
 	public static final String ONE_OFF_KEY = "OneOff";
 	public static final String SPAWN_POTENTIALS_KEY = "SpawnPotentials";
 	public static final String MAX_CONNECTED_ENTITIES_KEY = "MaxConnectedEntities";
@@ -77,7 +77,7 @@ public abstract class MobRespawnerLogic {
 	public int maxConnectedEntities = 1;
 
     public boolean canSpawn = false;
-	public boolean active = true;
+	public boolean enabled = true;
 	public boolean oneOff = false;
     public int spawnCount = 1;
     public int spawnRange = 2;
@@ -127,7 +127,7 @@ public abstract class MobRespawnerLogic {
 
     public void serverTick(ServerWorld world, BlockPos pos) {
 
-        if (!this.isPlayerInRange(world, pos) || !this.canSpawn || !this.active) {
+        if (!this.isPlayerInRange(world, pos) || !this.canSpawn || !this.enabled) {
             return;
         }
 
@@ -253,8 +253,8 @@ public abstract class MobRespawnerLogic {
 
     public void readNbt(NbtCompound nbt) {
 
-		if (nbt.contains(ACTIVE_KEY)) {
-			this.active = nbt.getBoolean(ACTIVE_KEY);
+		if (nbt.contains(ENABLED_KEY)) {
+			this.enabled = nbt.getBoolean(ENABLED_KEY);
 		}
 
 		if (nbt.contains(ONE_OFF_KEY)) {
@@ -307,7 +307,7 @@ public abstract class MobRespawnerLogic {
     }
 
     public NbtCompound writeNbt(NbtCompound nbt) {
-		nbt.putBoolean(ACTIVE_KEY, this.active);
+		nbt.putBoolean(ENABLED_KEY, this.enabled);
 		nbt.putBoolean(ONE_OFF_KEY, this.oneOff);
         nbt.putBoolean(CAN_SPAWN_KEY, this.canSpawn);
         nbt.putShort(SPAWN_COUNT_KEY, (short)this.spawnCount);
@@ -389,8 +389,8 @@ public abstract class MobRespawnerLogic {
 
 	public boolean removeEntityUuid(UUID uuidToRemove) {
 		boolean success = this.connectedEntitiesUuid.remove(uuidToRemove);
-		if (success && !this.canSpawn && this.oneOff && this.active && this.getConnectedEntitiesUuid().isEmpty()) {
-			this.active = false;
+		if (success && !this.canSpawn && this.oneOff && this.enabled && this.getConnectedEntitiesUuid().isEmpty()) {
+			this.enabled = false;
 		}
 		return success;
 	}
@@ -413,7 +413,7 @@ public abstract class MobRespawnerLogic {
 			this.spawnRange = packet.spawnRange();
 		}
 
-		this.active = packet.active();
+		this.enabled = packet.enabled();
 		this.oneOff = packet.oneOff();
 	}
 

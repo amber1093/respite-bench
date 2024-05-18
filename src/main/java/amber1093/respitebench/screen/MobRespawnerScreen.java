@@ -45,24 +45,24 @@ public class MobRespawnerScreen extends Screen {
 	public int spawnRange;
 	public boolean shouldClearEntityData = false;
 	public boolean shouldDisconnectEntities = false;
-	public boolean active;
+	public boolean enabled;
 	public boolean oneOff;
 
-	public CheckboxWidget activeWidget;
+	public CheckboxWidget enabledWidget;
 	public CheckboxWidget oneOffWidget;
 	public TextFieldWidget maxConnectedEntitiesWidget;
 	public TextFieldWidget spawnCountWidget;
 	public TextFieldWidget requiredPlayerRangeWidget;
 	public TextFieldWidget spawnRangeWidget;
 
-	public MobRespawnerScreen(Text title, BlockPos pos, int maxConnectedEntities, int spawnCount, int requiredPlayerRange, int spawnRange, boolean active, boolean oneOff) {
+	public MobRespawnerScreen(Text title, BlockPos pos, int maxConnectedEntities, int spawnCount, int requiredPlayerRange, int spawnRange, boolean enabled, boolean oneOff) {
 		super(title);
 		this.blockPos = pos;
 		this.maxConnectedEntities = maxConnectedEntities;
 		this.spawnCount = spawnCount;
 		this.requiredPlayerRange = requiredPlayerRange;
 		this.spawnRange = spawnRange;
-		this.active = active;
+		this.enabled = enabled;
 		this.oneOff = oneOff;
 	}
 
@@ -74,12 +74,12 @@ public class MobRespawnerScreen extends Screen {
 		int bottomEdge = getBottomEdge(this.height);
 
 		//checkbox constructors
-		activeWidget = new CheckboxWidget(
+		enabledWidget = new CheckboxWidget(
 			rightEdge - WIDGET_HEIGHT,
 			topEdge + WIDGET_SPACING,
 			WIDGET_HEIGHT, WIDGET_HEIGHT,
 			ScreenTexts.EMPTY,
-			this.active
+			this.enabled
 		);
 
 		oneOffWidget = new CheckboxWidget(
@@ -97,7 +97,7 @@ public class MobRespawnerScreen extends Screen {
 		Vector4i longTextDimensions =	new Vector4i(leftEdge, topEdge, LONG_TEXT_WIDTH, WIDGET_HEIGHT);
 		Vector4i shortTextDimensions =	new Vector4i(leftEdge, topEdge, SHORT_TEXT_WIDTH, WIDGET_HEIGHT);
 
-		addDrawable(getTextWidget(longTextDimensions, 1, "active", false, this.textRenderer));
+		addDrawable(getTextWidget(longTextDimensions, 1, "enabled", false, this.textRenderer));
 		addDrawable(getTextWidget(longTextDimensions, 2, "oneoff", false, this.textRenderer));
 		addDrawable(getTextWidget(longTextDimensions, 3, "maxconnectedentities", false, this.textRenderer));
 		addDrawable(getTextWidget(longTextDimensions, 4, "spawncount", true, this.textRenderer));
@@ -107,7 +107,7 @@ public class MobRespawnerScreen extends Screen {
 		addDrawable(getTextWidget(shortTextDimensions, 8, "connectedentitiesuuid", false, this.textRenderer));
 
 		//add checkboxes
-		addDrawableChild(this.activeWidget);
+		addDrawableChild(this.enabledWidget);
 		addDrawableChild(this.oneOffWidget);
 
 
@@ -175,7 +175,7 @@ public class MobRespawnerScreen extends Screen {
 			this.requiredPlayerRange =	(requiredPlayerRangeString ==	"" ? -1 : Integer.parseInt(requiredPlayerRangeString	.replaceAll("[\\D]", "")));
 			this.spawnRange =			(spawnRangeString ==			"" ? -1 : Integer.parseInt(spawnRangeString				.replaceAll("[\\D]", "")));
 
-			this.active = activeWidget.isChecked();
+			this.enabled = enabledWidget.isChecked();
 			this.oneOff = oneOffWidget.isChecked();
 
 			ClientPlayNetworking.send(new MobRespawnerUpdateC2SPacket(
@@ -186,7 +186,7 @@ public class MobRespawnerScreen extends Screen {
 					this.spawnRange,
 					this.shouldClearEntityData,
 					this.shouldDisconnectEntities,
-					this.active,
+					this.enabled,
 					this.oneOff
 			));
 		}
