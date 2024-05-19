@@ -73,51 +73,41 @@ public class MobRespawnerScreen extends Screen {
 		int topEdge = getTopEdge(this.height);
 		int bottomEdge = getBottomEdge(this.height);
 
-		//checkbox constructors
-		enabledWidget = new CheckboxWidget(
-			rightEdge - WIDGET_HEIGHT,
-			topEdge + WIDGET_SPACING,
-			WIDGET_HEIGHT, WIDGET_HEIGHT,
-			ScreenTexts.EMPTY,
-			this.enabled
-		);
-
-		oneOffWidget = new CheckboxWidget(
-			rightEdge - WIDGET_HEIGHT,
-			topEdge + (WIDGET_SPACING * 2),
-			WIDGET_HEIGHT, WIDGET_HEIGHT,
-			ScreenTexts.EMPTY,
-			this.oneOff
-		);
 
 		//add title
 		addDrawable(new TextWidget(leftEdge, topEdge, SCREEN_WIDTH, WIDGET_HEIGHT, title, this.textRenderer));
 
 		//add text
-		Vector4i longTextDimensions =	new Vector4i(leftEdge, topEdge, LONG_TEXT_WIDTH, WIDGET_HEIGHT);
-		Vector4i shortTextDimensions =	new Vector4i(leftEdge, topEdge, SHORT_TEXT_WIDTH, WIDGET_HEIGHT);
+		Vector4i longTextTransform =	new Vector4i(leftEdge, topEdge, LONG_TEXT_WIDTH, WIDGET_HEIGHT);
+		Vector4i shortTextTransform =	new Vector4i(leftEdge, topEdge, SHORT_TEXT_WIDTH, WIDGET_HEIGHT);
 
-		addDrawable(getTextWidget(longTextDimensions, 1, "enabled",					false, false, this.textRenderer));
-		addDrawable(getTextWidget(longTextDimensions, 2, "oneoff",					false, false, this.textRenderer));
-		addDrawable(getTextWidget(longTextDimensions, 3, "maxconnectedentities",	false, true, this.textRenderer));
-		addDrawable(getTextWidget(longTextDimensions, 4, "spawncount",				true, true, this.textRenderer));
-		addDrawable(getTextWidget(longTextDimensions, 5, "requiredplayerrange",		true, false, this.textRenderer));
-		addDrawable(getTextWidget(longTextDimensions, 6, "spawnrange",				true, false, this.textRenderer));
-		addDrawable(getTextWidget(shortTextDimensions, 7, "entitydata",				false, false, this.textRenderer));
-		addDrawable(getTextWidget(shortTextDimensions, 8, "connectedentitiesuuid",	false, false, this.textRenderer));
+		addDrawable(getTextWidget(longTextTransform, 1, "enabled",					false, false, this.textRenderer));
+		addDrawable(getTextWidget(longTextTransform, 2, "oneoff",					false, false, this.textRenderer));
+		addDrawable(getTextWidget(longTextTransform, 3, "maxconnectedentities",	false, true, this.textRenderer));
+		addDrawable(getTextWidget(longTextTransform, 4, "spawncount",				true, true, this.textRenderer));
+		addDrawable(getTextWidget(longTextTransform, 5, "requiredplayerrange",		true, false, this.textRenderer));
+		addDrawable(getTextWidget(longTextTransform, 6, "spawnrange",				true, false, this.textRenderer));
+		addDrawable(getTextWidget(shortTextTransform, 7, "entitydata",				false, false, this.textRenderer));
+		addDrawable(getTextWidget(shortTextTransform, 8, "connectedentitiesuuid",	false, false, this.textRenderer));
+
 
 		//add checkboxes
+		Vector4i checkboxTransform = new Vector4i(rightEdge - WIDGET_HEIGHT, topEdge, WIDGET_HEIGHT, WIDGET_HEIGHT);
+
+		this.enabledWidget = getCheckboxWidget(checkboxTransform, 1, this.enabled, "enabled", false, false);
+		this.oneOffWidget = getCheckboxWidget(checkboxTransform, 2, this.oneOff, "oneoff", false, false);
+
 		addDrawableChild(this.enabledWidget);
 		addDrawableChild(this.oneOffWidget);
 
 
 		//add textfields
-		Vector4i textFieldDimensions =	new Vector4i(rightEdge - TEXTFIELD_WIDTH, topEdge, TEXTFIELD_WIDTH, WIDGET_HEIGHT);
+		Vector4i textFieldTransform =	new Vector4i(rightEdge - TEXTFIELD_WIDTH, topEdge, TEXTFIELD_WIDTH, WIDGET_HEIGHT);
 
-		this.maxConnectedEntitiesWidget =	getTextFieldWidget(textFieldDimensions, 3, this.maxConnectedEntities, "maxconnectedentities", this.textRenderer);
-		this.spawnCountWidget =				getTextFieldWidget(textFieldDimensions, 4, this.spawnCount, "spawncount", this.textRenderer);
-		this.requiredPlayerRangeWidget =	getTextFieldWidget(textFieldDimensions, 5, this.requiredPlayerRange, "requiredplayerrange", this.textRenderer);
-		this.spawnRangeWidget =				getTextFieldWidget(textFieldDimensions, 6, this.spawnRange, "spawnrange", this.textRenderer);
+		this.maxConnectedEntitiesWidget =	getTextFieldWidget(textFieldTransform, 3, this.maxConnectedEntities, "maxconnectedentities", this.textRenderer);
+		this.spawnCountWidget =				getTextFieldWidget(textFieldTransform, 4, this.spawnCount, "spawncount", this.textRenderer);
+		this.requiredPlayerRangeWidget =	getTextFieldWidget(textFieldTransform, 5, this.requiredPlayerRange, "requiredplayerrange", this.textRenderer);
+		this.spawnRangeWidget =				getTextFieldWidget(textFieldTransform, 6, this.spawnRange, "spawnrange", this.textRenderer);
 
 		addDrawableChild(this.maxConnectedEntitiesWidget);
 		addDrawableChild(this.spawnCountWidget);
@@ -126,29 +116,29 @@ public class MobRespawnerScreen extends Screen {
 
 
 		//add buttons
-		Vector4i buttonDimensions = new Vector4i(rightEdge - BUTTON_WIDTH, topEdge, BUTTON_WIDTH, WIDGET_HEIGHT);
+		Vector4i buttonTransform = new Vector4i(rightEdge - BUTTON_WIDTH, topEdge, BUTTON_WIDTH, WIDGET_HEIGHT);
 
-		addDrawableChild(getButtonWidget(buttonDimensions, 7, "entitydata.clear", button -> {
+		addDrawableChild(getButtonWidget(buttonTransform, 7, "entitydata.clear", button -> {
 			this.shouldClearEntityData = true;
 			this.cancelled = false;
 			close();
 		}));
 
-		addDrawableChild(getButtonWidget(buttonDimensions, 8, "connectedentitiesuuid.disconnectall", button -> {
+		addDrawableChild(getButtonWidget(buttonTransform, 8, "connectedentitiesuuid.disconnectall", button -> {
 			this.shouldDisconnectEntities = true;
 			this.cancelled = false;
 			close();
 		}));
 
-		Vector4i doneButtonDimensions = new Vector4i(leftEdge, bottomEdge - WIDGET_HEIGHT, WIDE_BUTTON_WIDTH, WIDGET_HEIGHT);
-		Vector4i cancelButtonDimensions = new Vector4i(rightEdge - WIDE_BUTTON_WIDTH, bottomEdge - WIDGET_HEIGHT, WIDE_BUTTON_WIDTH, WIDGET_HEIGHT);
+		Vector4i doneButtonTransform = new Vector4i(leftEdge, bottomEdge - WIDGET_HEIGHT, WIDE_BUTTON_WIDTH, WIDGET_HEIGHT);
+		Vector4i cancelButtonTransform = new Vector4i(rightEdge - WIDE_BUTTON_WIDTH, bottomEdge - WIDGET_HEIGHT, WIDE_BUTTON_WIDTH, WIDGET_HEIGHT);
 
-		addDrawableChild(getButtonWidget(doneButtonDimensions, 0, ScreenTexts.DONE, button -> {
+		addDrawableChild(getButtonWidget(doneButtonTransform, 0, ScreenTexts.DONE, button -> {
 			this.cancelled = false;
 			close();
 		}));
 
-		addDrawableChild(getButtonWidget(cancelButtonDimensions, 0, ScreenTexts.CANCEL, button -> {
+		addDrawableChild(getButtonWidget(cancelButtonTransform, 0, ScreenTexts.CANCEL, button -> {
 			this.cancelled = true;
 			close();
 		}));
@@ -193,49 +183,66 @@ public class MobRespawnerScreen extends Screen {
 		super.close();
 	}
 
-	protected static ButtonWidget getButtonWidget(Vector4i dimensions, int row, String key, PressAction action) {
-		return getButtonWidget(dimensions, row, getTextFromKey(key), action);
+	protected static ButtonWidget getButtonWidget(Vector4i transform, int row, String key, PressAction action) {
+		return getButtonWidget(transform, row, getTextFromKey(key), action);
 	}
 
-	protected static ButtonWidget getButtonWidget(Vector4i dimensions, int row, Text text, PressAction action) {
+	protected static ButtonWidget getButtonWidget(Vector4i transform, int row, Text text, PressAction action) {
 		return ButtonWidget
 		.builder(text, action)
 		.dimensions(
-			dimensions.x(),
-			dimensions.y() + (WIDGET_SPACING * row),
-			dimensions.z(),
-			dimensions.w()
+			transform.x(),
+			transform.y() + (WIDGET_SPACING * row),
+			transform.z(),
+			transform.w()
 		)
 		.build();
 	}
 
-	protected static TextFieldWidget getTextFieldWidget(Vector4i dimensions, int row, int value, String key, TextRenderer textRenderer) {
-		return getTextFieldWidget(dimensions, row, value, getTextFromKey(key), textRenderer);
+	protected static CheckboxWidget getCheckboxWidget(Vector4i transform, int row, boolean value, String key, boolean sameAsVanilla, boolean lagWarning) {
+		return getCheckboxWidget(transform, row, value, getTextFromKey(key).formatted(Formatting.GRAY), getTooltip(key, sameAsVanilla, lagWarning));
 	}
 
-	protected static TextFieldWidget getTextFieldWidget(Vector4i dimensions, int row, int value, Text text, TextRenderer textRenderer) {
+	protected static CheckboxWidget getCheckboxWidget(Vector4i transform, int row, boolean value, Text text, Tooltip tooltip) {
+		CheckboxWidget widget = new CheckboxWidget(
+			transform.x(),
+			transform.y() + (WIDGET_SPACING * row),
+			transform.z(),
+			transform.w(),
+			text,
+			value
+		);
+		widget.setTooltip(tooltip);
+		return widget;
+	}
+
+	protected static TextFieldWidget getTextFieldWidget(Vector4i transform, int row, int value, String key, TextRenderer textRenderer) {
+		return getTextFieldWidget(transform, row, value, getTextFromKey(key), textRenderer);
+	}
+
+	protected static TextFieldWidget getTextFieldWidget(Vector4i transform, int row, int value, Text text, TextRenderer textRenderer) {
 		TextFieldWidget widget = new TextFieldWidget(
 			textRenderer,
-			dimensions.x(),
-			dimensions.y() + (WIDGET_SPACING * row),
-			dimensions.z(),
-			dimensions.w(),
+			transform.x(),
+			transform.y() + (WIDGET_SPACING * row),
+			transform.z(),
+			transform.w(),
 			text
 		);
 		widget.setText(String.valueOf(value));
 		return widget;
 	}
 
-	protected static TextWidget getTextWidget(Vector4i dimensions, int row, String key, boolean sameAsVanilla, boolean lagWarning, TextRenderer textRenderer) {
-		return getTextWidget(dimensions, row, getTextFromKey(key), getTooltip(key, sameAsVanilla, lagWarning), textRenderer);
+	protected static TextWidget getTextWidget(Vector4i transform, int row, String key, boolean sameAsVanilla, boolean lagWarning, TextRenderer textRenderer) {
+		return getTextWidget(transform, row, getTextFromKey(key), getTooltip(key, sameAsVanilla, lagWarning), textRenderer);
 	}
 
-	protected static TextWidget getTextWidget(Vector4i dimensions, int row, Text text, Tooltip tooltip, TextRenderer textRenderer) {
+	protected static TextWidget getTextWidget(Vector4i transform, int row, Text text, Tooltip tooltip, TextRenderer textRenderer) {
 		TextWidget widget = new TextWidget(
-			dimensions.x(),
-			dimensions.y() + (WIDGET_SPACING * row),
-			dimensions.z(),
-			dimensions.w(),
+			transform.x(),
+			transform.y() + (WIDGET_SPACING * row),
+			transform.z(),
+			transform.w(),
 			text,
 			textRenderer
 		);
