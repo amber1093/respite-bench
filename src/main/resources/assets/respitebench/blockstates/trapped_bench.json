@@ -1,0 +1,8 @@
+{
+	"variants": {
+		"facing=north": { "model": "respitebench:block/trapped_bench" },
+		"facing=east":  { "model": "respitebench:block/trapped_bench", "y": 90 },
+		"facing=south": { "model": "respitebench:block/trapped_bench", "y": 180 },
+		"facing=west":  { "model": "respitebench:block/trapped_bench", "y": 270 }
+	}
+}

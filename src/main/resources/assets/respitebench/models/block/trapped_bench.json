@@ -1,0 +1,7 @@
+{
+	"parent": "respitebench:block/bench",
+	"textures": {
+		"0": "respitebench:block/trapped_bench",
+		"particle": "respitebench:block/trapped_bench"
+	}
+}
