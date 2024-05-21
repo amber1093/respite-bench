@@ -32,11 +32,6 @@ public class MobRespawnerBlockEntity extends BlockEntity {
 			boolean result = this.logic.removeEntityUuid(uuidToRemove);
 			if (result == true) {
 				this.markDirty();
-
-				if (this.getWorld() != null) {
-					BlockState blockState = this.getWorld().getBlockState(this.getPos());
-					this.getWorld().updateListeners(this.getPos(), blockState, blockState, Block.NO_REDRAW);
-				}
 			}
 			return result;
 		});

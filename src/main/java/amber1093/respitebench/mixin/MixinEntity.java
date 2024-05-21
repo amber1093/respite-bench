@@ -24,18 +24,17 @@ public abstract class MixinEntity {
 	@Inject(at = @At("RETURN"), method = "<init>*")
 	public void registerConnectedEntityEvent(CallbackInfo callbackInfo) {
 		DiscardConnectedEntityCallback.EVENT.register((uuidList) -> {
-			if (!this.getWorld().isClient()) {
-				if (uuidList.contains(this.getUuid())) {
-					this.discard();
-				}
+			if (!this.getWorld().isClient() && this.getUuid() != null && uuidList.contains(this.getUuid())) {
+				this.discard();
 			}
 		});
 	}
 
 	@Inject(at = @At("HEAD"), method = "remove")
 	private void invokeEntityDeathCallback(CallbackInfo callbackInfo) {
-		UUID uuid = this.getUuid();
-		EntityDeathCallback.EVENT.invoker().removeEntityUuid(uuid);
+		if (this.getUuid() != null) {
+			EntityDeathCallback.EVENT.invoker().removeEntityUuid(this.getUuid());
+		}
 	}
 
 

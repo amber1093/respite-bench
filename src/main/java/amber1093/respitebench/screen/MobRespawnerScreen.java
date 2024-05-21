@@ -77,31 +77,34 @@ public class MobRespawnerScreen extends Screen {
 		//add title
 		addDrawable(new TextWidget(leftEdge, topEdge, SCREEN_WIDTH, WIDGET_HEIGHT, title, this.textRenderer));
 
-		//add text
+
+		//#region add text
 		Vector4i longTextTransform =	new Vector4i(leftEdge, topEdge, LONG_TEXT_WIDTH, WIDGET_HEIGHT);
 		Vector4i shortTextTransform =	new Vector4i(leftEdge, topEdge, SHORT_TEXT_WIDTH, WIDGET_HEIGHT);
 
 		addDrawable(getTextWidget(longTextTransform, 1, "enabled",					false, false, this.textRenderer));
 		addDrawable(getTextWidget(longTextTransform, 2, "oneoff",					false, false, this.textRenderer));
-		addDrawable(getTextWidget(longTextTransform, 3, "maxconnectedentities",	false, true, this.textRenderer));
+		addDrawable(getTextWidget(longTextTransform, 3, "maxconnectedentities",		false, true, this.textRenderer));
 		addDrawable(getTextWidget(longTextTransform, 4, "spawncount",				true, true, this.textRenderer));
 		addDrawable(getTextWidget(longTextTransform, 5, "requiredplayerrange",		true, false, this.textRenderer));
 		addDrawable(getTextWidget(longTextTransform, 6, "spawnrange",				true, false, this.textRenderer));
 		addDrawable(getTextWidget(shortTextTransform, 7, "entitydata",				false, false, this.textRenderer));
 		addDrawable(getTextWidget(shortTextTransform, 8, "connectedentitiesuuid",	false, false, this.textRenderer));
+		//#endregion
 
 
-		//add checkboxes
+		//#region add checkboxes
 		Vector4i checkboxTransform = new Vector4i(rightEdge - WIDGET_HEIGHT, topEdge, WIDGET_HEIGHT, WIDGET_HEIGHT);
 
-		this.enabledWidget = getCheckboxWidget(checkboxTransform, 1, this.enabled, "enabled", false, false);
-		this.oneOffWidget = getCheckboxWidget(checkboxTransform, 2, this.oneOff, "oneoff", false, false);
+		this.enabledWidget = getCheckboxWidget(checkboxTransform, 1, this.enabled);
+		this.oneOffWidget = getCheckboxWidget(checkboxTransform, 2, this.oneOff);
 
 		addDrawableChild(this.enabledWidget);
 		addDrawableChild(this.oneOffWidget);
+		//#endregion
 
 
-		//add textfields
+		//#region add textfields
 		Vector4i textFieldTransform =	new Vector4i(rightEdge - TEXTFIELD_WIDTH, topEdge, TEXTFIELD_WIDTH, WIDGET_HEIGHT);
 
 		this.maxConnectedEntitiesWidget =	getTextFieldWidget(textFieldTransform, 3, this.maxConnectedEntities, "maxconnectedentities", this.textRenderer);
@@ -113,9 +116,10 @@ public class MobRespawnerScreen extends Screen {
 		addDrawableChild(this.spawnCountWidget);
 		addDrawableChild(this.requiredPlayerRangeWidget);
 		addDrawableChild(this.spawnRangeWidget);
+		//#endregion
 
 
-		//add buttons
+		//#region add buttons
 		Vector4i buttonTransform = new Vector4i(rightEdge - BUTTON_WIDTH, topEdge, BUTTON_WIDTH, WIDGET_HEIGHT);
 
 		addDrawableChild(getButtonWidget(buttonTransform, 7, "entitydata.clear", button -> {
@@ -142,6 +146,7 @@ public class MobRespawnerScreen extends Screen {
 			this.cancelled = true;
 			close();
 		}));
+		//#endregion
 	}
 
 	@Override
@@ -199,21 +204,15 @@ public class MobRespawnerScreen extends Screen {
 		.build();
 	}
 
-	protected static CheckboxWidget getCheckboxWidget(Vector4i transform, int row, boolean value, String key, boolean sameAsVanilla, boolean lagWarning) {
-		return getCheckboxWidget(transform, row, value, getTextFromKey(key).formatted(Formatting.GRAY), getTooltip(key, sameAsVanilla, lagWarning));
-	}
-
-	protected static CheckboxWidget getCheckboxWidget(Vector4i transform, int row, boolean value, Text text, Tooltip tooltip) {
-		CheckboxWidget widget = new CheckboxWidget(
+	protected static CheckboxWidget getCheckboxWidget(Vector4i transform, int row, boolean value) {
+		return new CheckboxWidget(
 			transform.x(),
 			transform.y() + (WIDGET_SPACING * row),
 			transform.z(),
 			transform.w(),
-			text,
+			ScreenTexts.EMPTY,
 			value
 		);
-		widget.setTooltip(tooltip);
-		return widget;
 	}
 
 	protected static TextFieldWidget getTextFieldWidget(Vector4i transform, int row, int value, String key, TextRenderer textRenderer) {

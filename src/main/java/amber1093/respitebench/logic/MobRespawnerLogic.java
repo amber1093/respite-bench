@@ -389,7 +389,7 @@ public abstract class MobRespawnerLogic {
 	}
 
 	public boolean removeEntityUuid(UUID uuidToRemove) {
-		boolean success = this.connectedEntitiesUuid.remove(uuidToRemove);
+		boolean success = this.getConnectedEntitiesUuid().remove(uuidToRemove);
 		if (success && !this.canSpawn && this.oneOff && this.enabled && this.getConnectedEntitiesUuid().isEmpty()) {
 			this.enabled = false;
 		}
