@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import amber1093.respitebench.block.BenchBlock;
 import amber1093.respitebench.block.MobRespawnerBlock;
+import amber1093.respitebench.block.TrappedBenchBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -38,12 +39,19 @@ public abstract class MixinPlayerEntity extends LivingEntity {
 	@Inject(at = @At("HEAD"), method = "findRespawnPosition", cancellable = true)
 	private static Optional<Vec3d> onFindRespawnPosition(ServerWorld world, BlockPos pos, float angle, boolean forced, boolean alive, CallbackInfoReturnable<Optional<Vec3d>> callbackInfoReturnable) {
 
+		//always reset respawners
 		BenchBlock.mobRespawnerReset(true);
+
+		if (world.getBlockState(pos).getBlock() instanceof TrappedBenchBlock) {
+			TrappedBenchBlock.pulseRedstone(world, world.getBlockState(pos), pos);
+		}
 
 		if (world.getBlockState(pos).getBlock() instanceof BenchBlock) {
 			Optional<Vec3d> optional = BenchBlock.findRespawnPosition(EntityType.PLAYER, world, pos);
 			callbackInfoReturnable.setReturnValue(optional);
 		}
+
+		
 		return null;
 	}
 

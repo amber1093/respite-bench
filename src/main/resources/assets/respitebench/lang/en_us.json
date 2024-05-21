@@ -70,7 +70,4 @@
 	"text.autoconfig.respitebench.option.mobrespawner": "Mob Respawner",
 	"text.autoconfig.respitebench.option.mobrespawner.ignoreSpawnRules": "Ignore spawn rules",
 	"text.autoconfig.respitebench.option.mobrespawner.ignoreSpawnRules.@Tooltip": "Makes respawners ignore all spawn conditions (requiring grass for animals, low light levels for hostile mobs, etc.)."
-	
-
-
 }

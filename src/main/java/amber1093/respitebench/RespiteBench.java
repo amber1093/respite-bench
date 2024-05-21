@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import amber1093.respitebench.block.BenchBlock;
 import amber1093.respitebench.block.MobRespawnerBlock;
+import amber1093.respitebench.block.TrappedBenchBlock;
 import amber1093.respitebench.blockentity.MobRespawnerBlockEntity;
 import amber1093.respitebench.config.ConfigMenu;
 import amber1093.respitebench.entity.BenchEntity;
@@ -79,7 +80,7 @@ public class RespiteBench implements ModInitializer {
 	//#region Blocks
 	public static final Block MOB_RESPAWNER = registerBlock("mob_respawner", new MobRespawnerBlock(FabricBlockSettings.copyOf(Blocks.SPAWNER).strength(-1.0F, 3600000.0F)));
 	public static final Block BENCH = registerBlock("bench", new BenchBlock(FabricBlockSettings.copyOf(Blocks.BEDROCK).nonOpaque()));
-	public static final Block TRAPPED_BENCH = registerBlock("trapped_bench", new BenchBlock(FabricBlockSettings.copyOf(Blocks.BEDROCK).nonOpaque()));
+	public static final Block TRAPPED_BENCH = registerBlock("trapped_bench", new TrappedBenchBlock(FabricBlockSettings.copyOf(Blocks.BEDROCK).nonOpaque()));
 
 	private static Block registerBlock (String name, Block block) {
 		registerBlockItem(name, block);
