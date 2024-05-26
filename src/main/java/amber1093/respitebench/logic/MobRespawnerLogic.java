@@ -57,7 +57,7 @@ import org.slf4j.Logger;
  */
 public abstract class MobRespawnerLogic {
     public static final String SPAWN_DATA_KEY = "SpawnData";
-	public static final String CAN_SPAWN_KEY = "CanSpawn";
+	public static final String SPAWN_AMOUNT_LEFT_KEY = "SpawnAmountLeft";
 	public static final String ENABLED_KEY = "Enabled";
 	public static final String ONE_OFF_KEY = "OneOff";
 	public static final String SPAWN_POTENTIALS_KEY = "SpawnPotentials";
@@ -77,7 +77,7 @@ public abstract class MobRespawnerLogic {
 	private List<UUID> connectedEntitiesUuid = new ArrayList<>();
 	public int maxConnectedEntities = 1;
 
-    public boolean canSpawn = false;
+    public int spawnAmountLeft = 0;
 	public boolean enabled = true;
 	public boolean oneOff = false;
     public int spawnCount = 1;
@@ -101,7 +101,7 @@ public abstract class MobRespawnerLogic {
 		if (this.isPlayerInRange(world, pos) && this.renderedEntity != null) {
 
 			ParticleEffect particleType = ParticleTypes.SOUL_FIRE_FLAME;
-            if (!this.canSpawn) {
+            if (this.spawnAmountLeft <= 0) {
 				++this.rotation;
             }
 			else {
@@ -128,13 +128,12 @@ public abstract class MobRespawnerLogic {
 
     public void serverTick(ServerWorld world, BlockPos pos) {
 
-        if (!this.isPlayerInRange(world, pos) || !this.canSpawn || !this.enabled) {
+        if (this.spawnAmountLeft <= 0 || !this.enabled || !this.isPlayerInRange(world, pos)) {
             return;
         }
 
-		int currentConnectedEntityAmount = getConnectedEntityAmount();
-		if (currentConnectedEntityAmount >= maxConnectedEntities) {
-			this.updateSpawns(world, pos, false);
+		if (this.getConnectedEntityAmount() >= this.maxConnectedEntities) {
+			this.updateSpawns(world, pos, 0);
 			return;
 		}
 
@@ -155,7 +154,7 @@ public abstract class MobRespawnerLogic {
             NbtCompound nbtCompound = mobSpawnerEntry.getNbt();
             Optional<EntityType<?>> optional = EntityType.fromNbt(nbtCompound);
             if (optional.isEmpty()) {
-                this.updateSpawns(world, pos, false);
+                this.updateSpawns(world, pos, 0);
                 return;
             }
 
@@ -190,7 +189,7 @@ public abstract class MobRespawnerLogic {
 
 			//cancel if entity doesnt exist
             if (entity2 == null) {
-                this.updateSpawns(world, pos, false);
+                this.updateSpawns(world, pos, 0);
                 return;
             }
 
@@ -209,7 +208,7 @@ public abstract class MobRespawnerLogic {
 
 			//spawn mob
             if (!world.spawnNewEntityAndPassengers(entity2)) {
-                this.updateSpawns(world, pos, false);
+                this.updateSpawns(world, pos, 0);
                 return;
             }
 
@@ -228,27 +227,26 @@ public abstract class MobRespawnerLogic {
             spawnSuccessful = true;
 
 			//stop if max entity limit is reached
-			currentConnectedEntityAmount += 1;
-			if (currentConnectedEntityAmount >= maxConnectedEntities) {
-				this.updateSpawns(world, pos, false);
+			if (--this.spawnAmountLeft <= 0) {
+				this.updateSpawns(world, pos, 0);
 				break;
 			}
         }
 
         if (spawnSuccessful) {
-            this.updateSpawns(world, pos, true);
+            this.updateSpawns(world, pos, this.spawnAmountLeft);
         }
     }
 
-    private void updateSpawns(World world, BlockPos pos, boolean canSpawn) {
+    private void updateSpawns(World world, BlockPos pos, int spawnAmountLeft) {
         Random random = world.random;
-        this.canSpawn = canSpawn;
+        this.spawnAmountLeft = spawnAmountLeft;
         this.spawnPotentials.getOrEmpty(random).ifPresent(spawnPotential -> this.setSpawnEntry((MobSpawnerEntry)spawnPotential.getData()));
         this.sendStatus(world, pos, 1);
     }
 
 	public void setCanSpawn(World world, BlockPos pos, boolean canSpawn) {
-		this.canSpawn = canSpawn;
+		this.spawnAmountLeft = ((canSpawn || this.enabled) ? this.maxConnectedEntities : 0);
 		this.sendStatus(world, pos, 1);
 	}
 
@@ -262,8 +260,8 @@ public abstract class MobRespawnerLogic {
 			this.oneOff = nbt.getBoolean(ONE_OFF_KEY);
 		}
 
-		if (nbt.contains(CAN_SPAWN_KEY)) {
-			this.canSpawn = nbt.getBoolean(CAN_SPAWN_KEY);
+		if (nbt.contains(SPAWN_AMOUNT_LEFT_KEY)) {
+			this.spawnAmountLeft = nbt.getInt(SPAWN_AMOUNT_LEFT_KEY);
 		}
 
         if (nbt.contains(SPAWN_DATA_KEY, NbtElement.COMPOUND_TYPE)) {
@@ -310,7 +308,7 @@ public abstract class MobRespawnerLogic {
     public NbtCompound writeNbt(NbtCompound nbt) {
 		nbt.putBoolean(ENABLED_KEY, this.enabled);
 		nbt.putBoolean(ONE_OFF_KEY, this.oneOff);
-        nbt.putBoolean(CAN_SPAWN_KEY, this.canSpawn);
+        nbt.putInt(SPAWN_AMOUNT_LEFT_KEY, this.spawnAmountLeft);
         nbt.putShort(SPAWN_COUNT_KEY, (short)this.spawnCount);
         nbt.putShort(REQUIRED_PLAYER_RANGE_KEY, (short)this.requiredPlayerRange);
         nbt.putShort(SPAWN_RANGE_KEY, (short)this.spawnRange);
@@ -351,7 +349,7 @@ public abstract class MobRespawnerLogic {
     public boolean handleStatus(World world, int status) {
         if (status == 1) {
             if (world.isClient) {
-                this.canSpawn = false;
+                this.spawnAmountLeft = 0;
             }
             return true;
         }
@@ -390,7 +388,7 @@ public abstract class MobRespawnerLogic {
 
 	public boolean removeEntityUuid(UUID uuidToRemove) {
 		boolean success = this.getConnectedEntitiesUuid().remove(uuidToRemove);
-		if (success && !this.canSpawn && this.oneOff && this.enabled && this.getConnectedEntitiesUuid().isEmpty()) {
+		if (success && this.spawnAmountLeft <= 0 && this.oneOff && this.enabled && this.getConnectedEntitiesUuid().isEmpty()) {
 			this.enabled = false;
 		}
 		return success;
@@ -398,19 +396,19 @@ public abstract class MobRespawnerLogic {
 
 	public void updateSettings(MobRespawnerUpdateC2SPacket packet) {
 
-		if (maxConnectedEntities >= 0) {
+		if (this.maxConnectedEntities >= 0) {
 			this.maxConnectedEntities = packet.maxConnectedEntities();
 		}
 
-		if (spawnCount >= 0) {
+		if (this.spawnCount >= 0) {
 			this.spawnCount = packet.spawnCount();
 		}
 
-		if (requiredPlayerRange >= 0) {
+		if (this.requiredPlayerRange >= 0) {
 			this.requiredPlayerRange = packet.requiredPlayerRange();
 		}
 
-		if (spawnRange >= 0) {
+		if (this.spawnRange >= 0) {
 			this.spawnRange = packet.spawnRange();
 		}
 
