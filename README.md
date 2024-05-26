@@ -23,6 +23,7 @@ Flasks are health potions which can be refilled by using a bench (or dying). Can
 ### Bench
 
 Benches are rest points for the player. Using one will set your spawn point, refill your flasks, clear potion effects, heal you to full health and allow respawners to spawn mobs again.
+Also comes with a trapped variant which will emit a short redstone pulse (2 ticks) when used or when a player spawns by it.
 
 ### Respawner
 
