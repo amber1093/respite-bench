@@ -3,6 +3,7 @@ package amber1093.respitebench.logic;
 import com.mojang.logging.LogUtils;
 
 import amber1093.respitebench.RespiteBenchClient;
+import amber1093.respitebench.blockentity.MobRespawnerBlockEntity;
 import amber1093.respitebench.event.DiscardConnectedEntityCallback;
 import amber1093.respitebench.packet.MobRespawnerUpdateC2SPacket;
 
@@ -12,6 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -36,6 +38,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2d;
+import org.joml.Vector3d;
 import org.slf4j.Logger;
 
 //! TODO investigate for possible chunkloading related bugs
@@ -85,50 +89,55 @@ public abstract class MobRespawnerLogic {
     public int requiredPlayerRange = 16;
 
 	//just for particle visuals, not stored in nbt
-	private double rotation = 0;
-	private double particleRotationX = 0;
-	private double particleRotationY = 0;
+	private static double rotation = 0;
+	private static boolean canRotate = false;
+	private static Vector3d particlePos = new Vector3d();
+	private static Vector2d particleRotationPos = new Vector2d();
+	private static Vector2d particleRotationRadian = new Vector2d();
 
-    private boolean isPlayerInRange(World world, BlockPos pos) {
+    private static boolean isPlayerInRange(World world, BlockPos pos, int requiredPlayerRange) {
         return world.isPlayerInRange(
 				(double)pos.getX() + 0.5,
 				(double)pos.getY() + 0.5,
 				(double)pos.getZ() + 0.5,
-				this.requiredPlayerRange);
+				requiredPlayerRange);
     }
 
-    public void clientTick(World world, BlockPos pos) {
-		if (this.isPlayerInRange(world, pos) && this.renderedEntity != null) {
+    public static void clientTick(World world, BlockPos pos, BlockState state, MobRespawnerBlockEntity blockEntity) {
+		if (canRotate) {
+			++rotation;
+			canRotate = false;
 
+			particleRotationPos.x += 10;
+			particleRotationPos.y += 2;
+			particleRotationRadian.x = Math.toRadians(particleRotationPos.x % 360);
+			particleRotationRadian.y = Math.toRadians(particleRotationPos.y % 360);
+
+			particlePos.x = (0.4 * Math.cos(particleRotationRadian.x)); 
+			particlePos.y = (0.4 * Math.cos(particleRotationRadian.y));
+			particlePos.z = (0.4 * Math.sin(particleRotationRadian.x));
+		}
+
+		if (isPlayerInRange(world, pos, blockEntity.logic.requiredPlayerRange) && blockEntity.logic.renderedEntity != null) {
 			ParticleEffect particleType = ParticleTypes.SOUL_FIRE_FLAME;
-            if (this.spawnAmountLeft <= 0) {
-				++this.rotation;
-            }
-			else {
+            if (blockEntity.logic.spawnAmountLeft > 0) {
 				particleType = ParticleTypes.SMOKE;
 			}
 
-			this.particleRotationX += 10;
-			this.particleRotationY += 2;
-			double particleRotationXRadian = Math.toRadians(this.particleRotationX % 360);
-			double particleRotationYRadian = Math.toRadians(this.particleRotationY % 360);
-
-			double particlePosX = (double)pos.getX() + 0.5d; 
-			double particlePosY = (double)pos.getY() + 0.5d;
-			double particlePosZ = (double)pos.getZ() + 0.5d;
-
 			world.addParticle(
 					particleType,
-					particlePosX + (0.4 * Math.cos(particleRotationXRadian)),
-					particlePosY + (0.4 * Math.cos(particleRotationYRadian)),
-					particlePosZ + (0.4 * Math.sin(particleRotationXRadian)),
+					particlePos.x + (double)pos.getX() + 0.5d, 
+					particlePos.y + (double)pos.getY() + 0.5d, 
+					particlePos.z + (double)pos.getZ() + 0.5d, 
 					0, 0, 0);
         }
     }
 
     public void serverTick(ServerWorld world, BlockPos pos) {
 
-        if (this.spawnAmountLeft <= 0 || !this.enabled || !this.isPlayerInRange(world, pos)) {
+		canRotate = true;
+
+        if (this.spawnAmountLeft <= 0 || !this.enabled || !isPlayerInRange(world, pos, this.requiredPlayerRange)) {
             return;
         }
 
@@ -428,7 +437,7 @@ public abstract class MobRespawnerLogic {
     public abstract void sendStatus(World var1, BlockPos var2, int var3);
 
     public double getRotation() {
-        return this.rotation;
+        return rotation;
     }
 
 	public List<UUID> getConnectedEntitiesUuid() {

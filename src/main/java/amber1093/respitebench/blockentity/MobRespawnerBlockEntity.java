@@ -66,7 +66,7 @@ public class MobRespawnerBlockEntity extends BlockEntity {
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, MobRespawnerBlockEntity blockEntity) {
-        blockEntity.logic.clientTick(world, pos);
+        MobRespawnerLogic.clientTick(world, pos, state, blockEntity);
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, MobRespawnerBlockEntity blockEntity) {
