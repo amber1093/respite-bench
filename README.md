@@ -33,7 +33,6 @@ You can right click this block in creative mode to access a bunch of settings (s
 ## Known issues
 
 * Mobs spawned by the respawner are persistent (same as giving items or nametags to mobs). While this fixes most chunk-loading related bugs, it does not fix all of them.
-* Despite having "Ignore spawn rules" enabled in config, some mobs still require light levels lower than 12-13 to actually spawn in.
 
 ## Made for Custom Maps
 

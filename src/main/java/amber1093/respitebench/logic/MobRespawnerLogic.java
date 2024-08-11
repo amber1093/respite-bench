@@ -171,7 +171,7 @@ public abstract class MobRespawnerLogic {
 
 			//check for spawn rules, peaceful mode, light levels, etc.
 			BlockPos blockPos = BlockPos.ofFloored(d, e, f);
-			if (RespiteBenchClient.getMobRespawnerIgnoreSpawnRules() == false) {	//TODO doesnt work if light level is above 12 for some reason
+			if (RespiteBenchClient.getMobRespawnerIgnoreSpawnRules() == false) {
 				if (!mobSpawnerEntry.getCustomSpawnRules().isPresent()
 						? !SpawnRestriction.canSpawn(optional.get(), world, SpawnReason.SPAWNER, blockPos, world.getRandom())
 						: !optional.get().getSpawnGroup().isPeaceful() && world.getDifficulty() == Difficulty.PEACEFUL
@@ -197,10 +197,15 @@ public abstract class MobRespawnerLogic {
             entity2.refreshPositionAndAngles(entity2.getX(), entity2.getY(), entity2.getZ(), random.nextFloat() * 360.0f, 0.0f);
             if (entity2 instanceof MobEntity) {
                 MobEntity mobEntity = (MobEntity)entity2;
-                if (mobSpawnerEntry.getCustomSpawnRules().isEmpty() && !mobEntity.canSpawn(world, SpawnReason.SPAWNER) || !mobEntity.canSpawn(world)) { 
-					continue;
+
+				//second set of spawn rule checks
+				if (RespiteBenchClient.getMobRespawnerIgnoreSpawnRules() == false) {
+					if (mobSpawnerEntry.getCustomSpawnRules().isEmpty() && !mobEntity.canSpawn(world, SpawnReason.SPAWNER) || !mobEntity.canSpawn(world)) { 
+						continue;
+					}
 				}
 
+				//initialize mob
                 if (mobSpawnerEntry.getNbt().getSize() == 1 && mobSpawnerEntry.getNbt().contains("id", NbtElement.STRING_TYPE)) {
                     ((MobEntity)entity2).initialize(world, world.getLocalDifficulty(entity2.getBlockPos()), SpawnReason.SPAWNER, null, null);
                 }
