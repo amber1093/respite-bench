@@ -21,7 +21,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 
-//TODO close screen when block is broken
+
 @Environment(EnvType.CLIENT)
 public class MobRespawnerScreen extends Screen {
 

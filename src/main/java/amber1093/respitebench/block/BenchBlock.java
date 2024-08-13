@@ -34,11 +34,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
 
-//TODO better texture
-//TODO add wood variants
-//TODO BenchEntity is killed no matter which BenchBlock is broken
-
-
 public class BenchBlock extends HorizontalFacingBlock {
 
 	//* BenchBlockEntity is currently unused
@@ -157,8 +152,6 @@ public class BenchBlock extends HorizontalFacingBlock {
 		return getShape(state);
 	}
 
-	//TODO run this when player respawns
-	//TODO add particle effects (and maybe sound effect)
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		rest(world, pos, player, RespiteBench.BENCH_ENTITY);

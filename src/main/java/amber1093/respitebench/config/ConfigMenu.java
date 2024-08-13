@@ -11,8 +11,6 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class ConfigMenu implements ConfigData {
 
-	//TODO show overridden values (somehow)
-
 	@ConfigEntry.Gui.Excluded
 	public static final int FLASK_HEAL_AMOUNT_DEFAULT = 12;
 	@ConfigEntry.Gui.Excluded

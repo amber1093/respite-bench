@@ -21,7 +21,6 @@ public class BenchEntity extends TextDisplayEntity {
 				Entity passenger = this.getFirstPassenger();
 				if (passenger != null) {
 					PlayerEntity player = (PlayerEntity)passenger;
-					//TODO make this a config
 					player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 10, 255, true, false));
 					player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 10, 255, true, false));
 				}

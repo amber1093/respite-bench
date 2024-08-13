@@ -42,10 +42,6 @@ import org.joml.Vector2d;
 import org.joml.Vector3d;
 import org.slf4j.Logger;
 
-//! TODO investigate for possible chunkloading related bugs
-	//? known bug: triggered when a connected entity is killed while mob respawner is unloaded
-	//* known bug, unknown reason: sometimes respawner keeps spawning mobs with no regard for maxConnectedEntities
-
 /** <p>Mostly a copy paste of {@link net.minecraft.world.MobSpawnerLogic}, 
  * modified to only spawn mobs when called by the event {@link amber1093.respitebench.event.UseBenchCallback}
  * 

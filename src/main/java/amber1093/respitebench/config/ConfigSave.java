@@ -9,7 +9,6 @@ import net.minecraft.util.ActionResult;
 
 public class ConfigSave implements Save<ConfigMenu> {
 
-	//TODO any player can change config regardless of permissions
 	@Override
 	public ActionResult onSave(ConfigHolder<ConfigMenu> arg0, ConfigMenu config) {
 		//first save the config normally

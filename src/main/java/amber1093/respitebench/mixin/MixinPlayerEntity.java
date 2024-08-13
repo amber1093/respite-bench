@@ -60,7 +60,6 @@ public abstract class MixinPlayerEntity extends LivingEntity {
 	 */
 	@Inject(at = @At("HEAD"), method = "dropInventory")
 	public void refillFlasksOnRespawn(CallbackInfo callbackInfo) {
-		//TODO (config) check if spawn point block is a bench
 		if (this.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) == true) {
 			BenchBlock.refillFlasks(this.getInventory());
 		}
