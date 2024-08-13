@@ -12,6 +12,7 @@ public record ConfigUpdatePacket(
 	boolean bench_restInstantly,
 	boolean bench_clearPotionEffects,
 	boolean bench_setSpawnPoint,
+	float bench_distanceRequired,
 	boolean mobrespawner_ignoreSpawnRules
 ) implements FabricPacket {
 
@@ -29,6 +30,7 @@ public record ConfigUpdatePacket(
 			buf.readBoolean(),
 			buf.readBoolean(),
 			buf.readBoolean(),
+			buf.readFloat(),
 			buf.readBoolean()
 		);
 	}
@@ -40,6 +42,7 @@ public record ConfigUpdatePacket(
 			config.bench.restInstantly,
 			config.bench.clearPotionEffects,
 			config.bench.setSpawnPoint,
+			config.bench.distanceRequired,
 			config.mobrespawner.ignoreSpawnRules
 		);
 	}
@@ -51,6 +54,7 @@ public record ConfigUpdatePacket(
 		buf.writeBoolean(this.bench_restInstantly());
 		buf.writeBoolean(this.bench_clearPotionEffects());
 		buf.writeBoolean(this.bench_setSpawnPoint());
+		buf.writeFloat(this.bench_distanceRequired());
 		buf.writeBoolean(this.mobrespawner_ignoreSpawnRules());
 	}
 
@@ -61,6 +65,7 @@ public record ConfigUpdatePacket(
 		config.bench.restInstantly = this.bench_restInstantly();
 		config.bench.clearPotionEffects = this.bench_clearPotionEffects();
 		config.bench.setSpawnPoint = this.bench_setSpawnPoint();
+		config.bench.distanceRequired = this.bench_distanceRequired();
 		config.mobrespawner.ignoreSpawnRules = this.mobrespawner_ignoreSpawnRules();
 		return config;
 	}

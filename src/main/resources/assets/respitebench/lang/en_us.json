@@ -61,11 +61,13 @@
 
 	"text.autoconfig.respitebench.option.bench": "Bench",
 	"text.autoconfig.respitebench.option.bench.restInstantly": "Rest instantly",
-	"text.autoconfig.respitebench.option.bench.restInstantly.@Tooltip": "Disable sitting on the bench. Does not disable other features of it.",
+	"text.autoconfig.respitebench.option.bench.restInstantly.@Tooltip": "Disable sitting on benches. Does not disable other features of it.",
 	"text.autoconfig.respitebench.option.bench.clearPotionEffects": "Can clear potion effects",
 	"text.autoconfig.respitebench.option.bench.clearPotionEffects.@Tooltip": "Allow benches to clear your potion effects.",
 	"text.autoconfig.respitebench.option.bench.setSpawnPoint": "Can set spawn point",
 	"text.autoconfig.respitebench.option.bench.setSpawnPoint.@Tooltip": "Allow benches to change your spawn point.",
+	"text.autoconfig.respitebench.option.bench.distanceRequired": "Distance required",
+	"text.autoconfig.respitebench.option.bench.distanceRequired.@Tooltip": "Amount of block distance required to use a bench. 0 allows using benches from any distance.",
 
 	"text.autoconfig.respitebench.option.mobrespawner": "Mob Respawner",
 	"text.autoconfig.respitebench.option.mobrespawner.ignoreSpawnRules": "Ignore spawn rules",

@@ -154,8 +154,15 @@ public class BenchBlock extends HorizontalFacingBlock {
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		rest(world, pos, player, RespiteBench.BENCH_ENTITY);
-		return ActionResult.SUCCESS;
+		float distanceRequired = RespiteBenchClient.getBenchDistanceRequired();
+
+		if (distanceRequired == 0f || pos.isWithinDistance(player.getBlockPos(), distanceRequired)) {
+			rest(world, pos, player, RespiteBench.BENCH_ENTITY);
+			return ActionResult.SUCCESS;
+		}
+		else {
+			return ActionResult.FAIL;
+		}
 	}
 
 	public static void rest(World world, BlockPos pos, PlayerEntity player, EntityType<? extends BenchEntity> entityToRide) {

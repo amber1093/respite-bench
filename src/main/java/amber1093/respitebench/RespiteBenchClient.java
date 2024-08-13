@@ -97,6 +97,10 @@ public class RespiteBenchClient implements ClientModInitializer {
 		return (configoverride == null ? config.bench.setSpawnPoint : configoverride.bench.setSpawnPoint);
 	}
 
+	public static float getBenchDistanceRequired() {
+		return (configoverride == null ? config.bench.distanceRequired : configoverride.bench.distanceRequired);
+	}
+
 	public static boolean getMobRespawnerIgnoreSpawnRules() {
 		return (configoverride == null ? config.mobrespawner.ignoreSpawnRules : configoverride.mobrespawner.ignoreSpawnRules);
 	}
