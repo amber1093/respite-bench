@@ -12,6 +12,10 @@
 
 	"screen.respitebench.mob_respawner": "Mob Respawner Settings",
 
+	"screen.respitebench.mob_respawner.tab.properties": "Properties",
+	"screen.respitebench.mob_respawner.tab.spawntriggers": "Spawn Triggers",
+
+
 	"screen.respitebench.mob_respawner.enabled": "Enabled",
 	"screen.respitebench.mob_respawner.enabled.description": "Enable/disable all spawns from this block.",
 	"screen.respitebench.mob_respawner.enabled.nbtinfo": "NBT tag: Enabled\nType: boolean\nDefault: true",
@@ -45,6 +49,24 @@
 	"screen.respitebench.mob_respawner.connectedentitiesuuid.description": "UUID list of entities spawned by this block. Used to keep track of the ones that are still alive.",
 	"screen.respitebench.mob_respawner.connectedentitiesuuid.nbtinfo": "NBT tag: ConnectedEntitiesUuid\nType: compound[{UUID}, ...]\nDefault: empty",
 	"screen.respitebench.mob_respawner.connectedentitiesuuid.disconnectall": "Disconnect all",
+
+
+	"screen.respitebench.mob_respawner.trigger": "Trigger",
+	"screen.respitebench.mob_respawner.zone": "Zone",
+
+	"screen.respitebench.mob_respawner.shape": "Shape",
+	"screen.respitebench.mob_respawner.point": "Point",
+	"screen.respitebench.mob_respawner.box": "Box",
+	"screen.respitebench.mob_respawner.sphere": "Sphere",
+
+	"screen.respitebench.mob_respawner.position": "Position",
+	"screen.respitebench.mob_respawner.centerposition": "Center Position",
+	"screen.respitebench.mob_respawner.startposition": "Start Position",
+	"screen.respitebench.mob_respawner.endposition": "End Position",
+
+	"screen.respitebench.mob_respawner.hollow": "Hollow",
+	"screen.respitebench.mob_respawner.radius": "Radius",
+
 
 	"screen.respitebench.mob_respawner.sameasvanillaspawner": " (Same behavior as vanilla spawner)",
 	"screen.respitebench.mob_respawner.lagwarning": "\n\nHigh values can cause lag.",

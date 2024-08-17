@@ -26,7 +26,7 @@ import net.minecraft.util.math.BlockPos;
 public class MobRespawnerScreen extends Screen {
 
 	private static final int SCREEN_WIDTH = 250;
-	private static final int SCREEN_HEIGHT = 245;
+	private static final int SCREEN_HEIGHT = 270;
 	private static final int TEXTFIELD_WIDTH = 52;
 	private static final int BUTTON_WIDTH = 96;
 	private static final int WIDE_BUTTON_WIDTH = (SCREEN_WIDTH / 2) - 4;
@@ -37,6 +37,7 @@ public class MobRespawnerScreen extends Screen {
 	private static final int TEXT_COLOR = 10526880;
 
 	private boolean cancelled = true;
+	private int currentTab = 1;
 
 	public BlockPos blockPos;
 	public int maxConnectedEntities;
@@ -48,6 +49,8 @@ public class MobRespawnerScreen extends Screen {
 	public boolean enabled;
 	public boolean oneOff;
 
+	public ButtonWidget propertiesButtonWidget;
+	public ButtonWidget spawnTriggersButtonWidget;
 	public CheckboxWidget enabledWidget;
 	public CheckboxWidget oneOffWidget;
 	public TextFieldWidget maxConnectedEntitiesWidget;
@@ -73,82 +76,101 @@ public class MobRespawnerScreen extends Screen {
 		int topEdge = getTopEdge(this.height);
 		int bottomEdge = getBottomEdge(this.height);
 
+		Vector4i doneButtonTransform = new Vector4i(leftEdge, topEdge, WIDE_BUTTON_WIDTH, WIDGET_HEIGHT);
+		Vector4i cancelButtonTransform = new Vector4i(rightEdge - WIDE_BUTTON_WIDTH, topEdge, WIDE_BUTTON_WIDTH, WIDGET_HEIGHT);
+
+		Vector4i longTextTransform = new Vector4i(leftEdge, topEdge, LONG_TEXT_WIDTH, WIDGET_HEIGHT);
+		Vector4i shortTextTransform = new Vector4i(leftEdge, topEdge, SHORT_TEXT_WIDTH, WIDGET_HEIGHT);
+
+		Vector4i checkboxTransform = new Vector4i(rightEdge - WIDGET_HEIGHT, topEdge, WIDGET_HEIGHT, WIDGET_HEIGHT);
+		Vector4i textFieldTransform = new Vector4i(rightEdge - TEXTFIELD_WIDTH, topEdge, TEXTFIELD_WIDTH, WIDGET_HEIGHT);
+		Vector4i buttonTransform = new Vector4i(rightEdge - BUTTON_WIDTH, topEdge, BUTTON_WIDTH, WIDGET_HEIGHT);
+
 
 		//add title
 		addDrawable(new TextWidget(leftEdge, topEdge, SCREEN_WIDTH, WIDGET_HEIGHT, title, this.textRenderer));
 
+		//#region tab buttons and done/cancel buttons
+		this.propertiesButtonWidget = getButtonWidget(doneButtonTransform, 1, "tab.properties", button -> tabButtonPressAction(button));
+		this.spawnTriggersButtonWidget = getButtonWidget(cancelButtonTransform, 1, "tab.spawntriggers", button -> tabButtonPressAction(button));
+		getCurrentTabWidget().active = false;
 
-		//#region add text
-		Vector4i longTextTransform =	new Vector4i(leftEdge, topEdge, LONG_TEXT_WIDTH, WIDGET_HEIGHT);
-		Vector4i shortTextTransform =	new Vector4i(leftEdge, topEdge, SHORT_TEXT_WIDTH, WIDGET_HEIGHT);
-
-		addDrawable(getTextWidget(longTextTransform, 1, "enabled",					false, false, this.textRenderer));
-		addDrawable(getTextWidget(longTextTransform, 2, "oneoff",					false, false, this.textRenderer));
-		addDrawable(getTextWidget(longTextTransform, 3, "maxconnectedentities",		false, true, this.textRenderer));
-		addDrawable(getTextWidget(longTextTransform, 4, "spawncount",				true, true, this.textRenderer));
-		addDrawable(getTextWidget(longTextTransform, 5, "requiredplayerrange",		true, false, this.textRenderer));
-		addDrawable(getTextWidget(longTextTransform, 6, "spawnrange",				true, false, this.textRenderer));
-		addDrawable(getTextWidget(shortTextTransform, 7, "entitydata",				false, false, this.textRenderer));
-		addDrawable(getTextWidget(shortTextTransform, 8, "connectedentitiesuuid",	false, false, this.textRenderer));
-		//#endregion
+		addDrawableChild(this.propertiesButtonWidget);
+		addDrawableChild(this.spawnTriggersButtonWidget);
 
 
-		//#region add checkboxes
-		Vector4i checkboxTransform = new Vector4i(rightEdge - WIDGET_HEIGHT, topEdge, WIDGET_HEIGHT, WIDGET_HEIGHT);
-
-		this.enabledWidget = getCheckboxWidget(checkboxTransform, 1, this.enabled);
-		this.oneOffWidget = getCheckboxWidget(checkboxTransform, 2, this.oneOff);
-
-		addDrawableChild(this.enabledWidget);
-		addDrawableChild(this.oneOffWidget);
-		//#endregion
-
-
-		//#region add textfields
-		Vector4i textFieldTransform =	new Vector4i(rightEdge - TEXTFIELD_WIDTH, topEdge, TEXTFIELD_WIDTH, WIDGET_HEIGHT);
-
-		this.maxConnectedEntitiesWidget =	getTextFieldWidget(textFieldTransform, 3, this.maxConnectedEntities, "maxconnectedentities", this.textRenderer);
-		this.spawnCountWidget =				getTextFieldWidget(textFieldTransform, 4, this.spawnCount, "spawncount", this.textRenderer);
-		this.requiredPlayerRangeWidget =	getTextFieldWidget(textFieldTransform, 5, this.requiredPlayerRange, "requiredplayerrange", this.textRenderer);
-		this.spawnRangeWidget =				getTextFieldWidget(textFieldTransform, 6, this.spawnRange, "spawnrange", this.textRenderer);
-
-		addDrawableChild(this.maxConnectedEntitiesWidget);
-		addDrawableChild(this.spawnCountWidget);
-		addDrawableChild(this.requiredPlayerRangeWidget);
-		addDrawableChild(this.spawnRangeWidget);
-		//#endregion
-
-
-		//#region add buttons
-		Vector4i buttonTransform = new Vector4i(rightEdge - BUTTON_WIDTH, topEdge, BUTTON_WIDTH, WIDGET_HEIGHT);
-
-		addDrawableChild(getButtonWidget(buttonTransform, 7, "entitydata.clear", button -> {
-			this.shouldClearEntityData = true;
+		addDrawableChild(getButtonWidget(doneButtonTransform, 10, ScreenTexts.DONE, button -> {
 			this.cancelled = false;
 			close();
 		}));
 
-		addDrawableChild(getButtonWidget(buttonTransform, 8, "connectedentitiesuuid.disconnectall", button -> {
-			this.shouldDisconnectEntities = true;
-			this.cancelled = false;
-			close();
-		}));
-
-		Vector4i doneButtonTransform = new Vector4i(leftEdge, bottomEdge - WIDGET_HEIGHT, WIDE_BUTTON_WIDTH, WIDGET_HEIGHT);
-		Vector4i cancelButtonTransform = new Vector4i(rightEdge - WIDE_BUTTON_WIDTH, bottomEdge - WIDGET_HEIGHT, WIDE_BUTTON_WIDTH, WIDGET_HEIGHT);
-
-		addDrawableChild(getButtonWidget(doneButtonTransform, 0, ScreenTexts.DONE, button -> {
-			this.cancelled = false;
-			close();
-		}));
-
-		addDrawableChild(getButtonWidget(cancelButtonTransform, 0, ScreenTexts.CANCEL, button -> {
+		addDrawableChild(getButtonWidget(cancelButtonTransform, 10, ScreenTexts.CANCEL, button -> {
 			this.cancelled = true;
 			close();
 		}));
 		//#endregion
-	}
 
+		//#region properties tab
+		if (this.currentTab == 1) {
+			//#region add text
+			addDrawable(getTextWidget(longTextTransform, 2, "enabled",					false, false, this.textRenderer));
+			addDrawable(getTextWidget(longTextTransform, 3, "oneoff",					false, false, this.textRenderer));
+			addDrawable(getTextWidget(longTextTransform, 4, "maxconnectedentities",		false, true, this.textRenderer));
+			addDrawable(getTextWidget(longTextTransform, 5, "spawncount",				true, true, this.textRenderer));
+			addDrawable(getTextWidget(longTextTransform, 6, "requiredplayerrange",		true, false, this.textRenderer));
+			addDrawable(getTextWidget(longTextTransform, 7, "spawnrange",				true, false, this.textRenderer));
+			addDrawable(getTextWidget(shortTextTransform, 8, "entitydata",				false, false, this.textRenderer));
+			addDrawable(getTextWidget(shortTextTransform, 9, "connectedentitiesuuid",	false, false, this.textRenderer));
+			//#endregion
+			//#region add checkboxes
+			this.enabledWidget = getCheckboxWidget(checkboxTransform, 2, this.enabled);
+			this.oneOffWidget = getCheckboxWidget(checkboxTransform, 3, this.oneOff);
+
+			addDrawableChild(this.enabledWidget);
+			addDrawableChild(this.oneOffWidget);
+			//#endregion
+			//#region add textfields
+			this.maxConnectedEntitiesWidget =	getTextFieldWidget(textFieldTransform, 4, this.maxConnectedEntities, "maxconnectedentities", this.textRenderer);
+			this.spawnCountWidget =				getTextFieldWidget(textFieldTransform, 5, this.spawnCount, "spawncount", this.textRenderer);
+			this.requiredPlayerRangeWidget =	getTextFieldWidget(textFieldTransform, 6, this.requiredPlayerRange, "requiredplayerrange", this.textRenderer);
+			this.spawnRangeWidget =				getTextFieldWidget(textFieldTransform, 7, this.spawnRange, "spawnrange", this.textRenderer);
+
+			addDrawableChild(this.maxConnectedEntitiesWidget);
+			addDrawableChild(this.spawnCountWidget);
+			addDrawableChild(this.requiredPlayerRangeWidget);
+			addDrawableChild(this.spawnRangeWidget);
+			//#endregion
+			//#region add buttons
+			addDrawableChild(getButtonWidget(buttonTransform, 8, "entitydata.clear", button -> {
+				this.shouldClearEntityData = true;
+				this.cancelled = false;
+				close();
+			}));
+
+			addDrawableChild(getButtonWidget(buttonTransform, 9, "connectedentitiesuuid.disconnectall", button -> {
+				this.shouldDisconnectEntities = true;
+				this.cancelled = false;
+				close();
+			}));
+			//#endregion
+		}
+		//#endregion
+
+
+		//#region spawn triggers tab
+		if (this.currentTab == 2) {
+			//#region add text
+			addDrawable(getTextWidget(longTextTransform, 2, "shape",					false, false, this.textRenderer));
+			addDrawable(getTextWidget(longTextTransform, 2, "hollow",					false, false, this.textRenderer));
+			addDrawable(getTextWidget(longTextTransform, 2, "position",					false, false, this.textRenderer));
+			addDrawable(getTextWidget(longTextTransform, 3, "centerposition",			false, false, this.textRenderer));
+			addDrawable(getTextWidget(longTextTransform, 3, "startposition",			false, false, this.textRenderer));
+			addDrawable(getTextWidget(longTextTransform, 4, "endposition",				false, false, this.textRenderer));
+			addDrawable(getTextWidget(longTextTransform, 4, "radius",					false, false, this.textRenderer));
+			//#endregion
+		}
+		//#endregion
+	}
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		this.renderBackground(context);
@@ -170,8 +192,8 @@ public class MobRespawnerScreen extends Screen {
 			this.requiredPlayerRange =	(requiredPlayerRangeString ==	"" ? -1 : Integer.parseInt(requiredPlayerRangeString	.replaceAll("[\\D]", "")));
 			this.spawnRange =			(spawnRangeString ==			"" ? -1 : Integer.parseInt(spawnRangeString				.replaceAll("[\\D]", "")));
 
-			this.enabled = enabledWidget.isChecked();
-			this.oneOff = oneOffWidget.isChecked();
+			this.enabled = this.enabledWidget.isChecked();
+			this.oneOff = this.oneOffWidget.isChecked();
 
 			ClientPlayNetworking.send(new MobRespawnerUpdateC2SPacket(
 					this.blockPos,
@@ -188,6 +210,7 @@ public class MobRespawnerScreen extends Screen {
 		super.close();
 	}
 
+	//#region widget getters
 	protected static ButtonWidget getButtonWidget(Vector4i transform, int row, String key, PressAction action) {
 		return getButtonWidget(transform, row, getTextFromKey(key), action);
 	}
@@ -250,7 +273,9 @@ public class MobRespawnerScreen extends Screen {
 		widget.setTooltip(tooltip);
 		return widget;
 	}
+	//#endregion
 
+	//#region text and pos getters
 	protected static Tooltip getTooltip(String key, boolean sameAsVanilla, boolean lagWarning) {
 		return Tooltip.of(
 			getTextFromKey(key).formatted(Formatting.AQUA)
@@ -280,4 +305,32 @@ public class MobRespawnerScreen extends Screen {
 	protected static int getBottomEdge(int height) {
 		return (height / 2) + (SCREEN_HEIGHT / 2);
 	}
+	//#endregion
+
+	//#region tab management
+	private void tabButtonPressAction(ButtonWidget button) {
+		enableTabButtons();
+		button.active = false;
+		updateCurrentTab();
+	}
+
+	private void enableTabButtons() {
+		this.propertiesButtonWidget.active = true;
+		this.spawnTriggersButtonWidget.active = true;
+	}
+
+	private void updateCurrentTab() {
+		if (!this.propertiesButtonWidget.active) { this.currentTab = 1; }
+		if (!this.spawnTriggersButtonWidget.active) { this.currentTab = 2; }
+		this.clearAndInit();
+	}
+
+	private ButtonWidget getCurrentTabWidget() {
+		switch (currentTab) {
+			default:
+			case 1: { return this.propertiesButtonWidget; }
+			case 2: { return this.spawnTriggersButtonWidget; }
+		}
+	}
+	//#endregion
 }
