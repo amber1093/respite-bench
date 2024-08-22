@@ -20,6 +20,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 
 
 @Environment(EnvType.CLIENT)
@@ -36,8 +37,9 @@ public class MobRespawnerScreen extends Screen {
 	private static final int WIDGET_SPACING = 25;
 	private static final int TEXT_COLOR = 10526880;
 
+	private TabManager mainTabs = new TabManager();
+	private TabManager shapeTabs = new TabManager();
 	private boolean cancelled = true;
-	private int currentTab = 1;
 
 	public BlockPos blockPos;
 	public int maxConnectedEntities;
@@ -49,14 +51,25 @@ public class MobRespawnerScreen extends Screen {
 	public boolean enabled;
 	public boolean oneOff;
 
-	public ButtonWidget propertiesButtonWidget;
-	public ButtonWidget spawnTriggersButtonWidget;
 	public CheckboxWidget enabledWidget;
 	public CheckboxWidget oneOffWidget;
 	public TextFieldWidget maxConnectedEntitiesWidget;
 	public TextFieldWidget spawnCountWidget;
 	public TextFieldWidget requiredPlayerRangeWidget;
 	public TextFieldWidget spawnRangeWidget;
+
+
+	public boolean hollow;
+	public Vec3i firstPos = new Vec3i(0, 0, 0);
+	public Vec3i secondPos = new Vec3i(0, 0, 0);
+
+	public CheckboxWidget hollowWidget;
+	public TextFieldWidget firstPosX;
+	public TextFieldWidget firstPosY;
+	public TextFieldWidget firstPosZ;
+	public TextFieldWidget secondPosX;
+	public TextFieldWidget secondPosY;
+	public TextFieldWidget secondPosZ;
 
 	public MobRespawnerScreen(Text title, BlockPos pos, int maxConnectedEntities, int spawnCount, int requiredPlayerRange, int spawnRange, boolean enabled, boolean oneOff) {
 		super(title);
@@ -91,12 +104,12 @@ public class MobRespawnerScreen extends Screen {
 		addDrawable(new TextWidget(leftEdge, topEdge, SCREEN_WIDTH, WIDGET_HEIGHT, title, this.textRenderer));
 
 		//#region tab buttons and done/cancel buttons
-		this.propertiesButtonWidget = getButtonWidget(doneButtonTransform, 1, "tab.properties", button -> tabButtonPressAction(button));
-		this.spawnTriggersButtonWidget = getButtonWidget(cancelButtonTransform, 1, "tab.spawntriggers", button -> tabButtonPressAction(button));
-		getCurrentTabWidget().active = false;
+		this.mainTabs.clear();
+		this.mainTabs.addTab(getButtonWidget(doneButtonTransform, 1, "tab.properties", button -> tabButtonPressAction(this.mainTabs, button, 0)));
+		this.mainTabs.addTab(getButtonWidget(cancelButtonTransform, 1, "tab.spawntriggers", button -> tabButtonPressAction(this.mainTabs, button, 1)));
 
-		addDrawableChild(this.propertiesButtonWidget);
-		addDrawableChild(this.spawnTriggersButtonWidget);
+		addDrawableChild(this.mainTabs.getTab(0));
+		addDrawableChild(this.mainTabs.getTab(1));
 
 
 		addDrawableChild(getButtonWidget(doneButtonTransform, 10, ScreenTexts.DONE, button -> {
@@ -111,7 +124,7 @@ public class MobRespawnerScreen extends Screen {
 		//#endregion
 
 		//#region properties tab
-		if (this.currentTab == 1) {
+		if (this.mainTabs.getCurrentTab() == 0) {
 			//#region add text
 			addDrawable(getTextWidget(longTextTransform, 2, "enabled",					false, false, this.textRenderer));
 			addDrawable(getTextWidget(longTextTransform, 3, "oneoff",					false, false, this.textRenderer));
@@ -158,15 +171,59 @@ public class MobRespawnerScreen extends Screen {
 
 
 		//#region spawn triggers tab
-		if (this.currentTab == 2) {
-			//#region add text
-			addDrawable(getTextWidget(longTextTransform, 2, "shape",					false, false, this.textRenderer));
-			addDrawable(getTextWidget(longTextTransform, 2, "hollow",					false, false, this.textRenderer));
-			addDrawable(getTextWidget(longTextTransform, 2, "position",					false, false, this.textRenderer));
-			addDrawable(getTextWidget(longTextTransform, 3, "centerposition",			false, false, this.textRenderer));
-			addDrawable(getTextWidget(longTextTransform, 3, "startposition",			false, false, this.textRenderer));
-			addDrawable(getTextWidget(longTextTransform, 4, "endposition",				false, false, this.textRenderer));
-			addDrawable(getTextWidget(longTextTransform, 4, "radius",					false, false, this.textRenderer));
+		if (this.mainTabs.getCurrentTab() == 1) {
+			//#region add shape tabs
+			addDrawable(getTextWidget(shortTextTransform, 2, "shape", false, false, this.textRenderer));
+
+			int columnWidth = SCREEN_WIDTH/4;
+			int offset = columnWidth - TEXTFIELD_WIDTH;
+			Vector4i column2 = new Vector4i(rightEdge - (columnWidth * 3) + offset, topEdge, TEXTFIELD_WIDTH, WIDGET_HEIGHT);
+			Vector4i column3 = new Vector4i(rightEdge - (columnWidth * 2) + offset, topEdge, TEXTFIELD_WIDTH, WIDGET_HEIGHT);
+			Vector4i column4 = new Vector4i(rightEdge - (columnWidth * 1) + offset, topEdge, TEXTFIELD_WIDTH, WIDGET_HEIGHT);
+
+			this.shapeTabs.clear();
+			this.shapeTabs.addTab(getButtonWidget(column3, 2, "shape.point", button -> tabButtonPressAction(this.shapeTabs, button, 0)));
+			this.shapeTabs.addTab(getButtonWidget(column4, 2, "shape.box", button -> tabButtonPressAction(this.shapeTabs, button, 1)));
+
+			addDrawableChild(this.shapeTabs.getTab(0));
+			addDrawableChild(this.shapeTabs.getTab(1));
+			//#endregion
+			//#region shapes
+			if (this.shapeTabs.getCurrentTab() == 0) {
+				addDrawable(getTextWidget(shortTextTransform, 3, "position", false, false, this.textRenderer));
+				this.firstPosX = getTextFieldWidget(column2, 3, this.firstPos.getX(), "position.x", this.textRenderer);
+				this.firstPosY = getTextFieldWidget(column3, 3, this.firstPos.getY(), "position.y", this.textRenderer);
+				this.firstPosZ = getTextFieldWidget(column4, 3, this.firstPos.getZ(), "position.z", this.textRenderer);
+
+				addDrawableChild(this.firstPosX);
+				addDrawableChild(this.firstPosY);
+				addDrawableChild(this.firstPosZ);
+			}
+
+			if (this.shapeTabs.getCurrentTab() == 1) {
+				addDrawable(getTextWidget(longTextTransform, 3, "hollow",					false, false, this.textRenderer));
+				this.hollowWidget = getCheckboxWidget(checkboxTransform, 3, this.hollow);
+				addDrawableChild(this.hollowWidget);
+
+				addDrawable(getTextWidget(shortTextTransform, 4, "startposition",			false, false, this.textRenderer));
+				addDrawable(getTextWidget(shortTextTransform, 5, "endposition",				false, false, this.textRenderer));
+
+				this.firstPosX = getTextFieldWidget(column2, 4, this.firstPos.getX(), "position.x", this.textRenderer);
+				this.firstPosY = getTextFieldWidget(column3, 4, this.firstPos.getY(), "position.y", this.textRenderer);
+				this.firstPosZ = getTextFieldWidget(column4, 4, this.firstPos.getZ(), "position.z", this.textRenderer);
+
+				addDrawableChild(this.firstPosX);
+				addDrawableChild(this.firstPosY);
+				addDrawableChild(this.firstPosZ);
+
+				this.secondPosX = getTextFieldWidget(column2, 5, this.secondPos.getX(), "position.x", this.textRenderer);
+				this.secondPosY = getTextFieldWidget(column3, 5, this.secondPos.getY(), "position.y", this.textRenderer);
+				this.secondPosZ = getTextFieldWidget(column4, 5, this.secondPos.getZ(), "position.z", this.textRenderer);
+
+				addDrawableChild(this.secondPosX);
+				addDrawableChild(this.secondPosY);
+				addDrawableChild(this.secondPosZ);
+			}
 			//#endregion
 		}
 		//#endregion
@@ -279,10 +336,10 @@ public class MobRespawnerScreen extends Screen {
 	protected static Tooltip getTooltip(String key, boolean sameAsVanilla, boolean lagWarning) {
 		return Tooltip.of(
 			getTextFromKey(key).formatted(Formatting.AQUA)
-				.append(Text.literal("\n\n")).append(getTextFromKey(key + ".description")			.formatted(Formatting.WHITE))
+				.append(Text.literal("\n\n")).append(getTextFromKey(key + ".description")	.formatted(Formatting.WHITE))
 				.append((sameAsVanilla ? getTextFromKey("sameasvanillaspawner") : Text.empty())	.formatted(Formatting.GRAY).formatted(Formatting.ITALIC))
 				.append((lagWarning ? getTextFromKey("lagwarning") : Text.empty())				.formatted(Formatting.YELLOW))
-				.append(Text.literal("\n\n")).append(getTextFromKey(key + ".nbtinfo")				.formatted(Formatting.DARK_GRAY))
+				.append(Text.literal("\n\n")).append(getTextFromKey(key + ".nbtinfo")		.formatted(Formatting.DARK_GRAY))
 		);
 	}
 
@@ -307,30 +364,10 @@ public class MobRespawnerScreen extends Screen {
 	}
 	//#endregion
 
-	//#region tab management
-	private void tabButtonPressAction(ButtonWidget button) {
-		enableTabButtons();
+	private void tabButtonPressAction(TabManager tabManager, ButtonWidget button, int index) {
+		tabManager.enableAllTabs();
+		tabManager.setCurrentTab(index);
 		button.active = false;
-		updateCurrentTab();
-	}
-
-	private void enableTabButtons() {
-		this.propertiesButtonWidget.active = true;
-		this.spawnTriggersButtonWidget.active = true;
-	}
-
-	private void updateCurrentTab() {
-		if (!this.propertiesButtonWidget.active) { this.currentTab = 1; }
-		if (!this.spawnTriggersButtonWidget.active) { this.currentTab = 2; }
 		this.clearAndInit();
 	}
-
-	private ButtonWidget getCurrentTabWidget() {
-		switch (currentTab) {
-			default:
-			case 1: { return this.propertiesButtonWidget; }
-			case 2: { return this.spawnTriggersButtonWidget; }
-		}
-	}
-	//#endregion
 }

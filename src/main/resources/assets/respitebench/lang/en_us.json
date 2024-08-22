@@ -55,17 +55,17 @@
 	"screen.respitebench.mob_respawner.zone": "Zone",
 
 	"screen.respitebench.mob_respawner.shape": "Shape",
-	"screen.respitebench.mob_respawner.point": "Point",
-	"screen.respitebench.mob_respawner.box": "Box",
-	"screen.respitebench.mob_respawner.sphere": "Sphere",
+	"screen.respitebench.mob_respawner.shape.point": "Point",
+	"screen.respitebench.mob_respawner.shape.box": "Box",
 
 	"screen.respitebench.mob_respawner.position": "Position",
-	"screen.respitebench.mob_respawner.centerposition": "Center Position",
 	"screen.respitebench.mob_respawner.startposition": "Start Position",
 	"screen.respitebench.mob_respawner.endposition": "End Position",
+	"screen.respitebench.mob_respawner.position.x": "X",
+	"screen.respitebench.mob_respawner.position.y": "Y",
+	"screen.respitebench.mob_respawner.position.z": "Z",
 
 	"screen.respitebench.mob_respawner.hollow": "Hollow",
-	"screen.respitebench.mob_respawner.radius": "Radius",
 
 
 	"screen.respitebench.mob_respawner.sameasvanillaspawner": " (Same behavior as vanilla spawner)",
